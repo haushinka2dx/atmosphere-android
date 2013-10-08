@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Atmsample</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="drawer_open">Open Menu</string>
+    <string name="drawer_close">Close Menu</string>
+    <string name="user_name">Guest User</string>
+    <string name="message_time">12:00</string>
+    <string name="base_message">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</string>
+    <string name="user_icon">User Icon</string>
+    <string name="user_id">User ID</string>
+    <string name="user_password">Password</string>
+    <string name="save_password">Save password</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="login">Login</string>
+    <string name="login_error">Please check the password and ID.</string>
+    <string name="progress_format">(%1$,d/%2$,d)</string>
+    <string name="connecting">Connectiong</string>
+    <string name="uploading">Uploading</string>
+    <string name="under_maintenance">The server is currently unavailable due to maintenance.</string>
+    <string name="error">An error has occurred</string>
+    <string name="error_connect">Failed to connect to the servver</string>
+    <string name="error_io">Error occurred while reading</string>
+    <string name="submit">送信</string>
+    <string name="more_load">more・・・</string>
+    <string name="pull_update">Pull down to update</string>
+    <string name="global_timeline_title">everyone\'s message</string>
+    <string name="talk_timeline_title">message to you</string>
+    
+</resources>
