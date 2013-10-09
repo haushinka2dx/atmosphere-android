@@ -2,7 +2,6 @@ package atmosphere.android.activity;
 
 import java.util.List;
 
-import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -27,7 +26,6 @@ import atmsample.android.R;
 
 public class MainActivity extends FragmentActivity implements AtmosUrl {
 
-	private Context context;
 	private ActionBarDrawerToggle drawerToggle;
 
 	@Override
@@ -92,7 +90,7 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 	}
 
 	private void sendMessage(SendMessageRequest param) {
-		new PostTask<SendMessageResult>(context, SendMessageResult.class, new PostResultHandler<SendMessageResult>() {
+		new PostTask<SendMessageResult>(this, SendMessageResult.class, new PostResultHandler<SendMessageResult>() {
 			@Override
 			public void handleResult(List<SendMessageResult> results) {
 				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
