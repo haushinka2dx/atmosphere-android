@@ -37,7 +37,6 @@ public abstract class AbstractProgressTask<Params, Result> extends AsyncTask<Par
 				}
 			}
 		});
-		dialog.show();
 	}
 
 	public AbstractProgressTask<Params, Result> ignoreDialog(boolean ignore) {

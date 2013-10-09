@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.PagerTabStrip;
@@ -27,12 +26,10 @@ import atmosphere.android.activity.view.MessagePagerAdapter;
 import atmosphere.android.activity.view.fragment.GlobalTimeLineFragment;
 import atmosphere.android.activity.view.fragment.TalkTimeLineFragment;
 import atmosphere.android.constant.AtmosUrl;
-import atmosphere.android.dto.LoginResult;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.dto.MessageResult;
 import atmosphere.android.dto.SendMessageRequest;
 import atmosphere.android.dto.SendMessageResult;
-import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.internet.GetPath;
 import atmosphere.android.util.internet.JsonPath;
 import atmosphere.android.util.json.GetTask;
@@ -115,7 +112,7 @@ public class MessageListHelper implements AtmosUrl {
 		timeList.add(String.valueOf(new Date().getTime()));
 		params.put("_", timeList);
 
-		pastTask(activity, adapter, targetMethod, params);
+		pastTask(activity, adapter, targetMethod, params, false);
 
 		getLeftProgressBar(activity).setRotation(180);
 		messageListView.setOnTouchListener(new UpDownTouchListener(new UpDownTouchListener.OnDownListener() {
@@ -159,31 +156,22 @@ public class MessageListHelper implements AtmosUrl {
 	}
 
 	private static void pastTask(final Activity activity, final MessageAdapter adapter, final String targetMethod, final Map<String, List<String>> params) {
-		new GetTask<MessageResult>(activity, MessageResult.class, new GetResultHandler<MessageResult>() {
+		pastTask(activity, adapter, targetMethod, params, true);
+	}
+
+	private static void pastTask(final Activity activity, final MessageAdapter adapter, final String targetMethod, final Map<String, List<String>> params, boolean ignoreDialog) {
+		new GetTask<MessageResult>(activity, MessageResult.class, ignoreDialog, new GetResultHandler<MessageResult>() {
 			@Override
 			public void handleResult(List<MessageResult> results) {
 				if (results != null && !results.isEmpty()) {
 					adapter.addItems(results.get(0).results);
 					adapter.notifyDataSetChanged();
-				} else {
-					final Dialog loginDialog = new Dialog(activity);
-					DialogHelper.createLoginDialog(activity, loginDialog, R.string.login, new PostResultHandler<LoginResult>() {
-						@Override
-						public void handleResult(List<LoginResult> results) {
-							if (results != null && !results.isEmpty()) {
-								LoginResult result = results.get(0);
-								if (result.session_id != null && result.session_id.length() != 0) {
-									AtmosPreferenceManager.setAtmosSessionId(activity, result.session_id);
-									loginDialog.dismiss();
-									pastTask(activity, adapter, targetMethod, params);
-								} else {
-									loginDialog.setTitle("Retry");
-								}
-							}
-						}
-					});
-					loginDialog.show();
 				}
+			}
+		}, new GetTask.LoginResultHandler() {
+			@Override
+			public void handleResult() {
+				pastTask(activity, adapter, targetMethod, params);
 			}
 		}).execute(GetPath.paramOf(BASE_URL + targetMethod, params));
 	}
@@ -201,39 +189,26 @@ public class MessageListHelper implements AtmosUrl {
 			timeList.add(firstItem.created_at);
 			params.put("future_than", timeList);
 
-			new GetTask<MessageResult>(activity, MessageResult.class, new GetResultHandler<MessageResult>() {
+			new GetTask<MessageResult>(activity, MessageResult.class, true, new GetResultHandler<MessageResult>() {
 				@Override
 				public void handleResult(List<MessageResult> results) {
 					if (results != null && !results.isEmpty()) {
 						adapter.addBeforeItems(results.get(0).results);
 						adapter.notifyDataSetChanged();
 						getBaseProgressBar(activity).setIndeterminate(false);
-					} else {
-						final Dialog loginDialog = new Dialog(activity);
-						DialogHelper.createLoginDialog(activity, loginDialog, R.string.login, new PostResultHandler<LoginResult>() {
-							@Override
-							public void handleResult(List<LoginResult> results) {
-								if (results != null && !results.isEmpty()) {
-									LoginResult result = results.get(0);
-									if (result.session_id != null && result.session_id.length() != 0) {
-										AtmosPreferenceManager.setAtmosSessionId(activity, result.session_id);
-										loginDialog.dismiss();
-										futureTask(activity, adapter, targetMethod);
-									} else {
-										loginDialog.setTitle("Retry");
-									}
-								}
-							}
-						});
-						loginDialog.show();
 					}
+				}
+			}, new GetTask.LoginResultHandler() {
+				@Override
+				public void handleResult() {
+					futureTask(activity, adapter, targetMethod);
 				}
 			}).execute(GetPath.paramOf(BASE_URL + targetMethod, params));
 		}
 	}
 
-	private static void sendMessage(SendMessageRequest param, final Activity activity, final MessageAdapter adapter, final String targetMethod) {
-		new PostTask<SendMessageResult>(activity, SendMessageResult.class, new PostResultHandler<SendMessageResult>() {
+	private static void sendMessage(final SendMessageRequest param, final Activity activity, final MessageAdapter adapter, final String targetMethod) {
+		new PostTask<SendMessageResult>(activity, SendMessageResult.class, "Sending", new PostResultHandler<SendMessageResult>() {
 			@Override
 			public void handleResult(List<SendMessageResult> results) {
 				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
@@ -241,6 +216,11 @@ public class MessageListHelper implements AtmosUrl {
 					getDrawer(activity).closeDrawers();
 					futureTask(activity, adapter, targetMethod);
 				}
+			}
+		}, new PostTask.LoginResultHandler() {
+			@Override
+			public void handleResult() {
+				sendMessage(param, activity, adapter, targetMethod);
 			}
 		}).execute(JsonPath.paramOf(BASE_URL + SEND_MESSAGE_METHOD, param));
 	}

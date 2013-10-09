@@ -31,6 +31,18 @@ public class AtmosPreferenceManager {
 		editor.commit();
 	}
 
+	public static boolean getSavePasswordFlag(Context context) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		return prefs.getBoolean("save_password_flag", false);
+	}
+
+	public static void setSavePasswordFlag(Context context, boolean isSave) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		Editor editor = prefs.edit();
+		editor.putBoolean("save_password_flag", isSave);
+		editor.commit();
+	}
+
 	public static String getAtmosSessionId(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		return prefs.getString("atmos_session_id", "");
