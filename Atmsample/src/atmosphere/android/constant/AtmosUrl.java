@@ -8,4 +8,5 @@ public interface AtmosUrl {
 	public static final String TALK_TIMELINE_METHOD = "messages/talk_timeline";
 	public static final String SEND_MESSAGE_METHOD = "messages/send";
 	public static final String USER_AVATOR_METHOD = "user/avator";
+	public static final String USER_WHO_AM_I_METHOD = "auth/whoami";
 }
