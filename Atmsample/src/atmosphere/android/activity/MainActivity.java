@@ -20,6 +20,7 @@ import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.SendMessageRequest;
 import atmosphere.android.dto.SendMessageResult;
 import atmosphere.android.dto.WhoAmIResult;
+import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.internet.GetPath;
 import atmosphere.android.util.internet.JsonPath;
 import atmosphere.android.util.json.GetTask;
@@ -128,6 +129,8 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
+		menu.add(Menu.NONE, 0, Menu.NONE, "Defalt");
+		menu.add(Menu.NONE, 1, Menu.NONE, "Hirano View");
 		return true;
 	}
 
@@ -145,6 +148,8 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+
+		AtmosPreferenceManager.setViewTheme(this, item.getItemId());
 
 		// ActionBarDrawerToggleにandroid.id.home(up ナビゲーション)を渡す。
 		if (drawerToggle.onOptionsItemSelected(item)) {

@@ -20,7 +20,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import atmosphere.android.activity.listener.UpDownTouchListener;
+import android.widget.TextView;
+import atmosphere.android.activity.listener.FlickUpDownListener;
+import atmosphere.android.activity.listener.handler.OnFlickHandler;
+import atmosphere.android.activity.listener.handler.impl.FlickExecuteHandler;
+import atmosphere.android.activity.listener.handler.impl.FlickHandler;
+import atmosphere.android.activity.listener.handler.impl.FlickHiranoHandler;
 import atmosphere.android.activity.view.MessageAdapter;
 import atmosphere.android.activity.view.MessagePagerAdapter;
 import atmosphere.android.activity.view.fragment.GlobalTimeLineFragment;
@@ -30,6 +35,7 @@ import atmosphere.android.dto.MessageDto;
 import atmosphere.android.dto.MessageResult;
 import atmosphere.android.dto.SendMessageRequest;
 import atmosphere.android.dto.SendMessageResult;
+import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.internet.GetPath;
 import atmosphere.android.util.internet.JsonPath;
 import atmosphere.android.util.json.GetTask;
@@ -49,10 +55,15 @@ public class MessageListHelper implements AtmosUrl {
 		pager.setAdapter(adapter);
 	}
 
-	public static View createListView(final Activity activity, final View view, LayoutInflater inflater, final String targetMethod) {
+	public static View createListView(final Activity activity, final View view, final LayoutInflater inflater, final String targetMethod) {
 		ListView messageListView = getListView(view);
 		final MessageAdapter adapter = new MessageAdapter(activity, new ArrayList<MessageDto>());
-		messageListView.addFooterView(getFooter(inflater));
+
+		View footer = getFooter(inflater);
+		final ProgressBar footerProgressBar = (ProgressBar) footer.findViewById(R.id.ListViewFooterPrograssBar);
+		final TextView footerTextView = (TextView) footer.findViewById(R.id.ListViewFooterTextView);
+
+		messageListView.addFooterView(footer);
 		messageListView.setAdapter(adapter);
 		messageListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
@@ -97,7 +108,12 @@ public class MessageListHelper implements AtmosUrl {
 					List<String> timeList = new ArrayList<String>();
 					timeList.add(lastItem.created_at);
 					params.put("past_than", timeList);
-					pastTask(activity, adapter, targetMethod, params);
+
+					footerProgressBar.setVisibility(View.VISIBLE);
+					footerTextView.setText(R.string.connecting);
+					adapter.notifyDataSetChanged();
+
+					pastTask(activity, adapter, targetMethod, params, footerProgressBar, footerTextView);
 				}
 			}
 		});
@@ -112,66 +128,52 @@ public class MessageListHelper implements AtmosUrl {
 		timeList.add(String.valueOf(new Date().getTime()));
 		params.put("_", timeList);
 
-		pastTask(activity, adapter, targetMethod, params, false);
+		pastTask(activity, adapter, targetMethod, params, false, null, null);
 
-		getLeftProgressBar(activity).setRotation(180);
-		messageListView.setOnTouchListener(new UpDownTouchListener(new UpDownTouchListener.OnDownListener() {
+		OnFlickHandler handler;
+		if (AtmosPreferenceManager.getViewTheme(activity) == 1) {
+			handler = new FlickHiranoHandler(getBaseProgressBar(activity), getFlickProgressLayout(activity), messageListView);
+		} else {
+			handler = new FlickHandler(getBaseProgressBar(activity), getFlickProgressLayout(activity), getLeftProgressBar(activity), getRightProgressBar(activity));
+		}
+
+		messageListView.setOnTouchListener(new FlickUpDownListener(new FlickExecuteHandler(getBaseProgressBar(activity), getFlickProgressLayout(activity)) {
 			@Override
 			public void execute() {
-				getBaseProgressBar(activity).setVisibility(View.VISIBLE);
-				getBaseProgressBar(activity).setIndeterminate(true);
-				getFlickProgressLayout(activity).setVisibility(View.INVISIBLE);
+				super.execute();
 				futureTask(activity, adapter, targetMethod);
 			}
-		}, new UpDownTouchListener.OnProgressListener() {
-			@Override
-			public void controlProgressBar(int limit, int difference) {
-				getBaseProgressBar(activity).setVisibility(View.INVISIBLE);
-				getFlickProgressLayout(activity).setVisibility(View.VISIBLE);
-				getLeftProgressBar(activity).setMax(limit);
-				getRightProgressBar(activity).setMax(limit);
-
-				getLeftProgressBar(activity).setProgress(difference);
-				getRightProgressBar(activity).setProgress(difference);
-			}
-
-			@Override
-			public void compleated() {
-				getBaseProgressBar(activity).setVisibility(View.VISIBLE);
-				getFlickProgressLayout(activity).setVisibility(View.INVISIBLE);
-				getLeftProgressBar(activity).setProgress(0);
-				getRightProgressBar(activity).setProgress(0);
-			}
-
-			@Override
-			public void notCompleated() {
-				getBaseProgressBar(activity).setVisibility(View.INVISIBLE);
-				getFlickProgressLayout(activity).setVisibility(View.VISIBLE);
-				getLeftProgressBar(activity).setProgress(0);
-				getRightProgressBar(activity).setProgress(0);
-			}
-		}));
+		}, handler));
 
 		return view;
 	}
 
-	private static void pastTask(final Activity activity, final MessageAdapter adapter, final String targetMethod, final Map<String, List<String>> params) {
-		pastTask(activity, adapter, targetMethod, params, true);
+	private static void pastTask(final Activity activity, final MessageAdapter adapter, final String targetMethod, final Map<String, List<String>> params, ProgressBar footerProgressBar,
+			TextView footerTextView) {
+		pastTask(activity, adapter, targetMethod, params, true, footerProgressBar, footerTextView);
 	}
 
-	private static void pastTask(final Activity activity, final MessageAdapter adapter, final String targetMethod, final Map<String, List<String>> params, boolean ignoreDialog) {
+	private static void pastTask(final Activity activity, final MessageAdapter adapter, final String targetMethod, final Map<String, List<String>> params, boolean ignoreDialog,
+			final ProgressBar footerProgressBar, final TextView footerTextView) {
 		new GetTask<MessageResult>(activity, MessageResult.class, ignoreDialog, new GetResultHandler<MessageResult>() {
 			@Override
 			public void handleResult(List<MessageResult> results) {
 				if (results != null && !results.isEmpty()) {
 					adapter.addItems(results.get(0).results);
-					adapter.notifyDataSetChanged();
 				}
+
+				if (footerProgressBar != null) {
+					footerProgressBar.setVisibility(View.INVISIBLE);
+				}
+				if (footerTextView != null) {
+					footerTextView.setText(R.string.more_load);
+				}
+				adapter.notifyDataSetChanged();
 			}
 		}, new GetTask.LoginResultHandler() {
 			@Override
 			public void handleResult() {
-				pastTask(activity, adapter, targetMethod, params);
+				pastTask(activity, adapter, targetMethod, params, footerProgressBar, footerTextView);
 			}
 		}).execute(GetPath.paramOf(BASE_URL + targetMethod, params));
 	}

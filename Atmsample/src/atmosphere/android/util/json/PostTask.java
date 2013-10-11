@@ -109,8 +109,9 @@ public class PostTask<Result> extends AbstractProgressTask<JsonPath, List<Result
 
 	@Override
 	protected void onPostExecute(List<Result> result) {
-		if (result == null) {
-			if (AtmosPreferenceManager.getSavePasswordFlag(context)) {
+		if (result == null || (result.get(0).getClass().equals(LoginResult.class) && ((LoginResult) result.get(0)).session_id == null)) {
+			if (AtmosPreferenceManager.getSavePasswordFlag(context) && AtmosPreferenceManager.getLoginTryCount(context) == 0) {
+				AtmosPreferenceManager.setLoginTryCount(context, AtmosPreferenceManager.getLoginTryCount(context) + 1);
 				LoginRequest param = new LoginRequest();
 				param.user_id = AtmosPreferenceManager.getUserId(context);
 				param.password = AtmosPreferenceManager.getPassword(context);
@@ -124,6 +125,7 @@ public class PostTask<Result> extends AbstractProgressTask<JsonPath, List<Result
 				loginDialog.show();
 			}
 		} else if (handler != null) {
+			AtmosPreferenceManager.setLoginTryCount(context, 0);
 			handler.handleResult(result);
 		}
 		super.onPostExecute(result);

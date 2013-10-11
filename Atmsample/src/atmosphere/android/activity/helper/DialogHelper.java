@@ -28,7 +28,7 @@ public class DialogHelper implements AtmosUrl {
 		EditText userPassword = (EditText) view.findViewById(R.id.user_password);
 		userPassword.setText(AtmosPreferenceManager.getPassword(context));
 
-		CheckBox savePasswd = (CheckBox) view.findViewById(R.id.save_password_chckBox);
+		CheckBox savePasswd = (CheckBox) view.findViewById(R.id.save_password_checkBox);
 		savePasswd.setChecked(AtmosPreferenceManager.getSavePasswordFlag(context));
 
 		Button okButton = (Button) view.findViewById(R.id.ok_button);
@@ -40,7 +40,7 @@ public class DialogHelper implements AtmosUrl {
 				param.user_id = userId.getText().toString();
 				EditText password = (EditText) view.findViewById(R.id.user_password);
 				param.password = password.getText().toString();
-				CheckBox savePasswd = (CheckBox) view.findViewById(R.id.save_password_chckBox);
+				CheckBox savePasswd = (CheckBox) view.findViewById(R.id.save_password_checkBox);
 				boolean isSave = savePasswd.isChecked();
 
 				AtmosPreferenceManager.setUserId(context, param.user_id);

@@ -137,19 +137,28 @@ public class GetTask<Result> extends AbstractProgressTask<GetPath, List<Result>>
 	@Override
 	protected void onPostExecute(List<Result> result) {
 		if (result == null) {
-			if (AtmosPreferenceManager.getSavePasswordFlag(context)) {
+			if (AtmosPreferenceManager.getSavePasswordFlag(context) && AtmosPreferenceManager.getLoginTryCount(context) == 0) {
+				AtmosPreferenceManager.setLoginTryCount(context, AtmosPreferenceManager.getLoginTryCount(context) + 1);
 				LoginRequest param = new LoginRequest();
 				param.user_id = AtmosPreferenceManager.getUserId(context);
 				param.password = AtmosPreferenceManager.getPassword(context);
 
 				final Dialog loginDialog = new Dialog(context);
-				new PostTask<LoginResult>(context, LoginResult.class, createLoginHandler(loginDialog), null).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.LOGIN_METHOD, param));
+				new PostTask<LoginResult>(context, LoginResult.class, createLoginHandler(loginDialog), new PostTask.LoginResultHandler() {
+					@Override
+					public void handleResult() {
+						if (loginHandler != null) {
+							loginHandler.handleResult();
+						}
+					}
+				}).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.LOGIN_METHOD, param));
 			} else {
 				final Dialog loginDialog = new Dialog(context);
 				DialogHelper.createLoginDialog(context, loginDialog, R.string.login, createLoginHandler(loginDialog));
 				loginDialog.show();
 			}
 		} else if (handler != null) {
+			AtmosPreferenceManager.setLoginTryCount(context, 0);
 			handler.handleResult(result);
 		}
 		super.onPostExecute(result);

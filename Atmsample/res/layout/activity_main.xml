@@ -12,7 +12,7 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="10dp" >
+            android:layout_height="7dp" >
 
             <LinearLayout
                 android:id="@+id/flick_progress_layout"
@@ -25,7 +25,8 @@
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:rotation="180" />
 
                 <ProgressBar
                     android:id="@+id/right_progressBar"

@@ -54,4 +54,28 @@ public class AtmosPreferenceManager {
 		editor.putString("atmos_session_id", atmosSessionId);
 		editor.commit();
 	}
+
+	public static int getLoginTryCount(Context context) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		return prefs.getInt("login_try_count", 0);
+	}
+
+	public static void setLoginTryCount(Context context, int tryCount) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		Editor editor = prefs.edit();
+		editor.putInt("login_try_count", tryCount);
+		editor.commit();
+	}
+
+	public static int getViewTheme(Context context) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		return prefs.getInt("view_theme", 0);
+	}
+
+	public static void setViewTheme(Context context, int themeId) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		Editor editor = prefs.edit();
+		editor.putInt("view_theme", themeId);
+		editor.commit();
+	}
 }
