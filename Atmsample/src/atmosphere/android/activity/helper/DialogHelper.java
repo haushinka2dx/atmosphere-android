@@ -12,12 +12,13 @@ import atmosphere.android.dto.LoginRequest;
 import atmosphere.android.dto.LoginResult;
 import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.internet.JsonPath;
-import atmosphere.android.util.json.PostTask;
-import atmosphere.android.util.json.PostTask.PostResultHandler;
+import atmosphere.android.util.json.AtmosTask;
+import atmosphere.android.util.json.AtmosTask.RequestMethod;
+import atmosphere.android.util.json.AtmosTask.ResultHandler;
 import atmsample.android.R;
 
 public class DialogHelper implements AtmosUrl {
-	public static Dialog createLoginDialog(final Context context, final Dialog dialog, int titleResId, final PostResultHandler<LoginResult> handler) {
+	public static Dialog createLoginDialog(final Context context, final Dialog dialog, int titleResId, final ResultHandler<LoginResult> resultHandler) {
 		dialog.setCancelable(false);
 		dialog.setTitle(titleResId);
 
@@ -51,7 +52,7 @@ public class DialogHelper implements AtmosUrl {
 					AtmosPreferenceManager.setPassword(context, "");
 				}
 
-				new PostTask<LoginResult>(context, LoginResult.class, handler, null).execute(JsonPath.paramOf(BASE_URL + LOGIN_METHOD, param));
+				new AtmosTask<LoginResult>(context, LoginResult.class, RequestMethod.POST).resultHandler(resultHandler).execute(JsonPath.paramOf(BASE_URL + LOGIN_METHOD, param));
 			}
 		});
 

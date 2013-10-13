@@ -23,10 +23,10 @@ import atmosphere.android.dto.WhoAmIResult;
 import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.internet.GetPath;
 import atmosphere.android.util.internet.JsonPath;
-import atmosphere.android.util.json.GetTask;
-import atmosphere.android.util.json.GetTask.GetResultHandler;
-import atmosphere.android.util.json.PostTask;
-import atmosphere.android.util.json.PostTask.PostResultHandler;
+import atmosphere.android.util.json.AtmosTask;
+import atmosphere.android.util.json.AtmosTask.LoginResultHandler;
+import atmosphere.android.util.json.AtmosTask.RequestMethod;
+import atmosphere.android.util.json.AtmosTask.ResultHandler;
 import atmsample.android.R;
 
 public class MainActivity extends FragmentActivity implements AtmosUrl {
@@ -39,19 +39,19 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 		setContentView(R.layout.activity_main);
 
 		final FragmentActivity activity = this;
-		new GetTask<WhoAmIResult>(this, WhoAmIResult.class, true, new GetResultHandler<WhoAmIResult>() {
+		new AtmosTask<WhoAmIResult>(this, WhoAmIResult.class, RequestMethod.GET).resultHandler(new ResultHandler<WhoAmIResult>() {
 			@Override
 			public void handleResult(List<WhoAmIResult> results) {
 				if (results != null && !results.isEmpty()) {
 					MessageListHelper.initialize(activity, getViewPager(), getPagerTabStrip());
 				}
 			}
-		}, new GetTask.LoginResultHandler() {
+		}).loginHandler(new LoginResultHandler() {
 			@Override
 			public void handleResult() {
 				MessageListHelper.initialize(activity, getViewPager(), getPagerTabStrip());
 			}
-		}).execute(GetPath.paramOf(BASE_URL + USER_WHO_AM_I_METHOD, null));
+		}).ignoreDialog(true).execute(GetPath.paramOf(BASE_URL + USER_WHO_AM_I_METHOD, null));
 
 		drawerToggle = new ActionBarDrawerToggle(this, getDrawer(), R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
 			@Override
@@ -108,7 +108,7 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 	}
 
 	private void sendMessage(SendMessageRequest param) {
-		new PostTask<SendMessageResult>(this, SendMessageResult.class, "Sending", new PostResultHandler<SendMessageResult>() {
+		new AtmosTask<SendMessageResult>(this, SendMessageResult.class, RequestMethod.POST).progressMessage("Sending").resultHandler(new ResultHandler<SendMessageResult>() {
 			@Override
 			public void handleResult(List<SendMessageResult> results) {
 				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
@@ -116,13 +116,13 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 					getDrawer().closeDrawers();
 				}
 			}
-		}, new PostTask.LoginResultHandler() {
+		}).loginHandler(new LoginResultHandler() {
 			@Override
 			public void handleResult() {
 				getSendMessageEditText().setText("");
 				getDrawer().closeDrawers();
 			}
-		}).execute(JsonPath.paramOf(BASE_URL + SEND_MESSAGE_METHOD, param));
+		}).ignoreDialog(false).execute(JsonPath.paramOf(BASE_URL + SEND_MESSAGE_METHOD, param));
 	}
 
 	@Override

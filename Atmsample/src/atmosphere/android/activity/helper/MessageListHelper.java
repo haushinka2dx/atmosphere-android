@@ -38,10 +38,10 @@ import atmosphere.android.dto.SendMessageResult;
 import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.internet.GetPath;
 import atmosphere.android.util.internet.JsonPath;
-import atmosphere.android.util.json.GetTask;
-import atmosphere.android.util.json.GetTask.GetResultHandler;
-import atmosphere.android.util.json.PostTask;
-import atmosphere.android.util.json.PostTask.PostResultHandler;
+import atmosphere.android.util.json.AtmosTask;
+import atmosphere.android.util.json.AtmosTask.LoginResultHandler;
+import atmosphere.android.util.json.AtmosTask.RequestMethod;
+import atmosphere.android.util.json.AtmosTask.ResultHandler;
 import atmsample.android.R;
 
 public class MessageListHelper implements AtmosUrl {
@@ -155,7 +155,7 @@ public class MessageListHelper implements AtmosUrl {
 
 	private static void pastTask(final Activity activity, final MessageAdapter adapter, final String targetMethod, final Map<String, List<String>> params, boolean ignoreDialog,
 			final ProgressBar footerProgressBar, final TextView footerTextView) {
-		new GetTask<MessageResult>(activity, MessageResult.class, ignoreDialog, new GetResultHandler<MessageResult>() {
+		new AtmosTask<MessageResult>(activity, MessageResult.class, RequestMethod.GET).resultHandler(new ResultHandler<MessageResult>() {
 			@Override
 			public void handleResult(List<MessageResult> results) {
 				if (results != null && !results.isEmpty()) {
@@ -170,12 +170,12 @@ public class MessageListHelper implements AtmosUrl {
 				}
 				adapter.notifyDataSetChanged();
 			}
-		}, new GetTask.LoginResultHandler() {
+		}).loginHandler(new LoginResultHandler() {
 			@Override
 			public void handleResult() {
 				pastTask(activity, adapter, targetMethod, params, footerProgressBar, footerTextView);
 			}
-		}).execute(GetPath.paramOf(BASE_URL + targetMethod, params));
+		}).ignoreDialog(ignoreDialog).execute(GetPath.paramOf(BASE_URL + targetMethod, params));
 	}
 
 	private static void futureTask(final Activity activity, final MessageAdapter adapter, final String targetMethod) {
@@ -191,7 +191,7 @@ public class MessageListHelper implements AtmosUrl {
 			timeList.add(firstItem.created_at);
 			params.put("future_than", timeList);
 
-			new GetTask<MessageResult>(activity, MessageResult.class, true, new GetResultHandler<MessageResult>() {
+			new AtmosTask<MessageResult>(activity, MessageResult.class, RequestMethod.GET).resultHandler(new ResultHandler<MessageResult>() {
 				@Override
 				public void handleResult(List<MessageResult> results) {
 					if (results != null && !results.isEmpty()) {
@@ -200,17 +200,17 @@ public class MessageListHelper implements AtmosUrl {
 						getBaseProgressBar(activity).setIndeterminate(false);
 					}
 				}
-			}, new GetTask.LoginResultHandler() {
+			}).loginHandler(new LoginResultHandler() {
 				@Override
 				public void handleResult() {
 					futureTask(activity, adapter, targetMethod);
 				}
-			}).execute(GetPath.paramOf(BASE_URL + targetMethod, params));
+			}).ignoreDialog(true).execute(GetPath.paramOf(BASE_URL + targetMethod, params));
 		}
 	}
 
 	private static void sendMessage(final SendMessageRequest param, final Activity activity, final MessageAdapter adapter, final String targetMethod) {
-		new PostTask<SendMessageResult>(activity, SendMessageResult.class, "Sending", new PostResultHandler<SendMessageResult>() {
+		new AtmosTask<SendMessageResult>(activity, SendMessageResult.class, RequestMethod.POST).progressMessage("Sending").resultHandler(new ResultHandler<SendMessageResult>() {
 			@Override
 			public void handleResult(List<SendMessageResult> results) {
 				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
@@ -219,7 +219,7 @@ public class MessageListHelper implements AtmosUrl {
 					futureTask(activity, adapter, targetMethod);
 				}
 			}
-		}, new PostTask.LoginResultHandler() {
+		}).loginHandler(new LoginResultHandler() {
 			@Override
 			public void handleResult() {
 				sendMessage(param, activity, adapter, targetMethod);
