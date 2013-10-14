@@ -16,4 +16,8 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+    <style name="TooltipAnimation">
+        <item name="@android:windowExitAnimation">@anim/fade_out</item>
+    </style>
+    
 </resources>

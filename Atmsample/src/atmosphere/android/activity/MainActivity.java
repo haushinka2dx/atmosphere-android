@@ -21,7 +21,6 @@ import atmosphere.android.dto.SendMessageRequest;
 import atmosphere.android.dto.SendMessageResult;
 import atmosphere.android.dto.WhoAmIResult;
 import atmosphere.android.manager.AtmosPreferenceManager;
-import atmosphere.android.util.internet.GetPath;
 import atmosphere.android.util.internet.JsonPath;
 import atmosphere.android.util.json.AtmosTask;
 import atmosphere.android.util.json.AtmosTask.LoginResultHandler;
@@ -51,7 +50,7 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 			public void handleResult() {
 				MessageListHelper.initialize(activity, getViewPager(), getPagerTabStrip());
 			}
-		}).ignoreDialog(true).execute(GetPath.paramOf(BASE_URL + USER_WHO_AM_I_METHOD, null));
+		}).ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + USER_WHO_AM_I_METHOD, null));
 
 		drawerToggle = new ActionBarDrawerToggle(this, getDrawer(), R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
 			@Override

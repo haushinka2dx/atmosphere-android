@@ -1,6 +1,9 @@
 package atmosphere.android.util.json;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,10 +12,7 @@ import net.arnx.jsonic.JSON;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.Dialog;
@@ -25,12 +25,11 @@ import atmosphere.android.dto.LoginResult;
 import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.AbstractProgressTask;
 import atmosphere.android.util.ProgressObserver.ProgressStyle;
-import atmosphere.android.util.internet.GetPath;
+import atmosphere.android.util.internet.GET;
 import atmosphere.android.util.internet.JsonPath;
-import atmosphere.android.util.internet.Path;
 import atmsample.android.R;
 
-public class AtmosTask<Result> extends AbstractProgressTask<Path, List<Result>> {
+public class AtmosTask<Result> extends AbstractProgressTask<JsonPath, List<Result>> {
 
 	public enum RequestMethod {
 		GET, POST, ;
@@ -77,14 +76,14 @@ public class AtmosTask<Result> extends AbstractProgressTask<Path, List<Result>> 
 	}
 
 	@Override
-	protected List<Result> doInBackground(Path... params) {
+	protected List<Result> doInBackground(JsonPath... params) {
 		initialize();
 		List<Result> results = new ArrayList<Result>();
 		HttpClient httpClient = null;
 		HttpRequestBase request = null;
 		try {
 
-			for (Path path : params) {
+			for (JsonPath path : params) {
 				if (isCancelled()) {
 					break;
 				}
@@ -92,18 +91,23 @@ public class AtmosTask<Result> extends AbstractProgressTask<Path, List<Result>> 
 				System.setProperty("http.keepAlive", "false");
 				httpClient = new DefaultHttpClient();
 
-				if (requestMethod == RequestMethod.POST) {
-					HttpPost post = new HttpPost(path.real);
-					if (((JsonPath) path).param != null) {
-						post.setHeader("Content-Type", "application/json; charset=UTF-8");
-						String parmStr = JSON.encode(((JsonPath) path).param);
-						StringEntity entity = new StringEntity(parmStr, "UTF-8");
-						post.setEntity(entity);
+				request = new HttpRequestBase() {
+					@Override
+					public String getMethod() {
+						return requestMethod.name();
 					}
-					request = post;
-				} else if (requestMethod == RequestMethod.GET) {
-					request = new HttpGet(GetPath.createUrl((GetPath) path));
+				};
+
+				String parmStr = "";
+				if (path.param != null) {
+					if (requestMethod == RequestMethod.POST) {
+						request.setHeader("Content-Type", "application/json; charset=UTF-8");
+						parmStr = JSON.encode(path.param);
+					} else if (requestMethod == RequestMethod.GET) {
+						parmStr = GET.encode(path.param);
+					}
 				}
+				request.setURI(new URI(path.real + parmStr));
 				request.setHeader(HttpHeaderKey.AtmosSessionIdKey, AtmosPreferenceManager.getAtmosSessionId(context));
 
 				HttpResponse response = httpClient.execute(request);
@@ -125,8 +129,11 @@ public class AtmosTask<Result> extends AbstractProgressTask<Path, List<Result>> 
 					break;
 				}
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			Log.e("Atmos", "throws IOException in Atmos.", e);
+			observer.cancel();
+		} catch (URISyntaxException e) {
+			Log.e("Atmos", "throws URISyntaxException in Atmos.", e);
 			observer.cancel();
 		}
 

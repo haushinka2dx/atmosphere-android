@@ -2,9 +2,7 @@ package atmosphere.android.activity.helper;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import android.app.Activity;
 import android.support.v4.app.FragmentActivity;
@@ -31,12 +29,13 @@ import atmosphere.android.activity.view.MessagePagerAdapter;
 import atmosphere.android.activity.view.fragment.GlobalTimeLineFragment;
 import atmosphere.android.activity.view.fragment.TalkTimeLineFragment;
 import atmosphere.android.constant.AtmosUrl;
+import atmosphere.android.dto.FutureThanRequest;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.dto.MessageResult;
+import atmosphere.android.dto.PastThanRequest;
 import atmosphere.android.dto.SendMessageRequest;
 import atmosphere.android.dto.SendMessageResult;
 import atmosphere.android.manager.AtmosPreferenceManager;
-import atmosphere.android.util.internet.GetPath;
 import atmosphere.android.util.internet.JsonPath;
 import atmosphere.android.util.json.AtmosTask;
 import atmosphere.android.util.json.AtmosTask.LoginResultHandler;
@@ -99,15 +98,9 @@ public class MessageListHelper implements AtmosUrl {
 
 				} else {
 					MessageDto lastItem = (MessageDto) adapter.getItem(adapter.getCount() - 1);
-					Map<String, List<String>> params = new HashMap<String, List<String>>();
-
-					List<String> countList = new ArrayList<String>();
-					countList.add("10");
-					params.put("count", countList);
-
-					List<String> timeList = new ArrayList<String>();
-					timeList.add(lastItem.created_at);
-					params.put("past_than", timeList);
+					PastThanRequest params = new PastThanRequest();
+					params.count = 10;
+					params.past_than = lastItem.created_at;
 
 					footerProgressBar.setVisibility(View.VISIBLE);
 					footerTextView.setText(R.string.connecting);
@@ -118,15 +111,9 @@ public class MessageListHelper implements AtmosUrl {
 			}
 		});
 
-		Map<String, List<String>> params = new HashMap<String, List<String>>();
-
-		List<String> countList = new ArrayList<String>();
-		countList.add("10");
-		params.put("count", countList);
-
-		List<String> timeList = new ArrayList<String>();
-		timeList.add(String.valueOf(new Date().getTime()));
-		params.put("_", timeList);
+		PastThanRequest params = new PastThanRequest();
+		params.count = 10;
+		params.past_than = String.valueOf(new Date().getTime());
 
 		pastTask(activity, adapter, targetMethod, params, false, null, null);
 
@@ -148,12 +135,11 @@ public class MessageListHelper implements AtmosUrl {
 		return view;
 	}
 
-	private static void pastTask(final Activity activity, final MessageAdapter adapter, final String targetMethod, final Map<String, List<String>> params, ProgressBar footerProgressBar,
-			TextView footerTextView) {
+	private static void pastTask(final Activity activity, final MessageAdapter adapter, final String targetMethod, final PastThanRequest params, ProgressBar footerProgressBar, TextView footerTextView) {
 		pastTask(activity, adapter, targetMethod, params, true, footerProgressBar, footerTextView);
 	}
 
-	private static void pastTask(final Activity activity, final MessageAdapter adapter, final String targetMethod, final Map<String, List<String>> params, boolean ignoreDialog,
+	private static void pastTask(final Activity activity, final MessageAdapter adapter, final String targetMethod, final PastThanRequest params, boolean ignoreDialog,
 			final ProgressBar footerProgressBar, final TextView footerTextView) {
 		new AtmosTask<MessageResult>(activity, MessageResult.class, RequestMethod.GET).resultHandler(new ResultHandler<MessageResult>() {
 			@Override
@@ -175,21 +161,16 @@ public class MessageListHelper implements AtmosUrl {
 			public void handleResult() {
 				pastTask(activity, adapter, targetMethod, params, footerProgressBar, footerTextView);
 			}
-		}).ignoreDialog(ignoreDialog).execute(GetPath.paramOf(BASE_URL + targetMethod, params));
+		}).ignoreDialog(ignoreDialog).execute(JsonPath.paramOf(BASE_URL + targetMethod, params));
 	}
 
 	private static void futureTask(final Activity activity, final MessageAdapter adapter, final String targetMethod) {
 		if (0 < adapter.getCount()) {
 			MessageDto firstItem = (MessageDto) adapter.getItem(0);
-			Map<String, List<String>> params = new HashMap<String, List<String>>();
 
-			List<String> countList = new ArrayList<String>();
-			countList.add("-1");
-			params.put("count", countList);
-
-			List<String> timeList = new ArrayList<String>();
-			timeList.add(firstItem.created_at);
-			params.put("future_than", timeList);
+			FutureThanRequest params = new FutureThanRequest();
+			params.count = -1;
+			params.future_than = firstItem.created_at;
 
 			new AtmosTask<MessageResult>(activity, MessageResult.class, RequestMethod.GET).resultHandler(new ResultHandler<MessageResult>() {
 				@Override
@@ -205,7 +186,7 @@ public class MessageListHelper implements AtmosUrl {
 				public void handleResult() {
 					futureTask(activity, adapter, targetMethod);
 				}
-			}).ignoreDialog(true).execute(GetPath.paramOf(BASE_URL + targetMethod, params));
+			}).ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + targetMethod, params));
 		}
 	}
 
