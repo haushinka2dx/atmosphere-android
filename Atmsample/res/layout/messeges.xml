@@ -6,12 +6,11 @@
 
     <ImageView
         android:id="@+id/user_avator"
-        android:layout_width="0px"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="4dp"
         android:contentDescription="@string/user_icon"
-        android:layout_marginTop="1dp"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/no_image" />
 
     <LinearLayout
         android:layout_width="0px"
@@ -51,7 +50,6 @@
                 android:id="@+id/message_timeline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:autoLink="web|email|map"
                 android:text="@string/base_message"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
         </LinearLayout>

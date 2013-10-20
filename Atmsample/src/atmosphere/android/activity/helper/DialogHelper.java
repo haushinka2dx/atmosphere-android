@@ -52,7 +52,7 @@ public class DialogHelper implements AtmosUrl {
 					AtmosPreferenceManager.setPassword(context, "");
 				}
 
-				new AtmosTask<LoginResult>(context, LoginResult.class, RequestMethod.POST).resultHandler(resultHandler).execute(JsonPath.paramOf(BASE_URL + LOGIN_METHOD, param));
+				new AtmosTask.Builder<LoginResult>(context, LoginResult.class, RequestMethod.POST).resultHandler(resultHandler).build().execute(JsonPath.paramOf(BASE_URL + LOGIN_METHOD, param));
 			}
 		});
 

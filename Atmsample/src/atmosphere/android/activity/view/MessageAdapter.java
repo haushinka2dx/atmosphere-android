@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -21,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.MessageDto;
-import atmosphere.android.util.BitmapUtil;
 import atmosphere.android.util.TimeUtil;
 import atmsample.android.R;
 
@@ -30,15 +28,11 @@ public class MessageAdapter extends BaseAdapter implements AtmosUrl {
 	private Context context;
 	private List<MessageDto> list;
 	private Map<String, Bitmap> imageCash;
-	private Bitmap noImage;
 
 	public MessageAdapter(Context context, List<MessageDto> list) {
 		this.context = context;
 		this.list = list;
 		this.imageCash = new HashMap<String, Bitmap>();
-		Resources r = context.getResources();
-		Bitmap orgNoImage = BitmapFactory.decodeResource(r, R.drawable.no_image);
-		this.noImage = BitmapUtil.resize(orgNoImage);
 	}
 
 	public void setItems(List<MessageDto> list) {
@@ -52,6 +46,10 @@ public class MessageAdapter extends BaseAdapter implements AtmosUrl {
 	public void addBeforeItems(List<MessageDto> list) {
 		list.addAll(this.list);
 		this.list = list;
+	}
+
+	public void removeItem(int position) {
+		list.remove(position);
 	}
 
 	@Override
@@ -86,12 +84,21 @@ public class MessageAdapter extends BaseAdapter implements AtmosUrl {
 
 		TextView message = (TextView) view.findViewById(R.id.message_timeline);
 		message.setText(data.message);
+		// LinkUtil.autoLink(message, new LinkUtil.OnClickListener() {
+		// @Override
+		// public void onLinkClicked(String link) {
+		// }
+		//
+		// @Override
+		// public void onClicked() {
+		// listView.dispatchSetActivated(true);
+		// }
+		// });
 
 		TextView messageTime = (TextView) view.findViewById(R.id.message_time);
 		messageTime.setText(TimeUtil.formatDateFromGMT(data.created_at));
 
 		ImageView avator = (ImageView) view.findViewById(R.id.user_avator);
-		avator.setImageBitmap(noImage);
 
 		if (imageCash.containsKey(data.created_by)) {
 			avator.setImageBitmap(imageCash.get(data.created_by));
@@ -127,12 +134,11 @@ public class MessageAdapter extends BaseAdapter implements AtmosUrl {
 
 				protected void onPostExecute(Bitmap result) {
 					ImageView avator = (ImageView) view.findViewById(R.id.user_avator);
-					Bitmap resized = BitmapUtil.resize(result);
-					avator.setImageBitmap(resized);
+					avator.setImageBitmap(result);
 					if (15 < imageCash.size()) {
 						imageCash.clear();
 					}
-					imageCash.put(data.created_by, resized);
+					imageCash.put(data.created_by, result);
 				};
 
 			}.execute();

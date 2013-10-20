@@ -29,5 +29,12 @@
     <string name="pull_update">Pull down to update</string>
     <string name="global_timeline_title">everyone\'s message</string>
     <string name="talk_timeline_title">message to you</string>
+    <string name="fun">fun</string>
+    <string name="good">good</string>
+    <string name="memo">memo</string>
+    <string name="usefull">use full</string>
+    <string name="reply">reply</string>
+    <string name="delete">delete</string>
+    <string name="zero">0</string>
     
 </resources>
