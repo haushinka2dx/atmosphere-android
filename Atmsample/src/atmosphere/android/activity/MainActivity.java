@@ -2,6 +2,7 @@ package atmosphere.android.activity;
 
 import java.util.List;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -10,11 +11,16 @@ import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import atmosphere.android.activity.helper.MessageListHelper;
 import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.SendMessageRequest;
@@ -38,7 +44,7 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 		setContentView(R.layout.activity_main);
 
 		final FragmentActivity activity = this;
-		new AtmosTask<WhoAmIResult>(this, WhoAmIResult.class, RequestMethod.GET).resultHandler(new ResultHandler<WhoAmIResult>() {
+		new AtmosTask.Builder<WhoAmIResult>(this, WhoAmIResult.class, RequestMethod.GET).resultHandler(new ResultHandler<WhoAmIResult>() {
 			@Override
 			public void handleResult(List<WhoAmIResult> results) {
 				if (results != null && !results.isEmpty()) {
@@ -50,7 +56,7 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 			public void handleResult() {
 				MessageListHelper.initialize(activity, getViewPager(), getPagerTabStrip());
 			}
-		}).ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + USER_WHO_AM_I_METHOD, null));
+		}).build().execute(JsonPath.paramOf(BASE_URL + USER_WHO_AM_I_METHOD, null));
 
 		drawerToggle = new ActionBarDrawerToggle(this, getDrawer(), R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
 			@Override
@@ -77,6 +83,10 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 				// 表示済み、閉じ済みの状態：0
 				// ドラッグ中状態:1
 				// ドラッグを放した後のアニメーション中：2
+				if (newState == 2) {
+					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(getDrawer().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+				}
 				Log.i("MainActivity", "onDrawerStateChanged  new state : " + newState);
 			}
 
@@ -107,7 +117,7 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 	}
 
 	private void sendMessage(SendMessageRequest param) {
-		new AtmosTask<SendMessageResult>(this, SendMessageResult.class, RequestMethod.POST).progressMessage("Sending").resultHandler(new ResultHandler<SendMessageResult>() {
+		new AtmosTask.Builder<SendMessageResult>(this, SendMessageResult.class, RequestMethod.POST).progressMessage("Sending").resultHandler(new ResultHandler<SendMessageResult>() {
 			@Override
 			public void handleResult(List<SendMessageResult> results) {
 				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
@@ -121,7 +131,7 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 				getSendMessageEditText().setText("");
 				getDrawer().closeDrawers();
 			}
-		}).ignoreDialog(false).execute(JsonPath.paramOf(BASE_URL + SEND_MESSAGE_METHOD, param));
+		}).build().ignoreDialog(false).execute(JsonPath.paramOf(BASE_URL + SEND_MESSAGE_METHOD, param));
 	}
 
 	@Override
@@ -158,6 +168,25 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 		return super.onOptionsItemSelected(item);
 	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		ListView detailListView = getDetailListView();
+		if (detailListView.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
+			Animation animation = AnimationUtils.loadAnimation(this, R.anim.slide_out_right);
+			detailListView.startAnimation(animation);
+			detailListView.setVisibility(View.GONE);
+
+			ViewPager pager = getViewPager();
+			Animation outAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
+			pager.startAnimation(outAnimation);
+			pager.setVisibility(View.VISIBLE);
+
+			return true;
+		} else {
+			return super.onKeyDown(keyCode, event);
+		}
+	}
+
 	protected ViewPager getViewPager() {
 		return (ViewPager) findViewById(R.id.ViewPager);
 	}
@@ -176,5 +205,9 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 
 	protected Button getSubmitButton() {
 		return (Button) findViewById(R.id.SubmitButton);
+	}
+
+	protected ListView getDetailListView() {
+		return (ListView) findViewById(R.id.detali_message_list);
 	}
 }

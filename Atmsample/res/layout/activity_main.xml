@@ -43,19 +43,30 @@
                 android:layout_height="match_parent" />
         </FrameLayout>
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/ViewPager"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" >
+            android:layout_height="wrap_content" >
 
-            <android.support.v4.view.PagerTabStrip
-                android:id="@+id/PagerTabStrip"
+            <android.support.v4.view.ViewPager
+                android:id="@+id/ViewPager"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="6dp"
-                android:paddingTop="6dp" />
-        </android.support.v4.view.ViewPager>
+                android:layout_height="wrap_content" >
+
+                <android.support.v4.view.PagerTabStrip
+                    android:id="@+id/PagerTabStrip"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="6dp"
+                    android:paddingTop="6dp" />
+            </android.support.v4.view.ViewPager>
+
+            <ListView
+                android:id="@+id/detali_message_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" >
+            </ListView>
+        </FrameLayout>
     </LinearLayout>
 
     <LinearLayout

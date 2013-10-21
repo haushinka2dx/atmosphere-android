@@ -1,24 +1,19 @@
 package atmosphere.android.util.json;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.arnx.jsonic.JSON;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.util.Log;
 import atmosphere.android.activity.helper.DialogHelper;
+import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.constant.HttpHeaderKey;
 import atmosphere.android.dto.LoginRequest;
 import atmosphere.android.dto.LoginResult;
@@ -27,9 +22,10 @@ import atmosphere.android.util.AbstractProgressTask;
 import atmosphere.android.util.ProgressObserver.ProgressStyle;
 import atmosphere.android.util.internet.GET;
 import atmosphere.android.util.internet.JsonPath;
+import atmosphere.android.util.internet.UrlSession;
 import atmsample.android.R;
 
-public class AtmosTask<Result> extends AbstractProgressTask<JsonPath, List<Result>> {
+public class AtmosTask<Result> extends AbstractProgressTask<JsonPath, List<Result>> implements AtmosUrl {
 
 	public enum RequestMethod {
 		GET, POST, ;
@@ -43,44 +39,74 @@ public class AtmosTask<Result> extends AbstractProgressTask<JsonPath, List<Resul
 	private ProgressStyle progressStyle = ProgressStyle.Spin;
 	private String progressMessage = null;
 
-	public AtmosTask(Context context, Class<Result> resultType, RequestMethod requestMethod) {
-		super(context);
-		this.resultType = resultType;
-		this.requestMethod = requestMethod;
-		progressMessage = context.getResources().getString(R.string.connecting);
+	public static class Builder<Result> {
+		private Context context;
+		private Class<Result> resultType;
+		private RequestMethod requestMethod;
+
+		private ResultHandler<Result> resultHandler = null;
+		private LoginResultHandler loginHandler = null;
+		private ProgressStyle progressStyle = ProgressStyle.Spin;
+		private String progressMessage = null;
+
+		public Builder(Context context, Class<Result> resultType, RequestMethod requestMethod) {
+			this.context = context;
+			this.resultType = resultType;
+			this.requestMethod = requestMethod;
+			this.progressMessage = context.getResources().getString(R.string.connecting);
+		}
+
+		public Builder<Result> progressStyle(ProgressStyle progressStyle) {
+			this.progressStyle = progressStyle;
+			return this;
+		}
+
+		public Builder<Result> progressMessage(String progressMessage) {
+			this.progressMessage = progressMessage;
+			return this;
+		}
+
+		public Builder<Result> resultHandler(ResultHandler<Result> resultHandler) {
+			this.resultHandler = resultHandler;
+			return this;
+		}
+
+		public Builder<Result> loginHandler(LoginResultHandler loginHandler) {
+			this.loginHandler = loginHandler;
+			return this;
+		}
+
+		public AtmosTask<Result> build() {
+			if (context != null && resultType != null && requestMethod != null) {
+				return new AtmosTask<Result>(this);
+			} else {
+				return null;
+			}
+		}
 	}
 
-	public AtmosTask<Result> progressStyle(ProgressStyle progressStyle) {
-		this.progressStyle = progressStyle;
-		return this;
-	}
+	private AtmosTask(Builder<Result> builder) {
+		super(builder.context);
+		this.resultType = builder.resultType;
+		this.requestMethod = builder.requestMethod;
+		this.progressMessage = builder.progressMessage;
+		this.resultType = builder.resultType;
+		this.requestMethod = builder.requestMethod;
 
-	public AtmosTask<Result> progressMessage(String progressMessage) {
-		this.progressMessage = progressMessage;
-		return this;
-	}
+		this.resultHandler = builder.resultHandler;
+		this.loginHandler = builder.loginHandler;
+		this.progressStyle = builder.progressStyle;
+		this.progressMessage = builder.progressMessage;
 
-	public AtmosTask<Result> resultHandler(ResultHandler<Result> resultHandler) {
-		this.resultHandler = resultHandler;
-		return this;
-	}
-
-	public AtmosTask<Result> loginHandler(LoginResultHandler loginHandler) {
-		this.loginHandler = loginHandler;
-		return this;
-	}
-
-	private void initialize() {
 		super.observer.updateStyle(progressStyle);
 		super.observer.setMessage(progressMessage);
+
 	}
 
 	@Override
 	protected List<Result> doInBackground(JsonPath... params) {
-		initialize();
 		List<Result> results = new ArrayList<Result>();
-		HttpClient httpClient = null;
-		HttpRequestBase request = null;
+		UrlSession session = null;
 		try {
 
 			for (JsonPath path : params) {
@@ -89,52 +115,64 @@ public class AtmosTask<Result> extends AbstractProgressTask<JsonPath, List<Resul
 				}
 
 				System.setProperty("http.keepAlive", "false");
-				httpClient = new DefaultHttpClient();
 
-				request = new HttpRequestBase() {
-					@Override
-					public String getMethod() {
-						return requestMethod.name();
-					}
-				};
-
-				String parmStr = "";
-				if (path.param != null) {
-					if (requestMethod == RequestMethod.POST) {
-						request.setHeader("Content-Type", "application/json; charset=UTF-8");
-						parmStr = JSON.encode(path.param);
-					} else if (requestMethod == RequestMethod.GET) {
-						parmStr = GET.encode(path.param);
-					}
+				URL url = null;
+				if (requestMethod == RequestMethod.POST) {
+					url = new URL(path.real);
+				} else if (requestMethod == RequestMethod.GET) {
+					url = new URL(path.real + GET.encode(path.param));
 				}
-				request.setURI(new URI(path.real + parmStr));
-				request.setHeader(HttpHeaderKey.AtmosSessionIdKey, AtmosPreferenceManager.getAtmosSessionId(context));
 
-				HttpResponse response = httpClient.execute(request);
-				int code = response.getStatusLine().getStatusCode();
+				HttpURLConnection con = (HttpURLConnection) url.openConnection();
+				con.setConnectTimeout(8000);
+				con.setRequestMethod(requestMethod.name());
+				con.setRequestProperty(HttpHeaderKey.AtmosSessionIdKey, AtmosPreferenceManager.getAtmosSessionId(context));
+				con.setDoInput(true);
+
+				if (requestMethod == RequestMethod.POST && path.param != null) {
+					con.setDoOutput(true);
+					con.setRequestProperty("Content-Type", "application/json");
+					OutputStream out = con.getOutputStream();
+					JSON.encode(path.param, out, false);
+				}
+
+				session = new UrlSession(url, con);
+
+				int code = -1;
+				try {
+					code = session.con.getResponseCode();
+				} catch (IOException e) {
+					// TODO
+					// HttpURLConnectionでレスポンスコードが401だった場合に接続を切り取得できないため。HttpRequestBaseではPOSTの時のEntityをセット出来ず実現出来ていない。サーバー側でチェック用のロジックを組むかEntityをセットする方法を考えるべき
+					code = HttpURLConnection.HTTP_UNAUTHORIZED;
+				}
+
 				if (code == HttpURLConnection.HTTP_OK) {
-					HttpEntity entity = response.getEntity();
-					if (entity != null) {
-						AtmosPreferenceManager.setAtmosSessionId(context, response.getFirstHeader(HttpHeaderKey.AtmosSessionIdKey).getValue());
-						Log.v("SessionId", response.getFirstHeader(HttpHeaderKey.AtmosSessionIdKey).getValue());
-						Result result = JSON.decode(entity.getContent(), resultType);
-						results.add(result);
-					}
+					AtmosPreferenceManager.setAtmosSessionId(context, session.con.getHeaderField(HttpHeaderKey.AtmosSessionIdKey));
+					Log.v("SessionId", session.con.getHeaderField(HttpHeaderKey.AtmosSessionIdKey));
+
+					InputStream in = session.con.getInputStream();
+					Result result = JSON.decode(in, resultType);
+					results.add(result);
+					session.con.disconnect();
 				} else if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
-					results = null;
-					break;
+					return null;
 				} else {
-					Log.w("Atmos", "response code:" + code + " [" + response.toString() + "]");
+					Log.w("Atmos", "response code:" + code + " [" + session.url + "]");
 					observer.cancel(code);
-					break;
+					return results;
 				}
+
 			}
 		} catch (IOException e) {
 			Log.e("Atmos", "throws IOException in Atmos.", e);
 			observer.cancel();
-		} catch (URISyntaxException e) {
-			Log.e("Atmos", "throws URISyntaxException in Atmos.", e);
-			observer.cancel();
+			session.con.disconnect();
+			return null;
+		} finally {
+			if (session != null && session.con != null) {
+				session.con.disconnect();
+			}
 		}
 
 		return results;
@@ -142,15 +180,21 @@ public class AtmosTask<Result> extends AbstractProgressTask<JsonPath, List<Resul
 
 	@Override
 	protected void onPostExecute(List<Result> result) {
-		if (result == null || (result.get(0).getClass().equals(LoginResult.class) && ((LoginResult) result.get(0)).session_id == null)) {
+		if (result == null || (!result.isEmpty() && result.get(0).getClass().equals(LoginResult.class) && ((LoginResult) result.get(0)).session_id == null)) {
 			if (AtmosPreferenceManager.getSavePasswordFlag(context) && AtmosPreferenceManager.getLoginTryCount(context) == 0) {
 				AtmosPreferenceManager.setLoginTryCount(context, AtmosPreferenceManager.getLoginTryCount(context) + 1);
 				LoginRequest param = new LoginRequest();
 				param.user_id = AtmosPreferenceManager.getUserId(context);
 				param.password = AtmosPreferenceManager.getPassword(context);
 
-				final Dialog loginDialog = new Dialog(context);
-				new AtmosTask<LoginResult>(context, LoginResult.class, RequestMethod.POST).resultHandler(createLoginHandler(loginDialog));
+				new AtmosTask.Builder<LoginResult>(context, LoginResult.class, RequestMethod.POST).resultHandler(createLoginHandler(new Dialog(context))).loginHandler(new LoginResultHandler() {
+					@Override
+					public void handleResult() {
+						if (loginHandler != null) {
+							loginHandler.handleResult();
+						}
+					}
+				}).build().execute(JsonPath.paramOf(BASE_URL + LOGIN_METHOD, param));
 			} else {
 				final Dialog loginDialog = new Dialog(context);
 				DialogHelper.createLoginDialog(context, loginDialog, R.string.login, createLoginHandler(loginDialog));

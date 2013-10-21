@@ -25,7 +25,7 @@ public abstract class AbstractProgressTask<Params, Result> extends AsyncTask<Par
 
 	private void createDialog() {
 		dialog = new DownloadProgressDialog(context);
-		dialog.setCancelable(true);
+		dialog.setCancelable(false);
 
 		dialog.switchSpinProgressBar();
 		dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
