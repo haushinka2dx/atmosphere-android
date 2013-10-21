@@ -1,5 +1,7 @@
 package atmosphere.android.activity.view;
 
+import interprism.atmosphere.android.R;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -39,7 +41,6 @@ import atmosphere.android.util.json.AtmosTask;
 import atmosphere.android.util.json.AtmosTask.LoginResultHandler;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
-import atmsample.android.R;
 
 public class DetailMessageAdapter extends BaseAdapter implements AtmosUrl {
 	private Activity activity;

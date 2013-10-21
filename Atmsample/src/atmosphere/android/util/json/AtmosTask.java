@@ -1,5 +1,7 @@
 package atmosphere.android.util.json;
 
+import interprism.atmosphere.android.R;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,7 +25,6 @@ import atmosphere.android.util.ProgressObserver.ProgressStyle;
 import atmosphere.android.util.internet.GET;
 import atmosphere.android.util.internet.JsonPath;
 import atmosphere.android.util.internet.UrlSession;
-import atmsample.android.R;
 
 public class AtmosTask<Result> extends AbstractProgressTask<JsonPath, List<Result>> implements AtmosUrl {
 

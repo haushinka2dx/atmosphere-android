@@ -1,5 +1,6 @@
 package atmosphere.android.activity.view;
 
+import interprism.atmosphere.android.R;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
@@ -7,7 +8,6 @@ import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import atmsample.android.R;
 
 public class DownloadProgressDialog extends Dialog {
 	public DownloadProgressDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {

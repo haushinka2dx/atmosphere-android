@@ -1,5 +1,7 @@
 package atmosphere.android.activity.view;
 
+import interprism.atmosphere.android.R;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -21,7 +23,6 @@ import android.widget.TextView;
 import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.util.TimeUtil;
-import atmsample.android.R;
 
 public class MessageAdapter extends BaseAdapter implements AtmosUrl {
 

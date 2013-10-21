@@ -1,5 +1,7 @@
 package atmosphere.android.activity.helper;
 
+import interprism.atmosphere.android.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +52,6 @@ import atmosphere.android.util.json.AtmosTask;
 import atmosphere.android.util.json.AtmosTask.LoginResultHandler;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
-import atmsample.android.R;
 
 public class MessageListHelper implements AtmosUrl {
 

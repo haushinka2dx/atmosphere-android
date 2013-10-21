@@ -1,5 +1,7 @@
 package atmosphere.android.activity;
 
+import interprism.atmosphere.android.R;
+
 import java.util.List;
 
 import android.content.Context;
@@ -32,7 +34,6 @@ import atmosphere.android.util.json.AtmosTask;
 import atmosphere.android.util.json.AtmosTask.LoginResultHandler;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
-import atmsample.android.R;
 
 public class MainActivity extends FragmentActivity implements AtmosUrl {
 

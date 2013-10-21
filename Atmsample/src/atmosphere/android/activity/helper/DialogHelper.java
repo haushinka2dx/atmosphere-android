@@ -1,5 +1,6 @@
 package atmosphere.android.activity.helper;
 
+import interprism.atmosphere.android.R;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -15,7 +16,6 @@ import atmosphere.android.util.internet.JsonPath;
 import atmosphere.android.util.json.AtmosTask;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
-import atmsample.android.R;
 
 public class DialogHelper implements AtmosUrl {
 	public static Dialog createLoginDialog(final Context context, final Dialog dialog, int titleResId, final ResultHandler<LoginResult> resultHandler) {

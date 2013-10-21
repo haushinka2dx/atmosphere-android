@@ -1,5 +1,6 @@
 package atmosphere.android.util;
 
+import interprism.atmosphere.android.R;
 import android.content.Context;
 import android.graphics.Point;
 import android.util.DisplayMetrics;
@@ -7,12 +8,11 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
-import atmsample.android.R;
 
 public class Tooltip {
 
