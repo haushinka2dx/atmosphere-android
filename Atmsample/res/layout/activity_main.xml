@@ -45,7 +45,7 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="match_parent" >
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/ViewPager"
@@ -61,11 +61,24 @@
             </android.support.v4.view.ViewPager>
 
             <ListView
-                android:id="@+id/detali_message_list"
+                android:id="@+id/detail_message_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="gone" >
             </ListView>
+
+            <LinearLayout
+                android:id="@+id/detail_message_list_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/trans_derk_gray"
+                android:gravity="center"
+                android:visibility="gone" >
+
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
         </FrameLayout>
     </LinearLayout>
 

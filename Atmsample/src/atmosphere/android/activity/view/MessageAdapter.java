@@ -17,55 +17,20 @@ import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.util.TimeUtil;
 
-public class MessageAdapter extends BaseAdapter implements AtmosUrl {
+public class MessageAdapter extends MessageBaseAdapter {
 
 	private Context context;
-	private List<MessageDto> list;
 	private Map<String, Bitmap> imageCash;
 
 	public MessageAdapter(Context context, List<MessageDto> list) {
+		super(list);
 		this.context = context;
-		this.list = list;
 		this.imageCash = new HashMap<String, Bitmap>();
-	}
-
-	public void setItems(List<MessageDto> list) {
-		this.list = list;
-	}
-
-	public void addItems(List<MessageDto> list) {
-		this.list.addAll(list);
-	}
-
-	public void addBeforeItems(List<MessageDto> list) {
-		list.addAll(this.list);
-		this.list = list;
-	}
-
-	public void removeItem(int position) {
-		list.remove(position);
-	}
-
-	@Override
-	public int getCount() {
-		return list.size();
-	}
-
-	@Override
-	public Object getItem(int position) {
-		return list.get(position);
-	}
-
-	@Override
-	public long getItemId(int position) {
-		return position;
 	}
 
 	@Override

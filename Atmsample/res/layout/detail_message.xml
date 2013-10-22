@@ -66,129 +66,115 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="right"
-        android:orientation="vertical" >
+        android:orientation="horizontal" >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="right"
-            android:orientation="horizontal" >
+        <ImageButton
+            android:id="@+id/detail_delete_image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/delete"
+            android:src="@drawable/delete"
+            android:visibility="gone" />
 
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
-
-                <ImageButton
-                    android:id="@+id/detail_fun_image_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/fun"
-                    android:src="@drawable/fun"
-                    android:textDirection="@string/zero" />
-
-                <TextView
-                    android:id="@+id/detail_fun_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|right"
-                    android:layout_marginBottom="3dp"
-                    android:layout_marginRight="5dp"
-                    android:text="@string/zero"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="@color/white" />
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
-
-                <ImageButton
-                    android:id="@+id/detail_good_image_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/good"
-                    android:src="@drawable/good" />
-
-                <TextView
-                    android:id="@+id/detail_good_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|right"
-                    android:layout_marginBottom="3dp"
-                    android:layout_marginRight="5dp"
-                    android:text="@string/zero"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="@color/white" />
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
-
-                <ImageButton
-                    android:id="@+id/detail_memo_image_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/memo"
-                    android:src="@drawable/memo" />
-
-                <TextView
-                    android:id="@+id/detail_memo_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|right"
-                    android:layout_marginBottom="3dp"
-                    android:layout_marginRight="5dp"
-                    android:text="@string/zero"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="@color/white" />
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
-
-                <ImageButton
-                    android:id="@+id/detail_usefull_image_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/usefull"
-                    android:src="@drawable/usefull" />
-
-                <TextView
-                    android:id="@+id/detail_usefull_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|right"
-                    android:layout_marginBottom="3dp"
-                    android:layout_marginRight="5dp"
-                    android:text="@string/zero"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="@color/white" />
-            </FrameLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="right"
-            android:orientation="horizontal" >
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
 
             <ImageButton
-                android:id="@+id/detail_delete_image_button"
+                android:id="@+id/detail_fun_image_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/delete"
-                android:src="@drawable/delete"
-                android:visibility="gone" />
+                android:contentDescription="@string/fun"
+                android:src="@drawable/fun"
+                android:textDirection="@string/zero" />
+
+            <TextView
+                android:id="@+id/detail_fun_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="3dp"
+                android:layout_marginRight="5dp"
+                android:text="@string/zero"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/white" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
 
             <ImageButton
-                android:id="@+id/detail_reply_image_button"
+                android:id="@+id/detail_good_image_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/reply"
-                android:src="@drawable/reply" />
-        </LinearLayout>
+                android:contentDescription="@string/good"
+                android:src="@drawable/good" />
+
+            <TextView
+                android:id="@+id/detail_good_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="3dp"
+                android:layout_marginRight="5dp"
+                android:text="@string/zero"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/white" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ImageButton
+                android:id="@+id/detail_memo_image_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/memo"
+                android:src="@drawable/memo" />
+
+            <TextView
+                android:id="@+id/detail_memo_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="3dp"
+                android:layout_marginRight="5dp"
+                android:text="@string/zero"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/white" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ImageButton
+                android:id="@+id/detail_usefull_image_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/usefull"
+                android:src="@drawable/usefull" />
+
+            <TextView
+                android:id="@+id/detail_usefull_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="3dp"
+                android:layout_marginRight="5dp"
+                android:text="@string/zero"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/white" />
+        </FrameLayout>
+
+        <ImageButton
+            android:id="@+id/detail_reply_image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/reply"
+            android:src="@drawable/reply" />
     </LinearLayout>
 
 </LinearLayout>

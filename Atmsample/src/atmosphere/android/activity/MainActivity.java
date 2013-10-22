@@ -209,6 +209,6 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 	}
 
 	protected ListView getDetailListView() {
-		return (ListView) findViewById(R.id.detali_message_list);
+		return (ListView) findViewById(R.id.detail_message_list);
 	}
 }

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -20,17 +19,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import atmosphere.android.constant.AtmosAction;
-import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.DestroyRequest;
 import atmosphere.android.dto.MessageDto;
-import atmosphere.android.dto.ResponseRequest;
 import atmosphere.android.dto.ResponseResult;
 import atmosphere.android.dto.SendMessageRequest;
 import atmosphere.android.dto.SendMessageResult;
@@ -42,49 +37,16 @@ import atmosphere.android.util.json.AtmosTask.LoginResultHandler;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
-public class DetailMessageAdapter extends BaseAdapter implements AtmosUrl {
+public class DetailMessageAdapter extends MessageBaseAdapter {
 	private Activity activity;
-	private List<MessageDto> list;
 	private Map<String, Bitmap> imageCash;
 	private String userId;
 
 	public DetailMessageAdapter(Activity activity, List<MessageDto> list) {
+		super(list);
 		this.activity = activity;
-		this.list = list;
 		this.imageCash = new HashMap<String, Bitmap>();
 		this.userId = AtmosPreferenceManager.getUserId(activity);
-	}
-
-	public void setItems(List<MessageDto> list) {
-		this.list = list;
-	}
-
-	public void addItem(MessageDto item) {
-		this.list.add(item);
-	}
-
-	public void addItems(List<MessageDto> list) {
-		this.list.addAll(list);
-	}
-
-	public void addBeforeItems(List<MessageDto> list) {
-		list.addAll(this.list);
-		this.list = list;
-	}
-
-	@Override
-	public int getCount() {
-		return list.size();
-	}
-
-	@Override
-	public Object getItem(int position) {
-		return list.get(position);
-	}
-
-	@Override
-	public long getItemId(int position) {
-		return position;
 	}
 
 	@Override
@@ -193,25 +155,25 @@ public class DetailMessageAdapter extends BaseAdapter implements AtmosUrl {
 			if (data.responses.fun.contains(userId)) {
 				funImageButton.setEnabled(false);
 			} else {
-				funImageButton.setOnClickListener(createRespnseClickListener(activity, data, AtmosAction.FUN));
+				funImageButton.setEnabled(true);
 			}
 
 			if (data.responses.good.contains(userId)) {
 				goodImageButton.setEnabled(false);
 			} else {
-				goodImageButton.setOnClickListener(createRespnseClickListener(activity, data, AtmosAction.GOOD));
+				goodImageButton.setEnabled(true);
 			}
 
 			if (data.responses.memo.contains(userId)) {
 				memoImageButton.setEnabled(false);
 			} else {
-				memoImageButton.setOnClickListener(createRespnseClickListener(activity, data, AtmosAction.MEMO));
+				memoImageButton.setEnabled(true);
 			}
 
 			if (data.responses.usefull.contains(userId)) {
 				usefullImageButton.setEnabled(false);
 			} else {
-				usefullImageButton.setOnClickListener(createRespnseClickListener(activity, data, AtmosAction.USE_FULL));
+				usefullImageButton.setEnabled(true);
 			}
 
 		}
@@ -244,33 +206,6 @@ public class DetailMessageAdapter extends BaseAdapter implements AtmosUrl {
 
 	private void setResponseCount(TextView targetTextView, int count) {
 		targetTextView.setText(String.valueOf(count));
-	}
-
-	private View.OnClickListener createRespnseClickListener(final Context context, final MessageDto item, final AtmosAction action) {
-		return new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				ResponseRequest response = new ResponseRequest();
-				response.target_id = item._id;
-				response.action = action.getValue();
-				new AtmosTask.Builder<ResponseResult>(context, ResponseResult.class, RequestMethod.POST).resultHandler(new ResultHandler<ResponseResult>() {
-					@Override
-					public void handleResult(List<ResponseResult> results) {
-						String userId = AtmosPreferenceManager.getUserId(context);
-						if (action == AtmosAction.FUN && !item.responses.fun.contains(userId)) {
-							item.responses.fun.add(userId);
-						} else if (action == AtmosAction.GOOD && !item.responses.good.contains(userId)) {
-							item.responses.good.add(userId);
-						} else if (action == AtmosAction.MEMO && !item.responses.memo.contains(userId)) {
-							item.responses.memo.add(userId);
-						} else if (action == AtmosAction.USE_FULL && !item.responses.usefull.contains(userId)) {
-							item.responses.usefull.add(userId);
-						}
-						notifyDataSetChanged();
-					}
-				}).build().execute(JsonPath.paramOf(BASE_URL + SEND_RESPONSE_METHOD, response));
-			}
-		};
 	}
 
 	private static void sendMessage(final SendMessageRequest param, final Activity activity) {

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="derk_gray">#7F7F7F</color>
+    <color name="trans_derk_gray">#4F7F7F7F</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
-    
-</resources>
+</resources>

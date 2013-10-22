@@ -6,6 +6,7 @@ public class MessageDto {
 	public String message_type;
 	public AddressesDto addresses;
 	public String[] hashtags;
+	public String reply_to;
 	public String created_by;
 	public ResponsesDto responses;
 	public String created_at;
