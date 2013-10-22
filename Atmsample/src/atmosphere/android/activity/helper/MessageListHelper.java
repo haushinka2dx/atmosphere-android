@@ -80,10 +80,11 @@ public class MessageListHelper implements AtmosUrl {
 
 					List<MessageDto> list = new ArrayList<MessageDto>();
 					final MessageDto targetItem = (MessageDto) adapter.getItem(position);
-					DetailMessageAdapter detailAdapter = new DetailMessageAdapter(activity, list);
 					list.add(targetItem);
-					detailListView.setAdapter(detailAdapter);
+					final DetailMessageAdapter detailAdapter = new DetailMessageAdapter(activity, list);
 					LinearLayout detailOverlay = getDetailOverlay(activity);
+					detailListView.setAdapter(detailAdapter);
+
 					detailOverlay.setVisibility(View.VISIBLE);
 					MessageHelper.serchMessage(activity, targetItem.reply_to, detailAdapter, targetItem._id);
 
@@ -99,7 +100,8 @@ public class MessageListHelper implements AtmosUrl {
 					detailListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 						@Override
 						public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-							Tooltip detailTooltip = ResponseTooltipHelper.createResponseTooltip(activity, view, position, adapter, targetItem, targetMethod);
+							final MessageDto detailTargetItem = (MessageDto) detailAdapter.getItem(position);
+							Tooltip detailTooltip = ResponseTooltipHelper.createResponseTooltip(activity, view, position, detailAdapter, detailTargetItem, targetMethod);
 							detailTooltip.showTop(view);
 							return false;
 						}

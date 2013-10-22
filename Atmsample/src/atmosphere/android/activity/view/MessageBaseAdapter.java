@@ -46,12 +46,12 @@ public abstract class MessageBaseAdapter extends BaseAdapter implements AtmosUrl
 
 	@Override
 	public int getCount() {
-		return list.size();
+		return this.list.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return list.get(position);
+		return this.list.get(position);
 	}
 
 	@Override

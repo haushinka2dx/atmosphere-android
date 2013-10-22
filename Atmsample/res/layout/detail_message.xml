@@ -68,113 +68,61 @@
         android:gravity="right"
         android:orientation="horizontal" >
 
-        <ImageButton
-            android:id="@+id/detail_delete_image_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/delete"
-            android:src="@drawable/delete"
-            android:visibility="gone" />
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="@string/fun"
+            android:src="@drawable/fun" />
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+        <TextView
+            android:id="@+id/detail_fun_text_view"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:gravity="center"
+            android:text="@string/zero"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
-            <ImageButton
-                android:id="@+id/detail_fun_image_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/fun"
-                android:src="@drawable/fun"
-                android:textDirection="@string/zero" />
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="@string/good"
+            android:src="@drawable/good" />
 
-            <TextView
-                android:id="@+id/detail_fun_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|right"
-                android:layout_marginBottom="3dp"
-                android:layout_marginRight="5dp"
-                android:text="@string/zero"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@color/white" />
-        </FrameLayout>
+        <TextView
+            android:id="@+id/detail_good_text_view"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:gravity="center"
+            android:text="@string/zero"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="@string/memo"
+            android:src="@drawable/memo" />
 
-            <ImageButton
-                android:id="@+id/detail_good_image_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/good"
-                android:src="@drawable/good" />
+        <TextView
+            android:id="@+id/detail_memo_text_view"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:gravity="center"
+            android:text="@string/zero"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
-            <TextView
-                android:id="@+id/detail_good_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|right"
-                android:layout_marginBottom="3dp"
-                android:layout_marginRight="5dp"
-                android:text="@string/zero"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@color/white" />
-        </FrameLayout>
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="@string/usefull"
+            android:src="@drawable/usefull" />
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <ImageButton
-                android:id="@+id/detail_memo_image_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/memo"
-                android:src="@drawable/memo" />
-
-            <TextView
-                android:id="@+id/detail_memo_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|right"
-                android:layout_marginBottom="3dp"
-                android:layout_marginRight="5dp"
-                android:text="@string/zero"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@color/white" />
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <ImageButton
-                android:id="@+id/detail_usefull_image_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/usefull"
-                android:src="@drawable/usefull" />
-
-            <TextView
-                android:id="@+id/detail_usefull_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|right"
-                android:layout_marginBottom="3dp"
-                android:layout_marginRight="5dp"
-                android:text="@string/zero"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@color/white" />
-        </FrameLayout>
-
-        <ImageButton
-            android:id="@+id/detail_reply_image_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/reply"
-            android:src="@drawable/reply" />
+        <TextView
+            android:id="@+id/detail_usefull_text_view"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:gravity="center"
+            android:text="@string/zero"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 
 </LinearLayout>

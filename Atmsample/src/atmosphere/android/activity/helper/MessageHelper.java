@@ -182,12 +182,10 @@ public class MessageHelper implements AtmosUrl {
 							adapter.addItem(result.get(0));
 							serchReplyMessage(activity, result.get(0)._id, adapter);
 						} else {
-							getDetailOverlay(activity).setVisibility(View.GONE);
-							adapter.notifyDataSetChanged();
+							finishDetail(activity, adapter);
 						}
 					} else {
-						getDetailOverlay(activity).setVisibility(View.GONE);
-						adapter.notifyDataSetChanged();
+						finishDetail(activity, adapter);
 					}
 				}
 			}).loginHandler(new LoginResultHandler() {
@@ -197,7 +195,14 @@ public class MessageHelper implements AtmosUrl {
 				}
 			}).build().ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + MESSAGE_SEARCH_METHOD, param));
 		} else {
-			getDetailOverlay(activity).setVisibility(View.GONE);
+			finishDetail(activity, adapter);
+		}
+	}
+
+	private static void finishDetail(Activity activity, DetailMessageAdapter adapter) {
+		LinearLayout overlay = getDetailOverlay(activity);
+		if (overlay.getVisibility() == View.VISIBLE) {
+			overlay.setVisibility(View.GONE);
 			adapter.notifyDataSetChanged();
 		}
 	}
