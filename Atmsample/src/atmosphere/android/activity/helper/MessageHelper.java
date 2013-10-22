@@ -2,6 +2,7 @@ package atmosphere.android.activity.helper;
 
 import interprism.atmosphere.android.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
@@ -139,106 +140,126 @@ public class MessageHelper implements AtmosUrl {
 	}
 
 	public static void serchMessage(final Activity activity, final String replyId, final DetailMessageAdapter adapter, final String messageId, final List<MessageDto> orgList) {
+		final List<MessageDto> addBeforeList = new ArrayList<MessageDto>();
+		serchMessage(activity, replyId, adapter, messageId, orgList, addBeforeList);
+	}
+
+	private static void serchMessage(final Activity activity, final String replyId, final DetailMessageAdapter adapter, final String messageId, final List<MessageDto> orgList,
+			final List<MessageDto> addBeforeList) {
+
 		if (replyId != null && replyId.length() != 0) {
+			boolean skipConnect = false;
+			String targetReplyId = replyId;
 
-			boolean serchFlag = false;
-			String cashReplyId = null;
-			for (MessageDto messageDto : orgList) {
-				if (messageDto._id.equals(replyId)) {
-					adapter.addBeforeItem(messageDto);
-					serchFlag = true;
-					cashReplyId = messageDto.reply_to;
-					break;
+			if (orgList != null && !orgList.isEmpty()) {
+				for (MessageDto messageDto : orgList) {
+					if (messageDto._id.equals(targetReplyId)) {
+						addBeforeList.add(0, messageDto);
+						targetReplyId = messageDto.reply_to;
+					}
+				}
+
+				if (targetReplyId == null || targetReplyId.length() == 0) {
+					skipConnect = true;
 				}
 			}
 
-			if (serchFlag && cashReplyId != null) {
-				serchMessage(activity, cashReplyId, adapter, messageId, orgList);
-			} else if (serchFlag && cashReplyId == null) {
-				serchReplyMessage(activity, messageId, adapter, orgList);
+			if (skipConnect) {
+				serchReplyMessage(activity, messageId, adapter, orgList, addBeforeList);
 			} else {
 				SerchRequest param = new SerchRequest();
-				param.message_ids = replyId;
+				param.message_ids = targetReplyId;
 				new AtmosTask.Builder<MessageResult>(activity, MessageResult.class, RequestMethod.GET).resultHandler(new ResultHandler<MessageResult>() {
 					@Override
 					public void handleResult(List<MessageResult> results) {
 						if (results != null && !results.isEmpty()) {
 							List<MessageDto> result = results.get(0).results;
 							if (result != null && !result.isEmpty() && result.get(0) != null) {
-								adapter.addBeforeItem(result.get(0));
-								serchMessage(activity, result.get(0).reply_to, adapter, messageId, orgList);
+								addBeforeList.add(0, result.get(0));
+								serchMessage(activity, result.get(0).reply_to, adapter, messageId, null, addBeforeList);
 							} else {
-								serchReplyMessage(activity, messageId, adapter, orgList);
+								serchReplyMessage(activity, messageId, adapter, orgList, addBeforeList);
 							}
 
 						} else {
-							serchReplyMessage(activity, messageId, adapter, orgList);
+							serchReplyMessage(activity, messageId, adapter, orgList, addBeforeList);
 						}
 					}
 				}).loginHandler(new LoginResultHandler() {
 					@Override
 					public void handleResult() {
-						serchMessage(activity, replyId, adapter, messageId, orgList);
+						serchMessage(activity, replyId, adapter, messageId, orgList, addBeforeList);
 					}
 				}).build().ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + MESSAGE_SEARCH_METHOD, param));
 			}
 		} else {
-			serchReplyMessage(activity, messageId, adapter, orgList);
+			serchReplyMessage(activity, messageId, adapter, orgList, addBeforeList);
 		}
 	}
 
-	public static void serchReplyMessage(final Activity activity, final String messageId, final DetailMessageAdapter adapter, final List<MessageDto> orgList) {
+	private static void serchReplyMessage(final Activity activity, final String messageId, final DetailMessageAdapter adapter, final List<MessageDto> orgList, final List<MessageDto> addBeforeList) {
+		final List<MessageDto> addList = new ArrayList<MessageDto>();
+		serchReplyMessage(activity, messageId, adapter, orgList, addBeforeList, addList);
+	}
+
+	private static void serchReplyMessage(final Activity activity, final String messageId, final DetailMessageAdapter adapter, final List<MessageDto> orgList, final List<MessageDto> addBeforeList,
+			final List<MessageDto> addList) {
 		if (messageId != null && messageId.length() != 0) {
+			boolean skipConnect = false;
+			String targetMessageId = messageId;
 
-			boolean serchFlag = false;
-			String cashMessageId = null;
-			for (MessageDto messageDto : orgList) {
-				if (messageDto.reply_to.equals(messageId)) {
-					adapter.addItem(messageDto);
-					serchFlag = true;
-					cashMessageId = messageDto._id;
-					break;
+			if (orgList != null && !orgList.isEmpty()) {
+				for (int i = orgList.size() - 1; 0 <= i; i--) {
+					MessageDto messageDto = orgList.get(i);
+					if (messageDto.reply_to != null && messageDto.reply_to.equals(targetMessageId)) {
+						addList.add(messageDto);
+						targetMessageId = messageDto._id;
+					}
+				}
+
+				if (targetMessageId == null || targetMessageId.length() == 0) {
+					skipConnect = true;
 				}
 			}
 
-			if (serchFlag && cashMessageId != null) {
-				serchReplyMessage(activity, cashMessageId, adapter, orgList);
-			} else if (serchFlag && cashMessageId == null) {
-				finishDetail(activity, adapter);
+			if (skipConnect) {
+				finishDetail(activity, adapter, addBeforeList, addList);
 			} else {
 				SerchRequest param = new SerchRequest();
-				param.reply_to_message_id = messageId;
+				param.reply_to_message_id = targetMessageId;
 				new AtmosTask.Builder<MessageResult>(activity, MessageResult.class, RequestMethod.GET).resultHandler(new ResultHandler<MessageResult>() {
 					@Override
 					public void handleResult(List<MessageResult> results) {
 						if (results != null && !results.isEmpty()) {
 							List<MessageDto> result = results.get(0).results;
 							if (result != null && !result.isEmpty() && result.get(0) != null) {
-								adapter.addItem(result.get(0));
-								serchReplyMessage(activity, result.get(0)._id, adapter, orgList);
+								addList.add(result.get(0));
+								serchReplyMessage(activity, result.get(0)._id, adapter, null, addBeforeList, addList);
 							} else {
-								finishDetail(activity, adapter);
+								finishDetail(activity, adapter, addBeforeList, addList);
 							}
 						} else {
-							finishDetail(activity, adapter);
+							finishDetail(activity, adapter, addBeforeList, addList);
 						}
 					}
 				}).loginHandler(new LoginResultHandler() {
 					@Override
 					public void handleResult() {
-						serchReplyMessage(activity, messageId, adapter, orgList);
+						serchReplyMessage(activity, messageId, adapter, orgList, addBeforeList, addList);
 					}
 				}).build().ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + MESSAGE_SEARCH_METHOD, param));
 			}
 		} else {
-			finishDetail(activity, adapter);
+			finishDetail(activity, adapter, addBeforeList, addList);
 		}
 	}
 
-	private static void finishDetail(Activity activity, DetailMessageAdapter adapter) {
+	private static void finishDetail(Activity activity, DetailMessageAdapter adapter, List<MessageDto> addBeforeList, List<MessageDto> addList) {
 		LinearLayout overlay = getDetailOverlay(activity);
 		if (overlay.getVisibility() == View.VISIBLE) {
 			overlay.setVisibility(View.GONE);
+			adapter.addBeforeItems(addBeforeList);
+			adapter.addItems(addList);
 			adapter.notifyDataSetChanged();
 		}
 	}

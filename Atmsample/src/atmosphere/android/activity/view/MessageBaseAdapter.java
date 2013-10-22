@@ -1,6 +1,5 @@
 package atmosphere.android.activity.view;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.view.View;
@@ -21,23 +20,28 @@ public abstract class MessageBaseAdapter extends BaseAdapter implements AtmosUrl
 	}
 
 	public void addItem(MessageDto item) {
-		this.list.add(item);
+		if (item != null) {
+			this.list.add(item);
+		}
 	}
 
 	public void addItems(List<MessageDto> list) {
-		this.list.addAll(list);
+		if (list != null & !list.isEmpty()) {
+			this.list.addAll(list);
+		}
 	}
 
 	public void addBeforeItem(MessageDto item) {
-		List<MessageDto> newList = new ArrayList<MessageDto>();
-		newList.add(item);
-		newList.addAll(this.list);
-		this.list = newList;
+		if (item != null) {
+			this.list.add(0, item);
+		}
 	}
 
 	public void addBeforeItems(List<MessageDto> list) {
-		list.addAll(this.list);
-		this.list = list;
+		if (list != null && !list.isEmpty()) {
+			list.addAll(this.list);
+			this.list = list;
+		}
 	}
 
 	public void removeItem(int position) {
