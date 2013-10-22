@@ -33,6 +33,11 @@ public class MessageAdapter extends MessageBaseAdapter {
 		this.imageCash = new HashMap<String, Bitmap>();
 	}
 
+	public List<MessageDto> getList() {
+		// 本当はこれはやりたくない
+		return list;
+	}
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		final View view;

@@ -86,7 +86,7 @@ public class MessageListHelper implements AtmosUrl {
 					detailListView.setAdapter(detailAdapter);
 
 					detailOverlay.setVisibility(View.VISIBLE);
-					MessageHelper.serchMessage(activity, targetItem.reply_to, detailAdapter, targetItem._id);
+					MessageHelper.serchMessage(activity, targetItem.reply_to, detailAdapter, targetItem._id, adapter.getList());
 
 					ViewPager pager = getViewPager(activity);
 					Animation outAnimation = AnimationUtils.loadAnimation(activity, R.anim.slide_out_right);

@@ -138,62 +138,98 @@ public class MessageHelper implements AtmosUrl {
 		}).build().execute(JsonPath.paramOf(BASE_URL + SEND_RESPONSE_METHOD, response));
 	}
 
-	public static void serchMessage(final Activity activity, final String replyId, final DetailMessageAdapter adapter, final String messageId) {
+	public static void serchMessage(final Activity activity, final String replyId, final DetailMessageAdapter adapter, final String messageId, final List<MessageDto> orgList) {
 		if (replyId != null && replyId.length() != 0) {
-			SerchRequest param = new SerchRequest();
-			param.message_ids = replyId;
-			new AtmosTask.Builder<MessageResult>(activity, MessageResult.class, RequestMethod.GET).resultHandler(new ResultHandler<MessageResult>() {
-				@Override
-				public void handleResult(List<MessageResult> results) {
-					if (results != null && !results.isEmpty()) {
-						List<MessageDto> result = results.get(0).results;
-						if (result != null && !result.isEmpty() && result.get(0) != null) {
-							adapter.addBeforeItem(result.get(0));
-							serchMessage(activity, result.get(0).reply_to, adapter, messageId);
-						} else {
-							serchReplyMessage(activity, messageId, adapter);
-						}
 
-					} else {
-						serchReplyMessage(activity, messageId, adapter);
+			boolean serchFlag = false;
+			String cashReplyId = null;
+			for (MessageDto messageDto : orgList) {
+				if (messageDto._id.equals(replyId)) {
+					adapter.addBeforeItem(messageDto);
+					serchFlag = true;
+					cashReplyId = messageDto.reply_to;
+					break;
+				}
+			}
+
+			if (serchFlag && cashReplyId != null) {
+				serchMessage(activity, cashReplyId, adapter, messageId, orgList);
+			} else if (serchFlag && cashReplyId == null) {
+				serchReplyMessage(activity, messageId, adapter, orgList);
+			} else {
+				SerchRequest param = new SerchRequest();
+				param.message_ids = replyId;
+				new AtmosTask.Builder<MessageResult>(activity, MessageResult.class, RequestMethod.GET).resultHandler(new ResultHandler<MessageResult>() {
+					@Override
+					public void handleResult(List<MessageResult> results) {
+						if (results != null && !results.isEmpty()) {
+							List<MessageDto> result = results.get(0).results;
+							if (result != null && !result.isEmpty() && result.get(0) != null) {
+								adapter.addBeforeItem(result.get(0));
+								serchMessage(activity, result.get(0).reply_to, adapter, messageId, orgList);
+							} else {
+								serchReplyMessage(activity, messageId, adapter, orgList);
+							}
+
+						} else {
+							serchReplyMessage(activity, messageId, adapter, orgList);
+						}
 					}
-				}
-			}).loginHandler(new LoginResultHandler() {
-				@Override
-				public void handleResult() {
-					serchMessage(activity, replyId, adapter, messageId);
-				}
-			}).build().ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + MESSAGE_SEARCH_METHOD, param));
+				}).loginHandler(new LoginResultHandler() {
+					@Override
+					public void handleResult() {
+						serchMessage(activity, replyId, adapter, messageId, orgList);
+					}
+				}).build().ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + MESSAGE_SEARCH_METHOD, param));
+			}
 		} else {
-			serchReplyMessage(activity, messageId, adapter);
+			serchReplyMessage(activity, messageId, adapter, orgList);
 		}
 	}
 
-	public static void serchReplyMessage(final Activity activity, final String messageId, final DetailMessageAdapter adapter) {
+	public static void serchReplyMessage(final Activity activity, final String messageId, final DetailMessageAdapter adapter, final List<MessageDto> orgList) {
 		if (messageId != null && messageId.length() != 0) {
-			SerchRequest param = new SerchRequest();
-			param.reply_to_message_id = messageId;
-			new AtmosTask.Builder<MessageResult>(activity, MessageResult.class, RequestMethod.GET).resultHandler(new ResultHandler<MessageResult>() {
-				@Override
-				public void handleResult(List<MessageResult> results) {
-					if (results != null && !results.isEmpty()) {
-						List<MessageDto> result = results.get(0).results;
-						if (result != null && !result.isEmpty() && result.get(0) != null) {
-							adapter.addItem(result.get(0));
-							serchReplyMessage(activity, result.get(0)._id, adapter);
+
+			boolean serchFlag = false;
+			String cashMessageId = null;
+			for (MessageDto messageDto : orgList) {
+				if (messageDto.reply_to.equals(messageId)) {
+					adapter.addItem(messageDto);
+					serchFlag = true;
+					cashMessageId = messageDto._id;
+					break;
+				}
+			}
+
+			if (serchFlag && cashMessageId != null) {
+				serchReplyMessage(activity, cashMessageId, adapter, orgList);
+			} else if (serchFlag && cashMessageId == null) {
+				finishDetail(activity, adapter);
+			} else {
+				SerchRequest param = new SerchRequest();
+				param.reply_to_message_id = messageId;
+				new AtmosTask.Builder<MessageResult>(activity, MessageResult.class, RequestMethod.GET).resultHandler(new ResultHandler<MessageResult>() {
+					@Override
+					public void handleResult(List<MessageResult> results) {
+						if (results != null && !results.isEmpty()) {
+							List<MessageDto> result = results.get(0).results;
+							if (result != null && !result.isEmpty() && result.get(0) != null) {
+								adapter.addItem(result.get(0));
+								serchReplyMessage(activity, result.get(0)._id, adapter, orgList);
+							} else {
+								finishDetail(activity, adapter);
+							}
 						} else {
 							finishDetail(activity, adapter);
 						}
-					} else {
-						finishDetail(activity, adapter);
 					}
-				}
-			}).loginHandler(new LoginResultHandler() {
-				@Override
-				public void handleResult() {
-					serchReplyMessage(activity, messageId, adapter);
-				}
-			}).build().ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + MESSAGE_SEARCH_METHOD, param));
+				}).loginHandler(new LoginResultHandler() {
+					@Override
+					public void handleResult() {
+						serchReplyMessage(activity, messageId, adapter, orgList);
+					}
+				}).build().ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + MESSAGE_SEARCH_METHOD, param));
+			}
 		} else {
 			finishDetail(activity, adapter);
 		}
