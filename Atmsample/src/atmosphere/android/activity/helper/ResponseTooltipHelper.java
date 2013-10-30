@@ -5,6 +5,7 @@ import interprism.atmosphere.android.R;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
@@ -41,17 +42,22 @@ public class ResponseTooltipHelper implements AtmosUrl {
 			deleteButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					DestroyRequest param = new DestroyRequest();
-					param._id = item._id;
-					new AtmosTask.Builder<ResponseResult>(activity, ResponseResult.class, RequestMethod.POST).resultHandler(new ResultHandler<ResponseResult>() {
+					DialogHelper.createResponseDialog(activity, "Delete This Message?", item.message, new DialogInterface.OnClickListener() {
 						@Override
-						public void handleResult(List<ResponseResult> results) {
-							if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
-								adapter.removeItem(position);
-								adapter.notifyDataSetChanged();
-							}
+						public void onClick(DialogInterface dialog, int which) {
+							DestroyRequest param = new DestroyRequest();
+							param._id = item._id;
+							new AtmosTask.Builder<ResponseResult>(activity, ResponseResult.class, RequestMethod.POST).resultHandler(new ResultHandler<ResponseResult>() {
+								@Override
+								public void handleResult(List<ResponseResult> results) {
+									if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
+										adapter.removeItem(position);
+										adapter.notifyDataSetChanged();
+									}
+								}
+							}).build().execute(JsonPath.paramOf(BASE_URL + SEND_DESTORY_METHOD, param));
 						}
-					}).build().execute(JsonPath.paramOf(BASE_URL + SEND_DESTORY_METHOD, param));
+					});
 					tooltip.dismiss();
 				}
 			});
@@ -110,7 +116,12 @@ public class ResponseTooltipHelper implements AtmosUrl {
 				funButton.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						MessageHelper.sendResponse(activity, item, AtmosAction.FUN, adapter);
+						DialogHelper.createResponseDialog(activity, "Are you sure to response 'fun' ?", item.message, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								MessageHelper.sendResponse(activity, item, AtmosAction.FUN, adapter);
+							}
+						});
 						tooltip.dismiss();
 					}
 				});
@@ -126,7 +137,12 @@ public class ResponseTooltipHelper implements AtmosUrl {
 				goodButton.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						MessageHelper.sendResponse(activity, item, AtmosAction.GOOD, adapter);
+						DialogHelper.createResponseDialog(activity, "Are you sure to response 'good' ?", item.message, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								MessageHelper.sendResponse(activity, item, AtmosAction.GOOD, adapter);
+							}
+						});
 						tooltip.dismiss();
 					}
 				});
@@ -142,7 +158,12 @@ public class ResponseTooltipHelper implements AtmosUrl {
 				memoButton.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						MessageHelper.sendResponse(activity, item, AtmosAction.MEMO, adapter);
+						DialogHelper.createResponseDialog(activity, "Are you sure to response 'memo' ?", item.message, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								MessageHelper.sendResponse(activity, item, AtmosAction.MEMO, adapter);
+							}
+						});
 						tooltip.dismiss();
 					}
 				});
@@ -158,7 +179,12 @@ public class ResponseTooltipHelper implements AtmosUrl {
 				usefullButton.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						MessageHelper.sendResponse(activity, item, AtmosAction.USE_FULL, adapter);
+						DialogHelper.createResponseDialog(activity, "Are you sure to response 'usefull' ?", item.message, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								MessageHelper.sendResponse(activity, item, AtmosAction.USE_FULL, adapter);
+							}
+						});
 						tooltip.dismiss();
 					}
 				});

@@ -1,8 +1,11 @@
 package atmosphere.android.activity.helper;
 
 import interprism.atmosphere.android.R;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -67,5 +70,16 @@ public class DialogHelper implements AtmosUrl {
 		dialog.setContentView(view);
 
 		return dialog;
+	}
+
+	public static void createResponseDialog(Activity activity, String title, String message, DialogInterface.OnClickListener postListener) {
+		AlertDialog.Builder dialog = new AlertDialog.Builder(activity).setTitle(title).setMessage(message).setPositiveButton("OK", postListener)
+				.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+					}
+				});
+		dialog.show();
 	}
 }

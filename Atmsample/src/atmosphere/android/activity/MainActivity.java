@@ -139,7 +139,7 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
-		menu.add(Menu.NONE, 0, Menu.NONE, "Defalt");
+		menu.add(Menu.NONE, 0, Menu.NONE, "Default");
 		menu.add(Menu.NONE, 1, Menu.NONE, "Hirano View");
 		return true;
 	}
