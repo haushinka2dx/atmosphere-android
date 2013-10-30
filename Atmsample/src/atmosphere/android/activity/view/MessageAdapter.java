@@ -10,26 +10,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.util.TimeUtil;
 
-public class MessageAdapter extends MessageBaseAdapter {
+public class MessageAdapter extends MessageBaseAdapter implements AtmosUrl {
 
-	private Context context;
+	private Activity activity;
 	private Map<String, Bitmap> imageCash;
 
-	public MessageAdapter(Context context, List<MessageDto> list) {
+	public MessageAdapter(Activity activity, List<MessageDto> list) {
 		super(list);
-		this.context = context;
+		this.activity = activity;
 		this.imageCash = new HashMap<String, Bitmap>();
 	}
 
@@ -44,7 +48,7 @@ public class MessageAdapter extends MessageBaseAdapter {
 		if (convertView != null) {
 			view = convertView;
 		} else {
-			LayoutInflater inflater = LayoutInflater.from(context);
+			LayoutInflater inflater = LayoutInflater.from(activity);
 			view = inflater.inflate(R.layout.messeges, parent, false);
 		}
 
@@ -116,6 +120,18 @@ public class MessageAdapter extends MessageBaseAdapter {
 		}
 
 		return view;
+	}
+
+	protected static ListView getDetailListView(Activity activity) {
+		return (ListView) activity.findViewById(R.id.detail_message_list);
+	}
+
+	protected static LinearLayout getDetailOverlay(Activity activity) {
+		return (LinearLayout) activity.findViewById(R.id.detail_message_list_overlay);
+	}
+
+	protected static ViewPager getViewPager(Activity activity) {
+		return (ViewPager) activity.findViewById(R.id.ViewPager);
 	}
 
 }

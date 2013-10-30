@@ -32,7 +32,7 @@ public class ResponseTooltipHelper implements AtmosUrl {
 
 	public static Tooltip createResponseTooltip(final Activity activity, View view, final int position, final MessageBaseAdapter adapter, final MessageDto item, final String targetMethod) {
 		final Tooltip tooltip;
-		String userId = AtmosPreferenceManager.getUserId(activity);
+		final String userId = AtmosPreferenceManager.getUserId(activity);
 		if (item.created_by.equals(userId)) {
 			View tooltipView = LayoutInflater.from(activity).inflate(R.layout.reply_to_mine, null);
 			tooltip = new Tooltip(activity, tooltipView);
@@ -60,9 +60,24 @@ public class ResponseTooltipHelper implements AtmosUrl {
 			replayButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
+
+					String atMark = "@";
+					String space = " ";
+
+					StringBuilder sb = new StringBuilder();
+					if (item.addresses != null && item.addresses.users != null && !item.addresses.users.isEmpty()) {
+						for (String replayUser : item.addresses.users) {
+							if (!replayUser.equals(userId)) {
+								sb.append(atMark);
+								sb.append(replayUser);
+								sb.append(space);
+							}
+						}
+					}
+
 					getDrawer(activity).openDrawer(GravityCompat.START);
-					getSendMessageEditText(activity).setText("@" + item.created_by + " ");
-					getSendMessageEditText(activity).setSelection(item.created_by.length() + 2);
+					getSendMessageEditText(activity).setText(sb.toString());
+					getSendMessageEditText(activity).setSelection(sb.length());
 
 					getSubmitButton(activity).setOnClickListener(new View.OnClickListener() {
 						@Override
@@ -153,9 +168,28 @@ public class ResponseTooltipHelper implements AtmosUrl {
 			replayButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					String atMark = "@";
+					String createUser = item.created_by;
+					String space = " ";
+
+					StringBuilder sb = new StringBuilder();
+					sb.append(atMark);
+					sb.append(createUser);
+					sb.append(space);
+
+					if (item.addresses != null && item.addresses.users != null && !item.addresses.users.isEmpty()) {
+						for (String replayUser : item.addresses.users) {
+							if (!replayUser.equals(userId) && !replayUser.equals(createUser)) {
+								sb.append(atMark);
+								sb.append(replayUser);
+								sb.append(space);
+							}
+						}
+					}
+
 					getDrawer(activity).openDrawer(GravityCompat.START);
-					getSendMessageEditText(activity).setText("@" + item.created_by + " ");
-					getSendMessageEditText(activity).setSelection(item.created_by.length() + 2);
+					getSendMessageEditText(activity).setText(sb.toString());
+					getSendMessageEditText(activity).setSelection(sb.length());
 
 					getSubmitButton(activity).setOnClickListener(new View.OnClickListener() {
 						@Override
