@@ -6,15 +6,15 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import atmosphere.android.activity.helper.MessageListHelper;
+import atmosphere.android.activity.helper.PrivateMessageListHelper;
 import atmosphere.android.constant.AtmosUrl;
 
-public class TalkTimeLineFragment extends Fragment implements AtmosUrl {
+public class PrivateTimeLineFragment extends Fragment implements AtmosUrl {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.message_list_view, container, false);
-		MessageListHelper helper = new MessageListHelper(getActivity(), view, inflater, TALK_TIMELINE_METHOD);
+
+		PrivateMessageListHelper helper = new PrivateMessageListHelper(getActivity(), view, inflater, PRIVATE_TIMELINE_METHOD);
 		return helper.createListView();
 	}
-
 }

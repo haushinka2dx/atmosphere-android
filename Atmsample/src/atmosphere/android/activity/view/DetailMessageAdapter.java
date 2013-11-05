@@ -21,12 +21,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.util.TimeUtil;
 
 public class DetailMessageAdapter extends MessageBaseAdapter {
-	private Activity activity;
+	protected Activity activity;
 	private Map<String, Bitmap> imageCash;
 
 	public DetailMessageAdapter(Activity activity, List<MessageDto> list) {
@@ -114,6 +115,8 @@ public class DetailMessageAdapter extends MessageBaseAdapter {
 		TextView usefullTextView = (TextView) view.findViewById(R.id.detail_usefull_text_view);
 		setResponseCount(usefullTextView, data.responses.usefull.size());
 
+		privateControl(view, data);
+
 		return view;
 	}
 
@@ -121,11 +124,16 @@ public class DetailMessageAdapter extends MessageBaseAdapter {
 		targetTextView.setText(String.valueOf(count));
 	}
 
-	protected static DrawerLayout getDrawer(Activity activity) {
+	protected void privateControl(View view, MessageDto data) {
+		LinearLayout privateLayout = (LinearLayout) view.findViewById(R.id.private_detail_to_user_layout);
+		privateLayout.setVisibility(View.GONE);
+	}
+
+	protected DrawerLayout getDrawer(Activity activity) {
 		return (DrawerLayout) activity.findViewById(R.id.Drawer);
 	}
 
-	protected static EditText getSendMessageEditText(Activity activity) {
+	protected EditText getSendMessageEditText(Activity activity) {
 		return (EditText) activity.findViewById(R.id.SendMessageEditText);
 	}
 

@@ -1,5 +1,7 @@
 package atmosphere.android.activity.helper;
 
+import java.util.List;
+
 import interprism.atmosphere.android.R;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -8,9 +10,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ListView;
 import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.LoginRequest;
 import atmosphere.android.dto.LoginResult;
@@ -81,5 +86,22 @@ public class DialogHelper implements AtmosUrl {
 					}
 				});
 		dialog.show();
+	}
+
+	public static void createStringListDialog(Activity activity, List<String> list) {
+		if (list != null && !list.isEmpty()) {
+
+			Dialog dialog = new Dialog(activity);
+			dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+			final View view = LayoutInflater.from(activity).inflate(R.layout.string_list, null);
+			ListView listView = (ListView) view.findViewById(R.id.string_list);
+
+			ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, R.layout.string_item, list);
+			listView.setAdapter(adapter);
+
+			dialog.setContentView(view);
+			dialog.show();
+		}
 	}
 }

@@ -31,7 +31,7 @@ import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
 public class ResponseTooltipHelper implements AtmosUrl {
 
-	public static Tooltip createResponseTooltip(final Activity activity, View view, final int position, final MessageBaseAdapter adapter, final MessageDto item, final String targetMethod) {
+	public Tooltip createResponseTooltip(final Activity activity, View view, final int position, final MessageBaseAdapter adapter, final MessageDto item, final String targetMethod) {
 		final Tooltip tooltip;
 		final String userId = AtmosPreferenceManager.getUserId(activity);
 		if (item.created_by.equals(userId)) {
@@ -63,43 +63,7 @@ public class ResponseTooltipHelper implements AtmosUrl {
 			});
 
 			ImageButton replayButton = (ImageButton) tooltipView.findViewById(R.id.reply_to_mine_image_button);
-			replayButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-
-					String atMark = "@";
-					String space = " ";
-
-					StringBuilder sb = new StringBuilder();
-					if (item.addresses != null && item.addresses.users != null && !item.addresses.users.isEmpty()) {
-						for (String replayUser : item.addresses.users) {
-							if (!replayUser.equals(userId)) {
-								sb.append(atMark);
-								sb.append(replayUser);
-								sb.append(space);
-							}
-						}
-					}
-
-					getDrawer(activity).openDrawer(GravityCompat.START);
-					getSendMessageEditText(activity).setText(sb.toString());
-					getSendMessageEditText(activity).setSelection(sb.length());
-
-					getSubmitButton(activity).setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							SendMessageRequest param = new SendMessageRequest();
-							param.reply_to = item._id;
-							String message = getSendMessageEditText(activity).getText().toString();
-							param.message = message;
-							if (message != null && message.length() != 0) {
-								MessageHelper.sendMessage(param, activity, adapter, targetMethod);
-							}
-						}
-					});
-					tooltip.dismiss();
-				}
-			});
+			replayButton.setOnClickListener(createReplayListener(activity, userId, adapter, item, targetMethod, tooltip));
 
 		} else {
 			View tooltipView = LayoutInflater.from(activity).inflate(R.layout.reply_to_others, null);
@@ -191,60 +155,67 @@ public class ResponseTooltipHelper implements AtmosUrl {
 			}
 
 			ImageButton replayButton = (ImageButton) tooltipView.findViewById(R.id.reply_to_other_image_button);
-			replayButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					String atMark = "@";
-					String createUser = item.created_by;
-					String space = " ";
-
-					StringBuilder sb = new StringBuilder();
-					sb.append(atMark);
-					sb.append(createUser);
-					sb.append(space);
-
-					if (item.addresses != null && item.addresses.users != null && !item.addresses.users.isEmpty()) {
-						for (String replayUser : item.addresses.users) {
-							if (!replayUser.equals(userId) && !replayUser.equals(createUser)) {
-								sb.append(atMark);
-								sb.append(replayUser);
-								sb.append(space);
-							}
-						}
-					}
-
-					getDrawer(activity).openDrawer(GravityCompat.START);
-					getSendMessageEditText(activity).setText(sb.toString());
-					getSendMessageEditText(activity).setSelection(sb.length());
-
-					getSubmitButton(activity).setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							SendMessageRequest param = new SendMessageRequest();
-							param.reply_to = item._id;
-							String message = getSendMessageEditText(activity).getText().toString();
-							param.message = message;
-							if (message != null && message.length() != 0) {
-								MessageHelper.sendMessage(param, activity, adapter, targetMethod);
-							}
-						}
-					});
-					tooltip.dismiss();
-				}
-			});
+			replayButton.setOnClickListener(createReplayListener(activity, userId, adapter, item, targetMethod, tooltip));
 		}
 		return tooltip;
 	}
 
-	protected static DrawerLayout getDrawer(Activity activity) {
+	protected View.OnClickListener createReplayListener(final Activity activity, final String userId, final MessageBaseAdapter adapter, final MessageDto item, final String targetMethod,
+			final Tooltip tooltip) {
+		return new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String atMark = "@";
+				String createUser = item.created_by;
+				String space = " ";
+
+				StringBuilder sb = new StringBuilder();
+				if (!createUser.equals(AtmosPreferenceManager.getUserId(activity))) {
+					sb.append(atMark);
+					sb.append(createUser);
+					sb.append(space);
+				}
+
+				if (item.addresses != null && item.addresses.users != null && !item.addresses.users.isEmpty()) {
+					for (String replayUser : item.addresses.users) {
+						if (!replayUser.equals(userId) && !replayUser.equals(createUser)) {
+							sb.append(atMark);
+							sb.append(replayUser);
+							sb.append(space);
+						}
+					}
+				}
+
+				getDrawer(activity).openDrawer(GravityCompat.START);
+				getSendMessageEditText(activity).setText(sb.toString());
+				getSendMessageEditText(activity).setSelection(sb.length());
+
+				getSubmitButton(activity).setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						SendMessageRequest param = new SendMessageRequest();
+						param.reply_to = item._id;
+						String message = getSendMessageEditText(activity).getText().toString();
+						param.message = message;
+						if (message != null && message.length() != 0) {
+							MessageHelper.sendMessage(param, activity, adapter, targetMethod);
+						}
+					}
+				});
+				tooltip.dismiss();
+			}
+		};
+	}
+
+	protected DrawerLayout getDrawer(Activity activity) {
 		return (DrawerLayout) activity.findViewById(R.id.Drawer);
 	}
 
-	protected static EditText getSendMessageEditText(Activity activity) {
+	protected EditText getSendMessageEditText(Activity activity) {
 		return (EditText) activity.findViewById(R.id.SendMessageEditText);
 	}
 
-	protected static Button getSubmitButton(Activity activity) {
+	protected Button getSubmitButton(Activity activity) {
 		return (Button) activity.findViewById(R.id.SubmitButton);
 	}
 

@@ -14,7 +14,7 @@
         android:id="@+id/message_list_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/trans_derk_gray"
+        android:background="@drawable/trans_derk_gray"
         android:gravity="center"
         android:visibility="gone" >
 

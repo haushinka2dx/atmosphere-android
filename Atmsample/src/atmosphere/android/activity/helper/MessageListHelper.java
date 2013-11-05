@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
@@ -15,8 +13,6 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -28,9 +24,7 @@ import atmosphere.android.activity.listener.handler.impl.FlickHandler;
 import atmosphere.android.activity.listener.handler.impl.FlickHiranoHandler;
 import atmosphere.android.activity.view.DetailMessageAdapter;
 import atmosphere.android.activity.view.MessageAdapter;
-import atmosphere.android.activity.view.MessagePagerAdapter;
-import atmosphere.android.activity.view.fragment.GlobalTimeLineFragment;
-import atmosphere.android.activity.view.fragment.TalkTimeLineFragment;
+import atmosphere.android.activity.view.MessageBaseAdapter;
 import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.dto.PastThanRequest;
@@ -39,18 +33,22 @@ import atmosphere.android.util.Tooltip;
 
 public class MessageListHelper implements AtmosUrl {
 
-	public static void initialize(FragmentActivity activity, ViewPager pager, PagerTabStrip pagerTabStrip) {
-		MessagePagerAdapter adapter = new MessagePagerAdapter(activity, pager);
+	protected Activity activity;
+	protected View view;
+	private LayoutInflater inflater;
+	protected String targetMethod;
+	protected MessageAdapter adapter;
 
-		adapter.addTab(GlobalTimeLineFragment.class, R.string.global_timeline_title);
-		adapter.addTab(TalkTimeLineFragment.class, R.string.talk_timeline_title);
-
-		pager.setAdapter(adapter);
+	public MessageListHelper(Activity activity, View view, LayoutInflater inflater, String targetMethod) {
+		this.activity = activity;
+		this.view = view;
+		this.inflater = inflater;
+		this.targetMethod = targetMethod;
+		this.adapter = new MessageAdapter(activity, new ArrayList<MessageDto>());
 	}
 
-	public static View createListView(final Activity activity, final View view, final LayoutInflater inflater, final String targetMethod) {
+	public View createListView() {
 		ListView messageListView = getListView(view);
-		final MessageAdapter adapter = new MessageAdapter(activity, new ArrayList<MessageDto>());
 
 		View footer = getFooter(inflater);
 		final ProgressBar footerProgressBar = (ProgressBar) footer.findViewById(R.id.ListViewFooterPrograssBar);
@@ -64,7 +62,7 @@ public class MessageListHelper implements AtmosUrl {
 				ListView list = (ListView) parent;
 				if (list.getCount() - 1 != position) {
 					final MessageDto item = (MessageDto) list.getItemAtPosition(position);
-					Tooltip tooltip = ResponseTooltipHelper.createResponseTooltip(activity, view, position, adapter, item, targetMethod);
+					Tooltip tooltip = createTooltip(position, adapter, item);
 					tooltip.showTop(view);
 				}
 				return false;
@@ -81,7 +79,7 @@ public class MessageListHelper implements AtmosUrl {
 					List<MessageDto> list = new ArrayList<MessageDto>();
 					final MessageDto targetItem = (MessageDto) adapter.getItem(position);
 					list.add(targetItem);
-					final DetailMessageAdapter detailAdapter = new DetailMessageAdapter(activity, list);
+					final DetailMessageAdapter detailAdapter = createDetailAdapter(list);
 					LinearLayout detailOverlay = getDetailOverlay(activity);
 					detailListView.setAdapter(detailAdapter);
 
@@ -101,7 +99,7 @@ public class MessageListHelper implements AtmosUrl {
 						@Override
 						public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 							final MessageDto detailTargetItem = (MessageDto) detailAdapter.getItem(position);
-							Tooltip detailTooltip = ResponseTooltipHelper.createResponseTooltip(activity, view, position, detailAdapter, detailTargetItem, targetMethod);
+							Tooltip detailTooltip = createTooltip(position, detailAdapter, detailTargetItem);
 							detailTooltip.showTop(view);
 							return false;
 						}
@@ -145,55 +143,56 @@ public class MessageListHelper implements AtmosUrl {
 		return view;
 	}
 
-	protected static DrawerLayout getDrawer(Activity activity) {
+	protected DetailMessageAdapter createDetailAdapter(List<MessageDto> list) {
+		return new DetailMessageAdapter(activity, list);
+	}
+
+	protected Tooltip createTooltip(int position, MessageBaseAdapter detailAdapter, MessageDto detailTargetItem) {
+		ResponseTooltipHelper helper = new ResponseTooltipHelper();
+		return helper.createResponseTooltip(activity, view, position, detailAdapter, detailTargetItem, targetMethod);
+	}
+
+	protected DrawerLayout getDrawer(Activity activity) {
 		return (DrawerLayout) activity.findViewById(R.id.Drawer);
 	}
 
-	protected static EditText getSendMessageEditText(Activity activity) {
-		return (EditText) activity.findViewById(R.id.SendMessageEditText);
-	}
-
-	protected static Button getSubmitButton(Activity activity) {
-		return (Button) activity.findViewById(R.id.SubmitButton);
-	}
-
-	protected static ListView getListView(View view) {
+	protected ListView getListView(View view) {
 		return (ListView) view.findViewById(R.id.message_list);
 	}
 
-	protected static LinearLayout getListOverlay(View view) {
+	protected LinearLayout getListOverlay(View view) {
 		return (LinearLayout) view.findViewById(R.id.message_list_overlay);
 	}
 
-	protected static LinearLayout getFlickProgressLayout(Activity activity) {
+	protected LinearLayout getFlickProgressLayout(Activity activity) {
 		return (LinearLayout) activity.findViewById(R.id.flick_progress_layout);
 	}
 
-	protected static ProgressBar getBaseProgressBar(Activity activity) {
+	protected ProgressBar getBaseProgressBar(Activity activity) {
 		return (ProgressBar) activity.findViewById(R.id.base_progressBar);
 	}
 
-	protected static ProgressBar getLeftProgressBar(Activity activity) {
+	protected ProgressBar getLeftProgressBar(Activity activity) {
 		return (ProgressBar) activity.findViewById(R.id.left_progressBar);
 	}
 
-	protected static ProgressBar getRightProgressBar(Activity activity) {
+	protected ProgressBar getRightProgressBar(Activity activity) {
 		return (ProgressBar) activity.findViewById(R.id.right_progressBar);
 	}
 
-	protected static View getFooter(LayoutInflater inflater) {
+	protected View getFooter(LayoutInflater inflater) {
 		return inflater.inflate(R.layout.list_view_footer, null);
 	}
 
-	protected static ListView getDetailListView(Activity activity) {
+	protected ListView getDetailListView(Activity activity) {
 		return (ListView) activity.findViewById(R.id.detail_message_list);
 	}
 
-	protected static LinearLayout getDetailOverlay(Activity activity) {
+	protected LinearLayout getDetailOverlay(Activity activity) {
 		return (LinearLayout) activity.findViewById(R.id.detail_message_list_overlay);
 	}
 
-	protected static ViewPager getViewPager(Activity activity) {
+	protected ViewPager getViewPager(Activity activity) {
 		return (ViewPager) activity.findViewById(R.id.ViewPager);
 	}
 

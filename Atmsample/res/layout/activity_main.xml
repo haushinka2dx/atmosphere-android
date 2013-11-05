@@ -47,18 +47,51 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
-            <android.support.v4.view.ViewPager
-                android:id="@+id/ViewPager"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
 
-                <android.support.v4.view.PagerTabStrip
-                    android:id="@+id/PagerTabStrip"
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/ViewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" >
+
+                    <android.support.v4.view.PagerTabStrip
+                        android:id="@+id/PagerTabStrip"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="6dp"
+                        android:paddingTop="6dp" />
+                </android.support.v4.view.ViewPager>
+
+                <LinearLayout
+                    android:id="@+id/reply_button_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="6dp"
-                    android:paddingTop="6dp" />
-            </android.support.v4.view.ViewPager>
+                    android:orientation="horizontal"
+                    android:visibility="gone" >
+
+                    <ImageView
+                        android:id="@+id/global_reply_button"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/frame_border"
+                        android:contentDescription="@string/reply"
+                        android:src="@drawable/global_reply" />
+
+                    <ImageView
+                        android:id="@+id/private_reply_button"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/frame_border"
+                        android:contentDescription="@string/reply"
+                        android:src="@drawable/private_reply" />
+                </LinearLayout>
+            </LinearLayout>
 
             <ListView
                 android:id="@+id/detail_message_list"
@@ -71,7 +104,7 @@
                 android:id="@+id/detail_message_list_overlay"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/trans_derk_gray"
+                android:background="@drawable/trans_derk_gray"
                 android:gravity="center"
                 android:visibility="gone" >
 
@@ -96,11 +129,54 @@
             android:layout_weight="1"
             android:ems="10"
             android:gravity="top"
+            android:hint="@string/global_message"
             android:inputType="textMultiLine" >
         </EditText>
 
         <Button
             android:id="@+id/SubmitButton"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="@string/submit" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/right_drawer"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:background="#e67e22" >
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <EditText
+                android:id="@+id/SendPrivateToUserEditText"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="top"
+                android:hint="@string/to_users"
+                android:inputType="text" >
+            </EditText>
+
+            <EditText
+                android:id="@+id/SendPrivateMessageEditText"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:ems="10"
+                android:gravity="top"
+                android:hint="@string/private_message"
+                android:inputType="textMultiLine" >
+            </EditText>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/SubmitPrivateButton"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

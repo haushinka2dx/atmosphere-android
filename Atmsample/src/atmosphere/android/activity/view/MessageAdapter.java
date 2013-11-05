@@ -28,7 +28,7 @@ import atmosphere.android.util.TimeUtil;
 
 public class MessageAdapter extends MessageBaseAdapter implements AtmosUrl {
 
-	private Activity activity;
+	protected Activity activity;
 	private Map<String, Bitmap> imageCash;
 
 	public MessageAdapter(Activity activity, List<MessageDto> list) {
@@ -119,18 +119,25 @@ public class MessageAdapter extends MessageBaseAdapter implements AtmosUrl {
 			}.execute();
 		}
 
+		privateControl(view, data);
+
 		return view;
 	}
 
-	protected static ListView getDetailListView(Activity activity) {
+	protected void privateControl(View view, MessageDto data) {
+		LinearLayout privateLayout = (LinearLayout) view.findViewById(R.id.private_to_user_layout);
+		privateLayout.setVisibility(View.GONE);
+	}
+
+	protected ListView getDetailListView(Activity activity) {
 		return (ListView) activity.findViewById(R.id.detail_message_list);
 	}
 
-	protected static LinearLayout getDetailOverlay(Activity activity) {
+	protected LinearLayout getDetailOverlay(Activity activity) {
 		return (LinearLayout) activity.findViewById(R.id.detail_message_list_overlay);
 	}
 
-	protected static ViewPager getViewPager(Activity activity) {
+	protected ViewPager getViewPager(Activity activity) {
 		return (ViewPager) activity.findViewById(R.id.ViewPager);
 	}
 

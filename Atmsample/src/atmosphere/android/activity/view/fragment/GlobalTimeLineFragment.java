@@ -14,7 +14,8 @@ public class GlobalTimeLineFragment extends Fragment implements AtmosUrl {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.message_list_view, container, false);
-		return MessageListHelper.createListView(getActivity(), view, inflater, GLOBAL_TIMELINE_METHOD);
+		MessageListHelper helper = new MessageListHelper(getActivity(), view, inflater, GLOBAL_TIMELINE_METHOD);
+		return helper.createListView();
 	}
 
 }
