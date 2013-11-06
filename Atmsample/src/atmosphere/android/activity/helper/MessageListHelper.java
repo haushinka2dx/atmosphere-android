@@ -149,7 +149,7 @@ public class MessageListHelper implements AtmosUrl {
 
 	protected Tooltip createTooltip(int position, MessageBaseAdapter detailAdapter, MessageDto detailTargetItem) {
 		ResponseTooltipHelper helper = new ResponseTooltipHelper();
-		return helper.createResponseTooltip(activity, view, position, detailAdapter, detailTargetItem, targetMethod);
+		return helper.createResponseTooltip(activity, position, detailAdapter, detailTargetItem, targetMethod);
 	}
 
 	protected DrawerLayout getDrawer(Activity activity) {

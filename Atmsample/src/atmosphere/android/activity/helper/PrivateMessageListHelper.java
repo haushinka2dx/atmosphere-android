@@ -23,7 +23,7 @@ public class PrivateMessageListHelper extends MessageListHelper {
 	@Override
 	protected Tooltip createTooltip(int position, MessageBaseAdapter detailAdapter, MessageDto detailTargetItem) {
 		PrivateResponseTooltipHelper helper = new PrivateResponseTooltipHelper();
-		return helper.createResponseTooltip(activity, view, position, detailAdapter, detailTargetItem, targetMethod);
+		return helper.createResponseTooltip(activity, position, detailAdapter, detailTargetItem, targetMethod);
 	}
 
 	@Override

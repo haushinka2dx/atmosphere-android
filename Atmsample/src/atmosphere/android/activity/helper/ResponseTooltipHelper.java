@@ -31,7 +31,7 @@ import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
 public class ResponseTooltipHelper implements AtmosUrl {
 
-	public Tooltip createResponseTooltip(final Activity activity, View view, final int position, final MessageBaseAdapter adapter, final MessageDto item, final String targetMethod) {
+	public Tooltip createResponseTooltip(final Activity activity, final int position, final MessageBaseAdapter adapter, final MessageDto item, final String targetMethod) {
 		final Tooltip tooltip;
 		final String userId = AtmosPreferenceManager.getUserId(activity);
 		if (item.created_by.equals(userId)) {

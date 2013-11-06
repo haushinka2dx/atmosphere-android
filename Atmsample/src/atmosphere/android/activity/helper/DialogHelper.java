@@ -8,9 +8,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -91,16 +93,25 @@ public class DialogHelper implements AtmosUrl {
 	public static void createStringListDialog(Activity activity, List<String> list) {
 		if (list != null && !list.isEmpty()) {
 
-			Dialog dialog = new Dialog(activity);
-			dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			View view = LayoutInflater.from(activity).inflate(R.layout.simple_list, null);
+			ListView listView = (ListView) view.findViewById(R.id.ListView);
 
-			final View view = LayoutInflater.from(activity).inflate(R.layout.string_list, null);
-			ListView listView = (ListView) view.findViewById(R.id.string_list);
-
-			ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, R.layout.string_item, list);
+			ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, R.layout.simple_text, list);
 			listView.setAdapter(adapter);
 
+			DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
+			int dialogWidth = (int) (metrics.widthPixels * 0.8);
+			int dialogHeight = (int) (metrics.heightPixels * 0.6);
+
+			Dialog dialog = new Dialog(activity);
+			dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			dialog.setContentView(view);
+
+			WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+			lp.width = dialogWidth;
+			lp.height = dialogHeight;
+			dialog.getWindow().setAttributes(lp);
+
 			dialog.show();
 		}
 	}

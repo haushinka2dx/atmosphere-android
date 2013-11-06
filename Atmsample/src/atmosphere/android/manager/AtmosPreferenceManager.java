@@ -1,9 +1,14 @@
 package atmosphere.android.manager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
+import atmosphere.android.dto.User;
+import atmosphere.android.dto.UserListResult;
 
 public class AtmosPreferenceManager {
 
@@ -78,4 +83,36 @@ public class AtmosPreferenceManager {
 		editor.putInt("view_theme", themeId);
 		editor.commit();
 	}
+
+	public static List<String> getUserList(Context context) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String users = prefs
+				.getString(
+						"user_list",
+						"admin,ando,aoki_noriaki,arakawa,endo_kumiko,goto_takehira,hasumi_hiromi,hayashi_yuichiro,hirano,ichikawa_soma,ikeda_sachiko,imamoto_hikaru,ishioka,itou_kazuhiro,kanno,kobayashi_kiyonori,komatsuzaki,motegi_yohei,namatame,noguchi_masatoshi,ohtsuka,okazawa,oohira,sekine,sekine_toru,sugaya,suzuki_shunsuke,wakusawa");
+		List<String> userList = new ArrayList<String>();
+		for (String user : users.split(",")) {
+			userList.add(user);
+		}
+		return userList;
+	}
+
+	public static void setUserList(Context context, UserListResult result) {
+		if (result != null && result.results != null && !result.results.isEmpty()) {
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+			Editor editor = prefs.edit();
+
+			StringBuilder sb = new StringBuilder();
+			String sep = "";
+			for (User user : result.results) {
+				sb.append(sep);
+				sb.append(user.user_id);
+				sep = ",";
+			}
+
+			editor.putString("user_list", sb.toString());
+			editor.commit();
+		}
+	}
+
 }

@@ -15,5 +15,7 @@ public interface AtmosUrl {
 	public static final String SEND_PRIVATE_MESSAGE_METHOD = "private/send";
 	public static final String SEND_RESPONSE_METHOD = "messages/response";
 	public static final String SEND_DESTORY_METHOD = "messages/destroy";
+
+	public static final String USER_LIST_METHOD = "user/list";
 	public static final String USER_AVATOR_METHOD = "user/avator";
 }

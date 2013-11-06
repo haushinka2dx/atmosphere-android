@@ -118,41 +118,68 @@
     <LinearLayout
         android:id="@+id/left_drawer"
         android:layout_width="320dp"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
         android:layout_gravity="left"
-        android:background="#333" >
+        android:background="#333"
+        android:orientation="horizontal" >
 
         <EditText
             android:id="@+id/SendMessageEditText"
-            android:layout_width="0dp"
-            android:layout_height="200dp"
-            android:layout_weight="1"
+            android:layout_width="265dp"
+            android:layout_height="match_parent"
             android:ems="10"
             android:gravity="top"
             android:hint="@string/global_message"
             android:inputType="textMultiLine" >
         </EditText>
 
-        <Button
-            android:id="@+id/SubmitButton"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:text="@string/submit" />
+        <LinearLayout
+            android:layout_width="55dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="top" >
+
+                <ImageButton
+                    android:id="@+id/AddButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/reply"
+                    android:src="@drawable/add" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="bottom" >
+
+                <Button
+                    android:id="@+id/SubmitButton"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/submit" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/right_drawer"
         android:layout_width="320dp"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
         android:layout_gravity="right"
-        android:background="#e67e22" >
+        android:background="#e67e22"
+        android:baselineAligned="false"
+        android:orientation="horizontal" >
 
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="200dp"
-            android:layout_weight="1"
+            android:layout_width="265dp"
+            android:layout_height="match_parent"
             android:orientation="vertical" >
 
             <EditText
@@ -175,13 +202,39 @@
             </EditText>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/SubmitPrivateButton"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:text="@string/submit" />
+        <LinearLayout
+            android:layout_width="55dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="top" >
+
+                <ImageButton
+                    android:id="@+id/PrivateAddButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/reply"
+                    android:src="@drawable/add" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="bottom" >
+
+                <Button
+                    android:id="@+id/SubmitPrivateButton"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/submit" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>

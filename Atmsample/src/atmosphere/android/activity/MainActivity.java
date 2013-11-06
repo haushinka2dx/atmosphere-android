@@ -4,6 +4,7 @@ import interprism.atmosphere.android.R;
 
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -23,9 +24,11 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import atmosphere.android.activity.helper.AddMenuTooltipHelper;
 import atmosphere.android.activity.view.MessagePagerAdapter;
 import atmosphere.android.activity.view.fragment.GlobalTimeLineFragment;
 import atmosphere.android.activity.view.fragment.PrivateTimeLineFragment;
@@ -34,8 +37,9 @@ import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.SendMessageRequest;
 import atmosphere.android.dto.SendMessageResult;
 import atmosphere.android.dto.SendPrivateMessageRequest;
-import atmosphere.android.dto.WhoAmIResult;
+import atmosphere.android.dto.UserListResult;
 import atmosphere.android.manager.AtmosPreferenceManager;
+import atmosphere.android.util.Tooltip;
 import atmosphere.android.util.internet.JsonPath;
 import atmosphere.android.util.json.AtmosTask;
 import atmosphere.android.util.json.AtmosTask.LoginResultHandler;
@@ -50,11 +54,13 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		final Activity activity = this;
 
-		new AtmosTask.Builder<WhoAmIResult>(this, WhoAmIResult.class, RequestMethod.GET).resultHandler(new ResultHandler<WhoAmIResult>() {
+		new AtmosTask.Builder<UserListResult>(this, UserListResult.class, RequestMethod.GET).resultHandler(new ResultHandler<UserListResult>() {
 			@Override
-			public void handleResult(List<WhoAmIResult> results) {
+			public void handleResult(List<UserListResult> results) {
 				if (results != null && !results.isEmpty()) {
+					AtmosPreferenceManager.setUserList(activity, results.get(0));
 					messagesInitialize();
 				}
 			}
@@ -63,7 +69,7 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 			public void handleResult() {
 				messagesInitialize();
 			}
-		}).build().ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + USER_WHO_AM_I_METHOD, null));
+		}).build().ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + USER_LIST_METHOD, null));
 
 		drawerToggle = new ActionBarDrawerToggle(this, getDrawer(), R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
 			@Override
@@ -124,6 +130,25 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 		} else {
 			getReplayButtonLayout().setVisibility(View.GONE);
 		}
+
+		final ImageButton addButton = getAddButton();
+		addButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Tooltip tooltip = AddMenuTooltipHelper.createAddMenuTooltip(activity, getSendMessageEditText());
+				tooltip.showBottom(addButton);
+			}
+		});
+
+		final ImageButton privateAddButton = getPrivateAddButton();
+		privateAddButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Tooltip tooltip = AddMenuTooltipHelper.createAddMenuTooltip(activity, getSendPrivateToUserEditText());
+				tooltip.showBottom(privateAddButton);
+			}
+		});
+
 		initSubmitButton();
 		initSubmitPrivateButton();
 	}
@@ -297,6 +322,10 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 		return (Button) findViewById(R.id.SubmitButton);
 	}
 
+	protected ImageButton getAddButton() {
+		return (ImageButton) findViewById(R.id.AddButton);
+	}
+
 	protected EditText getSendPrivateMessageEditText() {
 		return (EditText) findViewById(R.id.SendPrivateMessageEditText);
 	}
@@ -307,6 +336,10 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 
 	protected Button getSubmitPrivateButton() {
 		return (Button) findViewById(R.id.SubmitPrivateButton);
+	}
+
+	protected ImageButton getPrivateAddButton() {
+		return (ImageButton) findViewById(R.id.PrivateAddButton);
 	}
 
 	protected ListView getDetailListView() {
