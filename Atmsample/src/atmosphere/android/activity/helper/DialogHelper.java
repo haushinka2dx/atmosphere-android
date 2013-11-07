@@ -1,23 +1,20 @@
 package atmosphere.android.activity.helper;
 
+import interprism.atmosphere.android.R;
+
 import java.util.List;
 
-import interprism.atmosphere.android.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ListView;
+import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.LoginRequest;
 import atmosphere.android.dto.LoginResult;
@@ -27,7 +24,7 @@ import atmosphere.android.util.json.AtmosTask;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
-public class DialogHelper implements AtmosUrl {
+public class DialogHelper implements AtmosUrl, AtmosConstant {
 	public static Dialog createLoginDialog(final Context context, final Dialog dialog, int titleResId, final ResultHandler<LoginResult> resultHandler) {
 		dialog.setCancelable(false);
 		dialog.setTitle(titleResId);
@@ -59,7 +56,7 @@ public class DialogHelper implements AtmosUrl {
 				if (isSave) {
 					AtmosPreferenceManager.setPassword(context, param.password);
 				} else {
-					AtmosPreferenceManager.setPassword(context, "");
+					AtmosPreferenceManager.setPassword(context, BLANK);
 				}
 
 				new AtmosTask.Builder<LoginResult>(context, LoginResult.class, RequestMethod.POST).resultHandler(resultHandler).build().execute(JsonPath.paramOf(BASE_URL + LOGIN_METHOD, param));
@@ -79,7 +76,7 @@ public class DialogHelper implements AtmosUrl {
 		return dialog;
 	}
 
-	public static void createResponseDialog(Activity activity, String title, String message, DialogInterface.OnClickListener postListener) {
+	public static void showResponseDialog(Activity activity, String title, String message, DialogInterface.OnClickListener postListener) {
 		AlertDialog.Builder dialog = new AlertDialog.Builder(activity).setTitle(title).setMessage(message).setPositiveButton("OK", postListener)
 				.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					@Override
@@ -90,29 +87,20 @@ public class DialogHelper implements AtmosUrl {
 		dialog.show();
 	}
 
-	public static void createStringListDialog(Activity activity, List<String> list) {
+	public static void showStringListDialog(Activity activity, List<String> list) {
 		if (list != null && !list.isEmpty()) {
 
-			View view = LayoutInflater.from(activity).inflate(R.layout.simple_list, null);
-			ListView listView = (ListView) view.findViewById(R.id.ListView);
+			String[] items = new String[list.size()];
+			for (int i = 0; i < list.size(); i++) {
+				items[i] = list.get(i);
+			}
 
-			ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, R.layout.simple_text, list);
-			listView.setAdapter(adapter);
+			new AlertDialog.Builder(activity).setTitle("To Users").setItems(items, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
 
-			DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
-			int dialogWidth = (int) (metrics.widthPixels * 0.8);
-			int dialogHeight = (int) (metrics.heightPixels * 0.6);
-
-			Dialog dialog = new Dialog(activity);
-			dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-			dialog.setContentView(view);
-
-			WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-			lp.width = dialogWidth;
-			lp.height = dialogHeight;
-			dialog.getWindow().setAttributes(lp);
-
-			dialog.show();
+				}
+			}).show();
 		}
 	}
 }

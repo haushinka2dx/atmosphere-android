@@ -17,6 +17,7 @@ import atmosphere.android.activity.view.DetailMessageAdapter;
 import atmosphere.android.activity.view.MessageAdapter;
 import atmosphere.android.activity.view.MessageBaseAdapter;
 import atmosphere.android.constant.AtmosAction;
+import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.FutureThanRequest;
 import atmosphere.android.dto.MessageDto;
@@ -34,7 +35,7 @@ import atmosphere.android.util.json.AtmosTask.LoginResultHandler;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
-public class MessageHelper implements AtmosUrl {
+public class MessageHelper implements AtmosUrl, AtmosConstant {
 
 	public static void pastTask(final Activity activity, final MessageAdapter adapter, final String targetMethod, final PastThanRequest params, ProgressBar footerProgressBar, TextView footerTextView) {
 		pastTask(activity, adapter, targetMethod, params, true, footerProgressBar, footerTextView, null);
@@ -102,7 +103,7 @@ public class MessageHelper implements AtmosUrl {
 			@Override
 			public void handleResult(List<SendMessageResult> results) {
 				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
-					getSendMessageEditText(activity).setText("");
+					getSendMessageEditText(activity).setText(BLANK);
 					getDrawer(activity).closeDrawers();
 					futureTask(activity, adapter, targetMethod);
 				}

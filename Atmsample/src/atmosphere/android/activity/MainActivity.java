@@ -28,11 +28,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import atmosphere.android.activity.helper.AddMenuTooltipHelper;
+import atmosphere.android.activity.helper.MenuToolipAddHelper;
 import atmosphere.android.activity.view.MessagePagerAdapter;
 import atmosphere.android.activity.view.fragment.GlobalTimeLineFragment;
 import atmosphere.android.activity.view.fragment.PrivateTimeLineFragment;
 import atmosphere.android.activity.view.fragment.TalkTimeLineFragment;
+import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.SendMessageRequest;
 import atmosphere.android.dto.SendMessageResult;
@@ -46,7 +47,7 @@ import atmosphere.android.util.json.AtmosTask.LoginResultHandler;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
-public class MainActivity extends FragmentActivity implements AtmosUrl {
+public class MainActivity extends FragmentActivity implements AtmosUrl, AtmosConstant {
 
 	private ActionBarDrawerToggle drawerToggle;
 
@@ -111,14 +112,14 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
 
-		getGlobalReplayShowView().setOnClickListener(new View.OnClickListener() {
+		getGlobalReplyShowView().setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				getDrawer().openDrawer(GravityCompat.START);
 			}
 		});
 
-		getPrivateReplayShowView().setOnClickListener(new View.OnClickListener() {
+		getPrivateReplyShowView().setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				getDrawer().openDrawer(GravityCompat.END);
@@ -126,16 +127,16 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 		});
 
 		if (AtmosPreferenceManager.getViewTheme(this) == 1) {
-			getReplayButtonLayout().setVisibility(View.VISIBLE);
+			getReplyButtonLayout().setVisibility(View.VISIBLE);
 		} else {
-			getReplayButtonLayout().setVisibility(View.GONE);
+			getReplyButtonLayout().setVisibility(View.GONE);
 		}
 
 		final ImageButton addButton = getAddButton();
 		addButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Tooltip tooltip = AddMenuTooltipHelper.createAddMenuTooltip(activity, getSendMessageEditText());
+				Tooltip tooltip = MenuToolipAddHelper.createAddMenuTooltip(activity, getSendMessageEditText());
 				tooltip.showBottom(addButton);
 			}
 		});
@@ -144,7 +145,7 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 		privateAddButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Tooltip tooltip = AddMenuTooltipHelper.createAddMenuTooltip(activity, getSendPrivateToUserEditText());
+				Tooltip tooltip = MenuToolipAddHelper.createAddMenuTooltip(activity, getSendPrivateToUserEditText());
 				tooltip.showBottom(privateAddButton);
 			}
 		});
@@ -154,7 +155,7 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 	}
 
 	private void initSubmitButton() {
-		getSendMessageEditText().setText("");
+		getSendMessageEditText().setText(BLANK);
 		Button submitButton = getSubmitButton();
 		submitButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -181,8 +182,8 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 	}
 
 	private void initSubmitPrivateButton() {
-		getSendPrivateMessageEditText().setText("");
-		getSendPrivateToUserEditText().setText("");
+		getSendPrivateMessageEditText().setText(BLANK);
+		getSendPrivateToUserEditText().setText(BLANK);
 
 		Button submitPrivateButton = getSubmitPrivateButton();
 		submitPrivateButton.setOnClickListener(new View.OnClickListener() {
@@ -204,14 +205,14 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 			@Override
 			public void handleResult(List<SendMessageResult> results) {
 				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
-					getSendMessageEditText().setText("");
+					getSendMessageEditText().setText(BLANK);
 					getDrawer().closeDrawer(GravityCompat.START);
 				}
 			}
 		}).loginHandler(new LoginResultHandler() {
 			@Override
 			public void handleResult() {
-				getSendMessageEditText().setText("");
+				getSendMessageEditText().setText(BLANK);
 				getDrawer().closeDrawer(GravityCompat.START);
 			}
 		}).build().ignoreDialog(false).execute(JsonPath.paramOf(BASE_URL + SEND_MESSAGE_METHOD, param));
@@ -222,16 +223,16 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 			@Override
 			public void handleResult(List<SendMessageResult> results) {
 				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
-					getSendPrivateMessageEditText().setText("");
-					getSendPrivateToUserEditText().setText("");
+					getSendPrivateMessageEditText().setText(BLANK);
+					getSendPrivateToUserEditText().setText(BLANK);
 					getDrawer().closeDrawer(GravityCompat.END);
 				}
 			}
 		}).loginHandler(new LoginResultHandler() {
 			@Override
 			public void handleResult() {
-				getSendPrivateMessageEditText().setText("");
-				getSendPrivateToUserEditText().setText("");
+				getSendPrivateMessageEditText().setText(BLANK);
+				getSendPrivateToUserEditText().setText(BLANK);
 				getDrawer().closeDrawer(GravityCompat.END);
 			}
 		}).build().ignoreDialog(false).execute(JsonPath.paramOf(BASE_URL + SEND_PRIVATE_MESSAGE_METHOD, param));
@@ -302,15 +303,15 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 		return (DrawerLayout) findViewById(R.id.Drawer);
 	}
 
-	protected LinearLayout getReplayButtonLayout() {
+	protected LinearLayout getReplyButtonLayout() {
 		return (LinearLayout) findViewById(R.id.reply_button_layout);
 	}
 
-	protected ImageView getGlobalReplayShowView() {
+	protected ImageView getGlobalReplyShowView() {
 		return (ImageView) findViewById(R.id.global_reply_button);
 	}
 
-	protected ImageView getPrivateReplayShowView() {
+	protected ImageView getPrivateReplyShowView() {
 		return (ImageView) findViewById(R.id.private_reply_button);
 	}
 

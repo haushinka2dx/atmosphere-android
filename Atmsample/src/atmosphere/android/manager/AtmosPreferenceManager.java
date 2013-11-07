@@ -7,14 +7,15 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
+import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.dto.User;
 import atmosphere.android.dto.UserListResult;
 
-public class AtmosPreferenceManager {
+public class AtmosPreferenceManager implements AtmosConstant {
 
 	public static String getUserId(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		return prefs.getString("user_id", "");
+		return prefs.getString("user_id", BLANK);
 	}
 
 	public static void setUserId(Context context, String userId) {
@@ -26,7 +27,7 @@ public class AtmosPreferenceManager {
 
 	public static String getPassword(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		return prefs.getString("user_password", "");
+		return prefs.getString("user_password", BLANK);
 	}
 
 	public static void setPassword(Context context, String password) {
@@ -50,7 +51,7 @@ public class AtmosPreferenceManager {
 
 	public static String getAtmosSessionId(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		return prefs.getString("atmos_session_id", "");
+		return prefs.getString("atmos_session_id", BLANK);
 	}
 
 	public static void setAtmosSessionId(Context context, String atmosSessionId) {
@@ -86,12 +87,9 @@ public class AtmosPreferenceManager {
 
 	public static List<String> getUserList(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		String users = prefs
-				.getString(
-						"user_list",
-						"admin,ando,aoki_noriaki,arakawa,endo_kumiko,goto_takehira,hasumi_hiromi,hayashi_yuichiro,hirano,ichikawa_soma,ikeda_sachiko,imamoto_hikaru,ishioka,itou_kazuhiro,kanno,kobayashi_kiyonori,komatsuzaki,motegi_yohei,namatame,noguchi_masatoshi,ohtsuka,okazawa,oohira,sekine,sekine_toru,sugaya,suzuki_shunsuke,wakusawa");
+		String users = prefs.getString("user_list", BLANK);
 		List<String> userList = new ArrayList<String>();
-		for (String user : users.split(",")) {
+		for (String user : users.split(COMMA)) {
 			userList.add(user);
 		}
 		return userList;
@@ -103,11 +101,11 @@ public class AtmosPreferenceManager {
 			Editor editor = prefs.edit();
 
 			StringBuilder sb = new StringBuilder();
-			String sep = "";
+			String sep = BLANK;
 			for (User user : result.results) {
 				sb.append(sep);
 				sb.append(user.user_id);
-				sep = ",";
+				sep = COMMA;
 			}
 
 			editor.putString("user_list", sb.toString());

@@ -23,10 +23,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.util.TimeUtil;
 
-public class DetailMessageAdapter extends MessageBaseAdapter {
+public class DetailMessageAdapter extends MessageBaseAdapter implements AtmosConstant {
 	protected Activity activity;
 	private Map<String, Bitmap> imageCash;
 

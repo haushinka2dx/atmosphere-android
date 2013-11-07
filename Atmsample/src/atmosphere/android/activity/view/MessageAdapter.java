@@ -22,11 +22,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.util.TimeUtil;
 
-public class MessageAdapter extends MessageBaseAdapter implements AtmosUrl {
+public class MessageAdapter extends MessageBaseAdapter implements AtmosUrl, AtmosConstant {
 
 	protected Activity activity;
 	private Map<String, Bitmap> imageCash;

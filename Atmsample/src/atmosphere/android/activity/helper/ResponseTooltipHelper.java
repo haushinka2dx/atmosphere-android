@@ -16,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import atmosphere.android.activity.view.MessageBaseAdapter;
 import atmosphere.android.constant.AtmosAction;
+import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.DestroyRequest;
 import atmosphere.android.dto.MessageDto;
@@ -29,7 +30,7 @@ import atmosphere.android.util.json.AtmosTask;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
-public class ResponseTooltipHelper implements AtmosUrl {
+public class ResponseTooltipHelper implements AtmosUrl, AtmosConstant {
 
 	public Tooltip createResponseTooltip(final Activity activity, final int position, final MessageBaseAdapter adapter, final MessageDto item, final String targetMethod) {
 		final Tooltip tooltip;
@@ -42,7 +43,7 @@ public class ResponseTooltipHelper implements AtmosUrl {
 			deleteButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					DialogHelper.createResponseDialog(activity, "Delete This Message?", item.message, new DialogInterface.OnClickListener() {
+					DialogHelper.showResponseDialog(activity, "Delete This Message?", item.message, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							DestroyRequest param = new DestroyRequest();
@@ -62,8 +63,8 @@ public class ResponseTooltipHelper implements AtmosUrl {
 				}
 			});
 
-			ImageButton replayButton = (ImageButton) tooltipView.findViewById(R.id.reply_to_mine_image_button);
-			replayButton.setOnClickListener(createReplayListener(activity, userId, adapter, item, targetMethod, tooltip));
+			ImageButton replyButton = (ImageButton) tooltipView.findViewById(R.id.reply_to_mine_image_button);
+			replyButton.setOnClickListener(createReplyListener(activity, userId, adapter, item, targetMethod, tooltip));
 
 		} else {
 			View tooltipView = LayoutInflater.from(activity).inflate(R.layout.reply_to_others, null);
@@ -80,7 +81,7 @@ public class ResponseTooltipHelper implements AtmosUrl {
 				funButton.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						DialogHelper.createResponseDialog(activity, "Are you sure to response 'fun' ?", item.message, new DialogInterface.OnClickListener() {
+						DialogHelper.showResponseDialog(activity, "Are you sure to response 'fun' ?", item.message, new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								MessageHelper.sendResponse(activity, item, AtmosAction.FUN, adapter);
@@ -101,7 +102,7 @@ public class ResponseTooltipHelper implements AtmosUrl {
 				goodButton.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						DialogHelper.createResponseDialog(activity, "Are you sure to response 'good' ?", item.message, new DialogInterface.OnClickListener() {
+						DialogHelper.showResponseDialog(activity, "Are you sure to response 'good' ?", item.message, new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								MessageHelper.sendResponse(activity, item, AtmosAction.GOOD, adapter);
@@ -122,7 +123,7 @@ public class ResponseTooltipHelper implements AtmosUrl {
 				memoButton.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						DialogHelper.createResponseDialog(activity, "Are you sure to response 'memo' ?", item.message, new DialogInterface.OnClickListener() {
+						DialogHelper.showResponseDialog(activity, "Are you sure to response 'memo' ?", item.message, new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								MessageHelper.sendResponse(activity, item, AtmosAction.MEMO, adapter);
@@ -143,7 +144,7 @@ public class ResponseTooltipHelper implements AtmosUrl {
 				usefullButton.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						DialogHelper.createResponseDialog(activity, "Are you sure to response 'usefull' ?", item.message, new DialogInterface.OnClickListener() {
+						DialogHelper.showResponseDialog(activity, "Are you sure to response 'usefull' ?", item.message, new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								MessageHelper.sendResponse(activity, item, AtmosAction.USE_FULL, adapter);
@@ -154,34 +155,32 @@ public class ResponseTooltipHelper implements AtmosUrl {
 				});
 			}
 
-			ImageButton replayButton = (ImageButton) tooltipView.findViewById(R.id.reply_to_other_image_button);
-			replayButton.setOnClickListener(createReplayListener(activity, userId, adapter, item, targetMethod, tooltip));
+			ImageButton replyButton = (ImageButton) tooltipView.findViewById(R.id.reply_to_other_image_button);
+			replyButton.setOnClickListener(createReplyListener(activity, userId, adapter, item, targetMethod, tooltip));
 		}
 		return tooltip;
 	}
 
-	protected View.OnClickListener createReplayListener(final Activity activity, final String userId, final MessageBaseAdapter adapter, final MessageDto item, final String targetMethod,
+	protected View.OnClickListener createReplyListener(final Activity activity, final String userId, final MessageBaseAdapter adapter, final MessageDto item, final String targetMethod,
 			final Tooltip tooltip) {
 		return new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String atMark = "@";
 				String createUser = item.created_by;
-				String space = " ";
 
 				StringBuilder sb = new StringBuilder();
 				if (!createUser.equals(AtmosPreferenceManager.getUserId(activity))) {
-					sb.append(atMark);
+					sb.append(AT_MARK);
 					sb.append(createUser);
-					sb.append(space);
+					sb.append(SPACE);
 				}
 
 				if (item.addresses != null && item.addresses.users != null && !item.addresses.users.isEmpty()) {
-					for (String replayUser : item.addresses.users) {
-						if (!replayUser.equals(userId) && !replayUser.equals(createUser)) {
-							sb.append(atMark);
-							sb.append(replayUser);
-							sb.append(space);
+					for (String replyUser : item.addresses.users) {
+						if (!replyUser.equals(userId) && !replyUser.equals(createUser)) {
+							sb.append(AT_MARK);
+							sb.append(replyUser);
+							sb.append(SPACE);
 						}
 					}
 				}
