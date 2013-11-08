@@ -26,7 +26,7 @@ import atmosphere.android.util.internet.GET;
 import atmosphere.android.util.internet.JsonPath;
 import atmosphere.android.util.internet.UrlSession;
 
-public class AtmosTask<Result> extends AbstractProgressTask<JsonPath, List<Result>> implements AtmosUrl {
+public class AtmosTask<Result> extends AbstractProgressTask<JsonPath, List<Result>> {
 
 	public enum RequestMethod {
 		GET, POST, ;
@@ -195,7 +195,7 @@ public class AtmosTask<Result> extends AbstractProgressTask<JsonPath, List<Resul
 							loginHandler.handleResult();
 						}
 					}
-				}).build().execute(JsonPath.paramOf(BASE_URL + LOGIN_METHOD, param));
+				}).build().execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.LOGIN_METHOD, param));
 			} else {
 				final Dialog loginDialog = new Dialog(context);
 				DialogHelper.createLoginDialog(context, loginDialog, R.string.login, createLoginHandler(loginDialog));

@@ -10,7 +10,7 @@
         android:orientation="horizontal" >
 
         <ImageView
-            android:id="@+id/detail_user_avator"
+            android:id="@+id/detail_user_avatar"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="4dp"

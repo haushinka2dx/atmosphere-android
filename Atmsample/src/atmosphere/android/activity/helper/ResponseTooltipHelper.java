@@ -30,7 +30,7 @@ import atmosphere.android.util.json.AtmosTask;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
-public class ResponseTooltipHelper implements AtmosUrl, AtmosConstant {
+public class ResponseTooltipHelper {
 
 	public Tooltip createResponseTooltip(final Activity activity, final int position, final MessageBaseAdapter adapter, final MessageDto item, final String targetMethod) {
 		final Tooltip tooltip;
@@ -56,7 +56,7 @@ public class ResponseTooltipHelper implements AtmosUrl, AtmosConstant {
 										adapter.notifyDataSetChanged();
 									}
 								}
-							}).build().execute(JsonPath.paramOf(BASE_URL + SEND_DESTORY_METHOD, param));
+							}).build().execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.SEND_DESTORY_METHOD, param));
 						}
 					});
 					tooltip.dismiss();
@@ -170,17 +170,17 @@ public class ResponseTooltipHelper implements AtmosUrl, AtmosConstant {
 
 				StringBuilder sb = new StringBuilder();
 				if (!createUser.equals(AtmosPreferenceManager.getUserId(activity))) {
-					sb.append(AT_MARK);
+					sb.append(AtmosConstant.AT_MARK);
 					sb.append(createUser);
-					sb.append(SPACE);
+					sb.append(AtmosConstant.SPACE);
 				}
 
 				if (item.addresses != null && item.addresses.users != null && !item.addresses.users.isEmpty()) {
 					for (String replyUser : item.addresses.users) {
 						if (!replyUser.equals(userId) && !replyUser.equals(createUser)) {
-							sb.append(AT_MARK);
+							sb.append(AtmosConstant.AT_MARK);
 							sb.append(replyUser);
-							sb.append(SPACE);
+							sb.append(AtmosConstant.SPACE);
 						}
 					}
 				}

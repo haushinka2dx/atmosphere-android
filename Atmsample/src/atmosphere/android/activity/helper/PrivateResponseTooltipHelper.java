@@ -14,7 +14,7 @@ import atmosphere.android.dto.SendMessageRequest;
 import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.Tooltip;
 
-public class PrivateResponseTooltipHelper extends ResponseTooltipHelper implements AtmosConstant {
+public class PrivateResponseTooltipHelper extends ResponseTooltipHelper {
 	@Override
 	protected OnClickListener createReplyListener(final Activity activity, final String userId, final MessageBaseAdapter adapter, final MessageDto item, final String targetMethod,
 			final Tooltip tooltip) {
@@ -25,17 +25,17 @@ public class PrivateResponseTooltipHelper extends ResponseTooltipHelper implemen
 
 				StringBuilder sb = new StringBuilder();
 				if (!createUser.equals(AtmosPreferenceManager.getUserId(activity))) {
-					sb.append(AT_MARK);
+					sb.append(AtmosConstant.AT_MARK);
 					sb.append(createUser);
-					sb.append(SPACE);
+					sb.append(AtmosConstant.SPACE);
 				}
 
 				if (item.to_user_id != null && !item.to_user_id.isEmpty()) {
 					for (String replyUser : item.to_user_id) {
 						if (!replyUser.equals(userId) && !replyUser.equals(createUser)) {
-							sb.append(AT_MARK);
+							sb.append(AtmosConstant.AT_MARK);
 							sb.append(replyUser);
-							sb.append(SPACE);
+							sb.append(AtmosConstant.SPACE);
 						}
 					}
 				}

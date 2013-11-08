@@ -2,18 +2,12 @@ package atmosphere.android.activity.view;
 
 import interprism.atmosphere.android.R;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,11 +17,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import atmosphere.android.constant.AtmosConstant;
+import atmosphere.android.activity.helper.AvatarHelper;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.util.TimeUtil;
 
-public class DetailMessageAdapter extends MessageBaseAdapter implements AtmosConstant {
+public class DetailMessageAdapter extends MessageBaseAdapter {
 	protected Activity activity;
 	private Map<String, Bitmap> imageCash;
 
@@ -58,51 +52,8 @@ public class DetailMessageAdapter extends MessageBaseAdapter implements AtmosCon
 		TextView messageTime = (TextView) view.findViewById(R.id.detail_message_time);
 		messageTime.setText(TimeUtil.formatDateFromGMT(data.created_at));
 
-		ImageView avator = (ImageView) view.findViewById(R.id.detail_user_avator);
-
-		if (imageCash.containsKey(data.created_by)) {
-			avator.setImageBitmap(imageCash.get(data.created_by));
-		} else {
-			final String urlString = BASE_URL + USER_AVATOR_METHOD + "?user_id=" + data.created_by;
-			new AsyncTask<Void, Void, Bitmap>() {
-
-				@Override
-				protected Bitmap doInBackground(Void... params) {
-					URL url = null;
-					InputStream istream = null;
-					Bitmap bitmap = null;
-					try {
-						url = new URL(urlString);
-						istream = url.openStream();
-						bitmap = BitmapFactory.decodeStream(istream);
-						istream.close();
-					} catch (MalformedURLException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					} finally {
-						if (istream != null) {
-							try {
-								istream.close();
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-					return bitmap;
-				}
-
-				protected void onPostExecute(Bitmap result) {
-					ImageView avator = (ImageView) view.findViewById(R.id.detail_user_avator);
-					avator.setImageBitmap(result);
-					if (15 < imageCash.size()) {
-						imageCash.clear();
-					}
-					imageCash.put(data.created_by, result);
-				};
-
-			}.execute();
-		}
+		ImageView avatar = (ImageView) view.findViewById(R.id.detail_user_avatar);
+		AvatarHelper.setAvatar(view, data, imageCash, avatar);
 
 		TextView funTextView = (TextView) view.findViewById(R.id.detail_fun_text_view);
 		setResponseCount(funTextView, data.responses.fun.size());

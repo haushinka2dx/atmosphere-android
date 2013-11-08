@@ -1,6 +1,9 @@
 package atmosphere.android.constant;
 
-public interface AtmosUrl {
+public final class AtmosUrl {
+	private AtmosUrl() {
+	}
+
 	public static final String BASE_URL = "https://atmos.interprism.co.jp/atmos/";
 
 	public static final String LOGIN_METHOD = "auth/login";
@@ -17,5 +20,5 @@ public interface AtmosUrl {
 	public static final String SEND_DESTORY_METHOD = "messages/destroy";
 
 	public static final String USER_LIST_METHOD = "user/list";
-	public static final String USER_AVATOR_METHOD = "user/avator";
+	public static final String USER_AVATAR_METHOD = "user/avator";
 }

@@ -1,8 +1,11 @@
 package atmosphere.android.constant;
 
-public interface AtmosConstant {
-	public final String AT_MARK = "@";
-	public final String SPACE = " ";
-	public final String COMMA = ",";
-	public final String BLANK = "";
+public final class AtmosConstant {
+	private AtmosConstant() {
+	}
+
+	public static final String AT_MARK = "@";
+	public static final String SPACE = " ";
+	public static final String COMMA = ",";
+	public static final String BLANK = "";
 }

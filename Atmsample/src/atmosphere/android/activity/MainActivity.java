@@ -47,7 +47,7 @@ import atmosphere.android.util.json.AtmosTask.LoginResultHandler;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
-public class MainActivity extends FragmentActivity implements AtmosUrl, AtmosConstant {
+public class MainActivity extends FragmentActivity {
 
 	private ActionBarDrawerToggle drawerToggle;
 
@@ -70,7 +70,7 @@ public class MainActivity extends FragmentActivity implements AtmosUrl, AtmosCon
 			public void handleResult() {
 				messagesInitialize();
 			}
-		}).build().ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + USER_LIST_METHOD, null));
+		}).build().ignoreDialog(true).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.USER_LIST_METHOD, null));
 
 		drawerToggle = new ActionBarDrawerToggle(this, getDrawer(), R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
 			@Override
@@ -155,7 +155,7 @@ public class MainActivity extends FragmentActivity implements AtmosUrl, AtmosCon
 	}
 
 	private void initSubmitButton() {
-		getSendMessageEditText().setText(BLANK);
+		getSendMessageEditText().setText(AtmosConstant.BLANK);
 		Button submitButton = getSubmitButton();
 		submitButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -182,8 +182,8 @@ public class MainActivity extends FragmentActivity implements AtmosUrl, AtmosCon
 	}
 
 	private void initSubmitPrivateButton() {
-		getSendPrivateMessageEditText().setText(BLANK);
-		getSendPrivateToUserEditText().setText(BLANK);
+		getSendPrivateMessageEditText().setText(AtmosConstant.BLANK);
+		getSendPrivateToUserEditText().setText(AtmosConstant.BLANK);
 
 		Button submitPrivateButton = getSubmitPrivateButton();
 		submitPrivateButton.setOnClickListener(new View.OnClickListener() {
@@ -205,17 +205,17 @@ public class MainActivity extends FragmentActivity implements AtmosUrl, AtmosCon
 			@Override
 			public void handleResult(List<SendMessageResult> results) {
 				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
-					getSendMessageEditText().setText(BLANK);
+					getSendMessageEditText().setText(AtmosConstant.BLANK);
 					getDrawer().closeDrawer(GravityCompat.START);
 				}
 			}
 		}).loginHandler(new LoginResultHandler() {
 			@Override
 			public void handleResult() {
-				getSendMessageEditText().setText(BLANK);
+				getSendMessageEditText().setText(AtmosConstant.BLANK);
 				getDrawer().closeDrawer(GravityCompat.START);
 			}
-		}).build().ignoreDialog(false).execute(JsonPath.paramOf(BASE_URL + SEND_MESSAGE_METHOD, param));
+		}).build().ignoreDialog(false).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.SEND_MESSAGE_METHOD, param));
 	}
 
 	private void sendPrivateMessage(SendPrivateMessageRequest param) {
@@ -223,19 +223,19 @@ public class MainActivity extends FragmentActivity implements AtmosUrl, AtmosCon
 			@Override
 			public void handleResult(List<SendMessageResult> results) {
 				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
-					getSendPrivateMessageEditText().setText(BLANK);
-					getSendPrivateToUserEditText().setText(BLANK);
+					getSendPrivateMessageEditText().setText(AtmosConstant.BLANK);
+					getSendPrivateToUserEditText().setText(AtmosConstant.BLANK);
 					getDrawer().closeDrawer(GravityCompat.END);
 				}
 			}
 		}).loginHandler(new LoginResultHandler() {
 			@Override
 			public void handleResult() {
-				getSendPrivateMessageEditText().setText(BLANK);
-				getSendPrivateToUserEditText().setText(BLANK);
+				getSendPrivateMessageEditText().setText(AtmosConstant.BLANK);
+				getSendPrivateToUserEditText().setText(AtmosConstant.BLANK);
 				getDrawer().closeDrawer(GravityCompat.END);
 			}
-		}).build().ignoreDialog(false).execute(JsonPath.paramOf(BASE_URL + SEND_PRIVATE_MESSAGE_METHOD, param));
+		}).build().ignoreDialog(false).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.SEND_PRIVATE_MESSAGE_METHOD, param));
 	}
 
 	@Override

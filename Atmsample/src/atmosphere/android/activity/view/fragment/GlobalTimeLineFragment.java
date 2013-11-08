@@ -9,12 +9,12 @@ import android.view.ViewGroup;
 import atmosphere.android.activity.helper.MessageListHelper;
 import atmosphere.android.constant.AtmosUrl;
 
-public class GlobalTimeLineFragment extends Fragment implements AtmosUrl {
+public class GlobalTimeLineFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View view = inflater.inflate(R.layout.message_list_view, container, false);
-		MessageListHelper helper = new MessageListHelper(getActivity(), view, inflater, GLOBAL_TIMELINE_METHOD);
+		MessageListHelper helper = new MessageListHelper(getActivity(), view, inflater, AtmosUrl.GLOBAL_TIMELINE_METHOD);
 		return helper.createListView();
 	}
 

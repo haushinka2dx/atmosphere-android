@@ -9,12 +9,12 @@ import android.view.ViewGroup;
 import atmosphere.android.activity.helper.PrivateMessageListHelper;
 import atmosphere.android.constant.AtmosUrl;
 
-public class PrivateTimeLineFragment extends Fragment implements AtmosUrl {
+public class PrivateTimeLineFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.message_list_view, container, false);
 
-		PrivateMessageListHelper helper = new PrivateMessageListHelper(getActivity(), view, inflater, PRIVATE_TIMELINE_METHOD);
+		PrivateMessageListHelper helper = new PrivateMessageListHelper(getActivity(), view, inflater, AtmosUrl.PRIVATE_TIMELINE_METHOD);
 		return helper.createListView();
 	}
 }

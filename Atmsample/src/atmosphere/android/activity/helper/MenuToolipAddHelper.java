@@ -18,7 +18,7 @@ import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.Tooltip;
 
-public class MenuToolipAddHelper implements AtmosConstant{
+public class MenuToolipAddHelper {
 
 	private enum Menu {
 		AddToUser, ;
@@ -69,9 +69,9 @@ public class MenuToolipAddHelper implements AtmosConstant{
 				StringBuilder sb = new StringBuilder();
 				for (int i = 0; i < flags.length; i++) {
 					if (flags[i]) {
-						sb.append(AT_MARK);
+						sb.append(AtmosConstant.AT_MARK);
 						sb.append(users[i]);
-						sb.append(SPACE);
+						sb.append(AtmosConstant.SPACE);
 					}
 				}
 				textView.setText((text + sb.toString()));

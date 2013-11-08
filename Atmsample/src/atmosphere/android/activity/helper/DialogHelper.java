@@ -24,7 +24,7 @@ import atmosphere.android.util.json.AtmosTask;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
-public class DialogHelper implements AtmosUrl, AtmosConstant {
+public class DialogHelper {
 	public static Dialog createLoginDialog(final Context context, final Dialog dialog, int titleResId, final ResultHandler<LoginResult> resultHandler) {
 		dialog.setCancelable(false);
 		dialog.setTitle(titleResId);
@@ -56,10 +56,11 @@ public class DialogHelper implements AtmosUrl, AtmosConstant {
 				if (isSave) {
 					AtmosPreferenceManager.setPassword(context, param.password);
 				} else {
-					AtmosPreferenceManager.setPassword(context, BLANK);
+					AtmosPreferenceManager.setPassword(context, AtmosConstant.BLANK);
 				}
 
-				new AtmosTask.Builder<LoginResult>(context, LoginResult.class, RequestMethod.POST).resultHandler(resultHandler).build().execute(JsonPath.paramOf(BASE_URL + LOGIN_METHOD, param));
+				new AtmosTask.Builder<LoginResult>(context, LoginResult.class, RequestMethod.POST).resultHandler(resultHandler).build()
+						.execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.LOGIN_METHOD, param));
 			}
 		});
 

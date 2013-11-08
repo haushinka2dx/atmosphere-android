@@ -25,13 +25,12 @@ import atmosphere.android.activity.listener.handler.impl.FlickHiranoHandler;
 import atmosphere.android.activity.view.DetailMessageAdapter;
 import atmosphere.android.activity.view.MessageAdapter;
 import atmosphere.android.activity.view.MessageBaseAdapter;
-import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.dto.PastThanRequest;
 import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.Tooltip;
 
-public class MessageListHelper implements AtmosUrl {
+public class MessageListHelper {
 
 	protected Activity activity;
 	protected View view;

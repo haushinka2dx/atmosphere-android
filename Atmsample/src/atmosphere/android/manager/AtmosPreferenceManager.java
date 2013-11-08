@@ -7,15 +7,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
-import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.dto.User;
 import atmosphere.android.dto.UserListResult;
 
-public class AtmosPreferenceManager implements AtmosConstant {
+public class AtmosPreferenceManager {
 
 	public static String getUserId(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		return prefs.getString("user_id", BLANK);
+		return prefs.getString("user_id", "");
 	}
 
 	public static void setUserId(Context context, String userId) {
@@ -27,7 +26,7 @@ public class AtmosPreferenceManager implements AtmosConstant {
 
 	public static String getPassword(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		return prefs.getString("user_password", BLANK);
+		return prefs.getString("user_password", "");
 	}
 
 	public static void setPassword(Context context, String password) {
@@ -51,7 +50,7 @@ public class AtmosPreferenceManager implements AtmosConstant {
 
 	public static String getAtmosSessionId(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		return prefs.getString("atmos_session_id", BLANK);
+		return prefs.getString("atmos_session_id", "");
 	}
 
 	public static void setAtmosSessionId(Context context, String atmosSessionId) {
@@ -87,9 +86,9 @@ public class AtmosPreferenceManager implements AtmosConstant {
 
 	public static List<String> getUserList(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		String users = prefs.getString("user_list", BLANK);
+		String users = prefs.getString("user_list", "");
 		List<String> userList = new ArrayList<String>();
-		for (String user : users.split(COMMA)) {
+		for (String user : users.split(",")) {
 			userList.add(user);
 		}
 		return userList;
@@ -101,11 +100,11 @@ public class AtmosPreferenceManager implements AtmosConstant {
 			Editor editor = prefs.edit();
 
 			StringBuilder sb = new StringBuilder();
-			String sep = BLANK;
+			String sep = "";
 			for (User user : result.results) {
 				sb.append(sep);
 				sb.append(user.user_id);
-				sep = COMMA;
+				sep = ",";
 			}
 
 			editor.putString("user_list", sb.toString());

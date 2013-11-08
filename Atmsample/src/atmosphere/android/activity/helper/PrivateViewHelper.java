@@ -7,17 +7,17 @@ import android.widget.TextView;
 import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.dto.MessageDto;
 
-public class PrivateViewHelper implements AtmosConstant {
+public class PrivateViewHelper {
 	public static void showToUsers(final Activity activity, View view, final MessageDto data, int layoutId, int toUserTextId, int pointTextId) {
 		LinearLayout privateLayout = (LinearLayout) view.findViewById(layoutId);
 		StringBuilder sb = new StringBuilder();
 		if (data.to_user_id != null) {
 			int count = 0;
-			String sep = BLANK;
+			String sep = AtmosConstant.BLANK;
 			for (String toUser : data.to_user_id) {
 				sb.append(sep);
 				sb.append(toUser);
-				sep = SPACE;
+				sep = AtmosConstant.SPACE;
 				count += (toUser.length() + 1);
 				if (24 < count) {
 					break;

@@ -35,7 +35,7 @@ import atmosphere.android.util.json.AtmosTask.LoginResultHandler;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
-public class MessageHelper implements AtmosUrl, AtmosConstant {
+public class MessageHelper {
 
 	public static void pastTask(final Activity activity, final MessageAdapter adapter, final String targetMethod, final PastThanRequest params, ProgressBar footerProgressBar, TextView footerTextView) {
 		pastTask(activity, adapter, targetMethod, params, true, footerProgressBar, footerTextView, null);
@@ -69,7 +69,7 @@ public class MessageHelper implements AtmosUrl, AtmosConstant {
 			public void handleResult() {
 				pastTask(activity, adapter, targetMethod, params, footerProgressBar, footerTextView);
 			}
-		}).build().ignoreDialog(ignoreDialog).execute(JsonPath.paramOf(BASE_URL + targetMethod, params));
+		}).build().ignoreDialog(ignoreDialog).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + targetMethod, params));
 	}
 
 	public static void futureTask(final Activity activity, final MessageBaseAdapter adapter, final String targetMethod) {
@@ -94,7 +94,7 @@ public class MessageHelper implements AtmosUrl, AtmosConstant {
 				public void handleResult() {
 					futureTask(activity, adapter, targetMethod);
 				}
-			}).build().ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + targetMethod, params));
+			}).build().ignoreDialog(true).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + targetMethod, params));
 		}
 	}
 
@@ -103,7 +103,7 @@ public class MessageHelper implements AtmosUrl, AtmosConstant {
 			@Override
 			public void handleResult(List<SendMessageResult> results) {
 				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
-					getSendMessageEditText(activity).setText(BLANK);
+					getSendMessageEditText(activity).setText(AtmosConstant.BLANK);
 					getDrawer(activity).closeDrawers();
 					futureTask(activity, adapter, targetMethod);
 				}
@@ -113,7 +113,7 @@ public class MessageHelper implements AtmosUrl, AtmosConstant {
 			public void handleResult() {
 				sendMessage(param, activity, adapter, targetMethod);
 			}
-		}).build().execute(JsonPath.paramOf(BASE_URL + SEND_MESSAGE_METHOD, param));
+		}).build().execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.SEND_MESSAGE_METHOD, param));
 	}
 
 	public static void sendResponse(final Activity activity, final MessageDto item, final AtmosAction action, final BaseAdapter adapter) {
@@ -137,7 +137,7 @@ public class MessageHelper implements AtmosUrl, AtmosConstant {
 					adapter.notifyDataSetChanged();
 				}
 			}
-		}).build().execute(JsonPath.paramOf(BASE_URL + SEND_RESPONSE_METHOD, response));
+		}).build().execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.SEND_RESPONSE_METHOD, response));
 	}
 
 	public static void serchMessage(final Activity activity, final String replyId, final DetailMessageAdapter adapter, final String messageId, final List<MessageDto> orgList) {
@@ -191,7 +191,7 @@ public class MessageHelper implements AtmosUrl, AtmosConstant {
 					public void handleResult() {
 						serchMessage(activity, replyId, adapter, messageId, orgList, addBeforeList);
 					}
-				}).build().ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + MESSAGE_SEARCH_METHOD, param));
+				}).build().ignoreDialog(true).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.MESSAGE_SEARCH_METHOD, param));
 			}
 		} else {
 			serchReplyMessage(activity, messageId, adapter, orgList, addBeforeList);
@@ -248,7 +248,7 @@ public class MessageHelper implements AtmosUrl, AtmosConstant {
 					public void handleResult() {
 						serchReplyMessage(activity, messageId, adapter, orgList, addBeforeList, addList);
 					}
-				}).build().ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + MESSAGE_SEARCH_METHOD, param));
+				}).build().ignoreDialog(true).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.MESSAGE_SEARCH_METHOD, param));
 			}
 		} else {
 			finishDetail(activity, adapter, addBeforeList, addList);
