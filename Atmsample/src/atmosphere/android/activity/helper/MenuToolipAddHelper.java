@@ -21,7 +21,17 @@ import atmosphere.android.util.Tooltip;
 public class MenuToolipAddHelper {
 
 	private enum Menu {
-		AddToUser, ;
+		AddToUsers("Add to Users"), ;
+
+		private String value;
+
+		private Menu(String value) {
+			this.value = value;
+		}
+
+		private String getValue() {
+			return value;
+		}
 	}
 
 	public static Tooltip createAddMenuTooltip(final Activity activity, final TextView textView) {
@@ -31,7 +41,7 @@ public class MenuToolipAddHelper {
 		ListView listView = (ListView) view.findViewById(R.id.ListView);
 
 		List<String> menuList = new ArrayList<String>();
-		menuList.add(Menu.AddToUser.name());
+		menuList.add(Menu.AddToUsers.getValue());
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(activity, R.layout.simple_text, menuList);
 		listView.setAdapter(adapter);
@@ -40,7 +50,7 @@ public class MenuToolipAddHelper {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				tooltip.dismiss();
-				if (position == Menu.AddToUser.ordinal()) {
+				if (position == Menu.AddToUsers.ordinal()) {
 					createAddUsersList(activity, textView);
 				}
 			}
@@ -69,9 +79,9 @@ public class MenuToolipAddHelper {
 				StringBuilder sb = new StringBuilder();
 				for (int i = 0; i < flags.length; i++) {
 					if (flags[i]) {
-						sb.append(AtmosConstant.AT_MARK);
+						sb.append(AtmosConstant.MENTION_START_MARK);
 						sb.append(users[i]);
-						sb.append(AtmosConstant.SPACE);
+						sb.append(AtmosConstant.MENTION_END_MARK);
 					}
 				}
 				textView.setText((text + sb.toString()));

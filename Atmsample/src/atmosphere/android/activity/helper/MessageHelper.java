@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.widget.BaseAdapter;
@@ -27,6 +28,7 @@ import atmosphere.android.dto.ResponseRequest;
 import atmosphere.android.dto.ResponseResult;
 import atmosphere.android.dto.SendMessageRequest;
 import atmosphere.android.dto.SendMessageResult;
+import atmosphere.android.dto.SendPrivateMessageRequest;
 import atmosphere.android.dto.SerchRequest;
 import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.internet.JsonPath;
@@ -98,22 +100,53 @@ public class MessageHelper {
 		}
 	}
 
-	public static void sendMessage(final SendMessageRequest param, final Activity activity, final MessageBaseAdapter adapter, final String targetMethod) {
+	public static void sendMessage(final Activity activity, final SendMessageRequest param) {
+		sendMessage(activity, param, null, null);
+	}
+
+	public static void sendMessage(final Activity activity, final SendMessageRequest param, final MessageBaseAdapter adapter, final String targetMethod) {
 		new AtmosTask.Builder<SendMessageResult>(activity, SendMessageResult.class, RequestMethod.POST).progressMessage("Sending").resultHandler(new ResultHandler<SendMessageResult>() {
 			@Override
 			public void handleResult(List<SendMessageResult> results) {
 				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
-					getSendMessageEditText(activity).setText(AtmosConstant.BLANK);
-					getDrawer(activity).closeDrawers();
-					futureTask(activity, adapter, targetMethod);
+					getSendMessageEditText(activity).setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
+					getDrawer(activity).closeDrawer(GravityCompat.START);
+					if (adapter != null && targetMethod != null) {
+						futureTask(activity, adapter, targetMethod);
+					}
 				}
 			}
 		}).loginHandler(new LoginResultHandler() {
 			@Override
 			public void handleResult() {
-				sendMessage(param, activity, adapter, targetMethod);
+				sendMessage(activity, param, adapter, targetMethod);
 			}
 		}).build().execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.SEND_MESSAGE_METHOD, param));
+	}
+
+	public static void sendPrivateMessage(final Activity activity, final SendPrivateMessageRequest param) {
+		sendPrivateMessage(activity, param, null, null);
+	}
+
+	public static void sendPrivateMessage(final Activity activity, final SendPrivateMessageRequest param, final MessageBaseAdapter adapter, final String targetMethod) {
+		new AtmosTask.Builder<SendMessageResult>(activity, SendMessageResult.class, RequestMethod.POST).progressMessage("Sending").resultHandler(new ResultHandler<SendMessageResult>() {
+			@Override
+			public void handleResult(List<SendMessageResult> results) {
+				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
+					getSendPrivateMessageEditText(activity).setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
+					getSendPrivateToUserEditText(activity).setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
+					getDrawer(activity).closeDrawer(GravityCompat.END);
+					if (adapter != null && targetMethod != null) {
+						futureTask(activity, adapter, targetMethod);
+					}
+				}
+			}
+		}).loginHandler(new LoginResultHandler() {
+			@Override
+			public void handleResult() {
+				sendPrivateMessage(activity, param, adapter, targetMethod);
+			}
+		}).build().execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.SEND_PRIVATE_MESSAGE_METHOD, param));
 	}
 
 	public static void sendResponse(final Activity activity, final MessageDto item, final AtmosAction action, final BaseAdapter adapter) {
@@ -271,6 +304,14 @@ public class MessageHelper {
 
 	protected static EditText getSendMessageEditText(Activity activity) {
 		return (EditText) activity.findViewById(R.id.SendMessageEditText);
+	}
+
+	protected static EditText getSendPrivateMessageEditText(Activity activity) {
+		return (EditText) activity.findViewById(R.id.SendPrivateMessageEditText);
+	}
+
+	protected static EditText getSendPrivateToUserEditText(Activity activity) {
+		return (EditText) activity.findViewById(R.id.SendPrivateToUserEditText);
 	}
 
 	protected static ProgressBar getBaseProgressBar(Activity activity) {

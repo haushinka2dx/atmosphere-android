@@ -170,17 +170,17 @@ public class ResponseTooltipHelper {
 
 				StringBuilder sb = new StringBuilder();
 				if (!createUser.equals(AtmosPreferenceManager.getUserId(activity))) {
-					sb.append(AtmosConstant.AT_MARK);
+					sb.append(AtmosConstant.MENTION_START_MARK);
 					sb.append(createUser);
-					sb.append(AtmosConstant.SPACE);
+					sb.append(AtmosConstant.MENTION_END_MARK);
 				}
 
 				if (item.addresses != null && item.addresses.users != null && !item.addresses.users.isEmpty()) {
 					for (String replyUser : item.addresses.users) {
 						if (!replyUser.equals(userId) && !replyUser.equals(createUser)) {
-							sb.append(AtmosConstant.AT_MARK);
+							sb.append(AtmosConstant.MENTION_START_MARK);
 							sb.append(replyUser);
-							sb.append(AtmosConstant.SPACE);
+							sb.append(AtmosConstant.MENTION_END_MARK);
 						}
 					}
 				}
@@ -197,7 +197,7 @@ public class ResponseTooltipHelper {
 						String message = getSendMessageEditText(activity).getText().toString();
 						param.message = message;
 						if (message != null && message.length() != 0) {
-							MessageHelper.sendMessage(param, activity, adapter, targetMethod);
+							MessageHelper.sendMessage(activity, param, adapter, targetMethod);
 						}
 					}
 				});

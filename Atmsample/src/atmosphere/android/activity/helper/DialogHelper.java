@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.LoginRequest;
 import atmosphere.android.dto.LoginResult;
@@ -56,7 +55,7 @@ public class DialogHelper {
 				if (isSave) {
 					AtmosPreferenceManager.setPassword(context, param.password);
 				} else {
-					AtmosPreferenceManager.setPassword(context, AtmosConstant.BLANK);
+					AtmosPreferenceManager.setPassword(context, "");
 				}
 
 				new AtmosTask.Builder<LoginResult>(context, LoginResult.class, RequestMethod.POST).resultHandler(resultHandler).build()

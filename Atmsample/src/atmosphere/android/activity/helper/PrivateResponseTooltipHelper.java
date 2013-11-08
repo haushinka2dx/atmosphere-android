@@ -10,7 +10,7 @@ import android.widget.EditText;
 import atmosphere.android.activity.view.MessageBaseAdapter;
 import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.dto.MessageDto;
-import atmosphere.android.dto.SendMessageRequest;
+import atmosphere.android.dto.SendPrivateMessageRequest;
 import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.Tooltip;
 
@@ -25,17 +25,17 @@ public class PrivateResponseTooltipHelper extends ResponseTooltipHelper {
 
 				StringBuilder sb = new StringBuilder();
 				if (!createUser.equals(AtmosPreferenceManager.getUserId(activity))) {
-					sb.append(AtmosConstant.AT_MARK);
+					sb.append(AtmosConstant.MENTION_START_MARK);
 					sb.append(createUser);
-					sb.append(AtmosConstant.SPACE);
+					sb.append(AtmosConstant.MENTION_END_MARK);
 				}
 
 				if (item.to_user_id != null && !item.to_user_id.isEmpty()) {
 					for (String replyUser : item.to_user_id) {
 						if (!replyUser.equals(userId) && !replyUser.equals(createUser)) {
-							sb.append(AtmosConstant.AT_MARK);
+							sb.append(AtmosConstant.MENTION_START_MARK);
 							sb.append(replyUser);
-							sb.append(AtmosConstant.SPACE);
+							sb.append(AtmosConstant.MENTION_END_MARK);
 						}
 					}
 				}
@@ -46,12 +46,14 @@ public class PrivateResponseTooltipHelper extends ResponseTooltipHelper {
 				getSubmitPrivateButton(activity).setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						SendMessageRequest param = new SendMessageRequest();
+						SendPrivateMessageRequest param = new SendPrivateMessageRequest();
 						param.reply_to = item._id;
-						String message = getSendMessageEditText(activity).getText().toString();
+						String message = getSendPrivateMessageEditText(activity).getText().toString();
 						param.message = message;
+						param.to_user_id = getSendPrivateToUserEditText(activity).getText().toString();
+
 						if (message != null && message.length() != 0) {
-							MessageHelper.sendMessage(param, activity, adapter, targetMethod);
+							MessageHelper.sendPrivateMessage(activity, param, adapter, targetMethod);
 						}
 					}
 				});

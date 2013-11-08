@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.dto.MessageDto;
 
 public class PrivateViewHelper {
@@ -13,11 +12,11 @@ public class PrivateViewHelper {
 		StringBuilder sb = new StringBuilder();
 		if (data.to_user_id != null) {
 			int count = 0;
-			String sep = AtmosConstant.BLANK;
+			String sep = "";
 			for (String toUser : data.to_user_id) {
 				sb.append(sep);
 				sb.append(toUser);
-				sep = AtmosConstant.SPACE;
+				sep = " ";
 				count += (toUser.length() + 1);
 				if (24 < count) {
 					break;

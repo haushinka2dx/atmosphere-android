@@ -4,8 +4,7 @@ public final class AtmosConstant {
 	private AtmosConstant() {
 	}
 
-	public static final String AT_MARK = "@";
-	public static final String SPACE = " ";
-	public static final String COMMA = ",";
-	public static final String BLANK = "";
+	public static final String MENTION_START_MARK = "@";
+	public static final String MENTION_END_MARK = " ";
+	public static final String SEND_MESSAGE_CLEAR_TEXT = "";
 }
