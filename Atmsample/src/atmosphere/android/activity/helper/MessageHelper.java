@@ -109,7 +109,7 @@ public class MessageHelper {
 			@Override
 			public void handleResult(List<SendMessageResult> results) {
 				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
-					getSendMessageEditText(activity).setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
+					getSendMessageEditText(activity).setText(AtmosConstant.MESSAGE_CLEAR_TEXT);
 					getDrawer(activity).closeDrawer(GravityCompat.START);
 					if (adapter != null && targetMethod != null) {
 						futureTask(activity, adapter, targetMethod);
@@ -133,8 +133,8 @@ public class MessageHelper {
 			@Override
 			public void handleResult(List<SendMessageResult> results) {
 				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
-					getSendPrivateMessageEditText(activity).setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
-					getSendPrivateToUserEditText(activity).setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
+					getSendPrivateMessageEditText(activity).setText(AtmosConstant.MESSAGE_CLEAR_TEXT);
+					getSendPrivateToUserEditText(activity).setText(AtmosConstant.MESSAGE_CLEAR_TEXT);
 					getDrawer(activity).closeDrawer(GravityCompat.END);
 					if (adapter != null && targetMethod != null) {
 						futureTask(activity, adapter, targetMethod);

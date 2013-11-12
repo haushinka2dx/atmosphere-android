@@ -6,5 +6,5 @@ public final class AtmosConstant {
 
 	public static final String MENTION_START_MARK = "@";
 	public static final String MENTION_END_MARK = " ";
-	public static final String SEND_MESSAGE_CLEAR_TEXT = "";
+	public static final String MESSAGE_CLEAR_TEXT = "";
 }
