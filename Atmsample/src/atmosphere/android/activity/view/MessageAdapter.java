@@ -2,34 +2,32 @@ package atmosphere.android.activity.view;
 
 import interprism.atmosphere.android.R;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import atmosphere.android.activity.helper.AvatarHelper;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.util.TimeUtil;
 
 public class MessageAdapter extends MessageBaseAdapter {
 
-	private Context context;
+	protected Activity activity;
 	private Map<String, Bitmap> imageCash;
 
-	public MessageAdapter(Context context, List<MessageDto> list) {
+	public MessageAdapter(Activity activity, List<MessageDto> list) {
 		super(list);
-		this.context = context;
+		this.activity = activity;
 		this.imageCash = new HashMap<String, Bitmap>();
 	}
 
@@ -44,7 +42,7 @@ public class MessageAdapter extends MessageBaseAdapter {
 		if (convertView != null) {
 			view = convertView;
 		} else {
-			LayoutInflater inflater = LayoutInflater.from(context);
+			LayoutInflater inflater = LayoutInflater.from(activity);
 			view = inflater.inflate(R.layout.messeges, parent, false);
 		}
 
@@ -69,53 +67,29 @@ public class MessageAdapter extends MessageBaseAdapter {
 		TextView messageTime = (TextView) view.findViewById(R.id.message_time);
 		messageTime.setText(TimeUtil.formatDateFromGMT(data.created_at));
 
-		ImageView avator = (ImageView) view.findViewById(R.id.user_avator);
+		ImageView avatar = (ImageView) view.findViewById(R.id.user_avatar);
+		AvatarHelper.setAvatar(view, data, imageCash, avatar);
 
-		if (imageCash.containsKey(data.created_by)) {
-			avator.setImageBitmap(imageCash.get(data.created_by));
-		} else {
-			final String urlString = BASE_URL + USER_AVATOR_METHOD + "?user_id=" + data.created_by;
-			new AsyncTask<Void, Void, Bitmap>() {
-
-				@Override
-				protected Bitmap doInBackground(Void... params) {
-					URL url = null;
-					InputStream istream = null;
-					Bitmap bitmap = null;
-					try {
-						url = new URL(urlString);
-						istream = url.openStream();
-						bitmap = BitmapFactory.decodeStream(istream);
-						istream.close();
-					} catch (MalformedURLException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					} finally {
-						if (istream != null) {
-							try {
-								istream.close();
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-					return bitmap;
-				}
-
-				protected void onPostExecute(Bitmap result) {
-					ImageView avator = (ImageView) view.findViewById(R.id.user_avator);
-					avator.setImageBitmap(result);
-					if (15 < imageCash.size()) {
-						imageCash.clear();
-					}
-					imageCash.put(data.created_by, result);
-				};
-
-			}.execute();
-		}
+		privateControl(view, data);
 
 		return view;
+	}
+
+	protected void privateControl(View view, MessageDto data) {
+		LinearLayout privateLayout = (LinearLayout) view.findViewById(R.id.private_to_user_layout);
+		privateLayout.setVisibility(View.GONE);
+	}
+
+	protected ListView getDetailListView(Activity activity) {
+		return (ListView) activity.findViewById(R.id.detail_message_list);
+	}
+
+	protected LinearLayout getDetailOverlay(Activity activity) {
+		return (LinearLayout) activity.findViewById(R.id.detail_message_list_overlay);
+	}
+
+	protected ViewPager getViewPager(Activity activity) {
+		return (ViewPager) activity.findViewById(R.id.ViewPager);
 	}
 
 }

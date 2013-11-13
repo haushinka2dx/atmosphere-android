@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.widget.BaseAdapter;
@@ -17,6 +18,7 @@ import atmosphere.android.activity.view.DetailMessageAdapter;
 import atmosphere.android.activity.view.MessageAdapter;
 import atmosphere.android.activity.view.MessageBaseAdapter;
 import atmosphere.android.constant.AtmosAction;
+import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.FutureThanRequest;
 import atmosphere.android.dto.MessageDto;
@@ -26,6 +28,7 @@ import atmosphere.android.dto.ResponseRequest;
 import atmosphere.android.dto.ResponseResult;
 import atmosphere.android.dto.SendMessageRequest;
 import atmosphere.android.dto.SendMessageResult;
+import atmosphere.android.dto.SendPrivateMessageRequest;
 import atmosphere.android.dto.SerchRequest;
 import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.internet.JsonPath;
@@ -34,7 +37,7 @@ import atmosphere.android.util.json.AtmosTask.LoginResultHandler;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
-public class MessageHelper implements AtmosUrl {
+public class MessageHelper {
 
 	public static void pastTask(final Activity activity, final MessageAdapter adapter, final String targetMethod, final PastThanRequest params, ProgressBar footerProgressBar, TextView footerTextView) {
 		pastTask(activity, adapter, targetMethod, params, true, footerProgressBar, footerTextView, null);
@@ -68,7 +71,7 @@ public class MessageHelper implements AtmosUrl {
 			public void handleResult() {
 				pastTask(activity, adapter, targetMethod, params, footerProgressBar, footerTextView);
 			}
-		}).build().ignoreDialog(ignoreDialog).execute(JsonPath.paramOf(BASE_URL + targetMethod, params));
+		}).build().ignoreDialog(ignoreDialog).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + targetMethod, params));
 	}
 
 	public static void futureTask(final Activity activity, final MessageBaseAdapter adapter, final String targetMethod) {
@@ -93,26 +96,57 @@ public class MessageHelper implements AtmosUrl {
 				public void handleResult() {
 					futureTask(activity, adapter, targetMethod);
 				}
-			}).build().ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + targetMethod, params));
+			}).build().ignoreDialog(true).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + targetMethod, params));
 		}
 	}
 
-	public static void sendMessage(final SendMessageRequest param, final Activity activity, final MessageBaseAdapter adapter, final String targetMethod) {
+	public static void sendMessage(final Activity activity, final SendMessageRequest param) {
+		sendMessage(activity, param, null, null);
+	}
+
+	public static void sendMessage(final Activity activity, final SendMessageRequest param, final MessageBaseAdapter adapter, final String targetMethod) {
 		new AtmosTask.Builder<SendMessageResult>(activity, SendMessageResult.class, RequestMethod.POST).progressMessage("Sending").resultHandler(new ResultHandler<SendMessageResult>() {
 			@Override
 			public void handleResult(List<SendMessageResult> results) {
 				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
-					getSendMessageEditText(activity).setText("");
-					getDrawer(activity).closeDrawers();
-					futureTask(activity, adapter, targetMethod);
+					getSendMessageEditText(activity).setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
+					getDrawer(activity).closeDrawer(GravityCompat.START);
+					if (adapter != null && targetMethod != null) {
+						futureTask(activity, adapter, targetMethod);
+					}
 				}
 			}
 		}).loginHandler(new LoginResultHandler() {
 			@Override
 			public void handleResult() {
-				sendMessage(param, activity, adapter, targetMethod);
+				sendMessage(activity, param, adapter, targetMethod);
 			}
-		}).build().execute(JsonPath.paramOf(BASE_URL + SEND_MESSAGE_METHOD, param));
+		}).build().execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.SEND_MESSAGE_METHOD, param));
+	}
+
+	public static void sendPrivateMessage(final Activity activity, final SendPrivateMessageRequest param) {
+		sendPrivateMessage(activity, param, null, null);
+	}
+
+	public static void sendPrivateMessage(final Activity activity, final SendPrivateMessageRequest param, final MessageBaseAdapter adapter, final String targetMethod) {
+		new AtmosTask.Builder<SendMessageResult>(activity, SendMessageResult.class, RequestMethod.POST).progressMessage("Sending").resultHandler(new ResultHandler<SendMessageResult>() {
+			@Override
+			public void handleResult(List<SendMessageResult> results) {
+				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
+					getSendPrivateMessageEditText(activity).setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
+					getSendPrivateToUserEditText(activity).setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
+					getDrawer(activity).closeDrawer(GravityCompat.END);
+					if (adapter != null && targetMethod != null) {
+						futureTask(activity, adapter, targetMethod);
+					}
+				}
+			}
+		}).loginHandler(new LoginResultHandler() {
+			@Override
+			public void handleResult() {
+				sendPrivateMessage(activity, param, adapter, targetMethod);
+			}
+		}).build().execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.SEND_PRIVATE_MESSAGE_METHOD, param));
 	}
 
 	public static void sendResponse(final Activity activity, final MessageDto item, final AtmosAction action, final BaseAdapter adapter) {
@@ -136,7 +170,7 @@ public class MessageHelper implements AtmosUrl {
 					adapter.notifyDataSetChanged();
 				}
 			}
-		}).build().execute(JsonPath.paramOf(BASE_URL + SEND_RESPONSE_METHOD, response));
+		}).build().execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.SEND_RESPONSE_METHOD, response));
 	}
 
 	public static void serchMessage(final Activity activity, final String replyId, final DetailMessageAdapter adapter, final String messageId, final List<MessageDto> orgList) {
@@ -190,7 +224,7 @@ public class MessageHelper implements AtmosUrl {
 					public void handleResult() {
 						serchMessage(activity, replyId, adapter, messageId, orgList, addBeforeList);
 					}
-				}).build().ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + MESSAGE_SEARCH_METHOD, param));
+				}).build().ignoreDialog(true).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.MESSAGE_SEARCH_METHOD, param));
 			}
 		} else {
 			serchReplyMessage(activity, messageId, adapter, orgList, addBeforeList);
@@ -247,7 +281,7 @@ public class MessageHelper implements AtmosUrl {
 					public void handleResult() {
 						serchReplyMessage(activity, messageId, adapter, orgList, addBeforeList, addList);
 					}
-				}).build().ignoreDialog(true).execute(JsonPath.paramOf(BASE_URL + MESSAGE_SEARCH_METHOD, param));
+				}).build().ignoreDialog(true).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.MESSAGE_SEARCH_METHOD, param));
 			}
 		} else {
 			finishDetail(activity, adapter, addBeforeList, addList);
@@ -270,6 +304,14 @@ public class MessageHelper implements AtmosUrl {
 
 	protected static EditText getSendMessageEditText(Activity activity) {
 		return (EditText) activity.findViewById(R.id.SendMessageEditText);
+	}
+
+	protected static EditText getSendPrivateMessageEditText(Activity activity) {
+		return (EditText) activity.findViewById(R.id.SendPrivateMessageEditText);
+	}
+
+	protected static EditText getSendPrivateToUserEditText(Activity activity) {
+		return (EditText) activity.findViewById(R.id.SendPrivateToUserEditText);
 	}
 
 	protected static ProgressBar getBaseProgressBar(Activity activity) {

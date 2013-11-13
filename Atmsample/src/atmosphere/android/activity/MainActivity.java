@@ -4,11 +4,13 @@ import interprism.atmosphere.android.R;
 
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -22,20 +24,30 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-import atmosphere.android.activity.helper.MessageListHelper;
+import atmosphere.android.activity.helper.MenuToolipAddHelper;
+import atmosphere.android.activity.helper.MessageHelper;
+import atmosphere.android.activity.view.MessagePagerAdapter;
+import atmosphere.android.activity.view.fragment.GlobalTimeLineFragment;
+import atmosphere.android.activity.view.fragment.PrivateTimeLineFragment;
+import atmosphere.android.activity.view.fragment.TalkTimeLineFragment;
+import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.SendMessageRequest;
-import atmosphere.android.dto.SendMessageResult;
-import atmosphere.android.dto.WhoAmIResult;
+import atmosphere.android.dto.SendPrivateMessageRequest;
+import atmosphere.android.dto.UserListResult;
 import atmosphere.android.manager.AtmosPreferenceManager;
+import atmosphere.android.util.Tooltip;
 import atmosphere.android.util.internet.JsonPath;
 import atmosphere.android.util.json.AtmosTask;
 import atmosphere.android.util.json.AtmosTask.LoginResultHandler;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
-public class MainActivity extends FragmentActivity implements AtmosUrl {
+public class MainActivity extends FragmentActivity {
 
 	private ActionBarDrawerToggle drawerToggle;
 
@@ -43,26 +55,28 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		final Activity activity = this;
 
-		final FragmentActivity activity = this;
-		new AtmosTask.Builder<WhoAmIResult>(this, WhoAmIResult.class, RequestMethod.GET).resultHandler(new ResultHandler<WhoAmIResult>() {
+		new AtmosTask.Builder<UserListResult>(this, UserListResult.class, RequestMethod.GET).resultHandler(new ResultHandler<UserListResult>() {
 			@Override
-			public void handleResult(List<WhoAmIResult> results) {
+			public void handleResult(List<UserListResult> results) {
 				if (results != null && !results.isEmpty()) {
-					MessageListHelper.initialize(activity, getViewPager(), getPagerTabStrip());
+					AtmosPreferenceManager.setUserList(activity, results.get(0));
+					messagesInitialize();
 				}
 			}
 		}).loginHandler(new LoginResultHandler() {
 			@Override
 			public void handleResult() {
-				MessageListHelper.initialize(activity, getViewPager(), getPagerTabStrip());
+				messagesInitialize();
 			}
-		}).build().execute(JsonPath.paramOf(BASE_URL + USER_WHO_AM_I_METHOD, null));
+		}).build().ignoreDialog(true).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.USER_LIST_METHOD, null));
 
 		drawerToggle = new ActionBarDrawerToggle(this, getDrawer(), R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
 			@Override
 			public void onDrawerClosed(View drawerView) {
-				initSubmitButton();
+				initSubmitButton(activity);
+				initSubmitPrivateButton(activity);
 				Log.i("MainActivity", "onDrawerClosed");
 			}
 
@@ -98,11 +112,50 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setHomeButtonEnabled(true);
 
-		initSubmitButton();
+		getGlobalReplyShowView().setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getDrawer().openDrawer(GravityCompat.START);
+			}
+		});
+
+		getPrivateReplyShowView().setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getDrawer().openDrawer(GravityCompat.END);
+			}
+		});
+
+		if (AtmosPreferenceManager.getViewTheme(this) == 1) {
+			getReplyButtonLayout().setVisibility(View.VISIBLE);
+		} else {
+			getReplyButtonLayout().setVisibility(View.GONE);
+		}
+
+		final ImageButton addButton = getAddButton();
+		addButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Tooltip tooltip = MenuToolipAddHelper.createAddMenuTooltip(activity, getSendMessageEditText());
+				tooltip.showBottom(addButton);
+			}
+		});
+
+		final ImageButton privateAddButton = getPrivateAddButton();
+		privateAddButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Tooltip tooltip = MenuToolipAddHelper.createAddMenuTooltip(activity, getSendPrivateToUserEditText());
+				tooltip.showBottom(privateAddButton);
+			}
+		});
+
+		initSubmitButton(activity);
+		initSubmitPrivateButton(activity);
 	}
 
-	private void initSubmitButton() {
-		getSendMessageEditText().setText("");
+	private void initSubmitButton(final Activity activity) {
+		getSendMessageEditText().setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
 		Button submitButton = getSubmitButton();
 		submitButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -111,35 +164,47 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 				String message = getSendMessageEditText().getText().toString();
 				param.message = message;
 				if (message != null && message.length() != 0) {
-					sendMessage(param);
+					MessageHelper.sendMessage(activity, param);
 				}
 			}
 		});
 	}
 
-	private void sendMessage(SendMessageRequest param) {
-		new AtmosTask.Builder<SendMessageResult>(this, SendMessageResult.class, RequestMethod.POST).progressMessage("Sending").resultHandler(new ResultHandler<SendMessageResult>() {
+	private void messagesInitialize() {
+		ViewPager pager = getViewPager();
+		MessagePagerAdapter adapter = new MessagePagerAdapter(this, pager);
+
+		adapter.addTab(GlobalTimeLineFragment.class, R.string.global_timeline_title);
+		adapter.addTab(TalkTimeLineFragment.class, R.string.talk_timeline_title);
+		adapter.addTab(PrivateTimeLineFragment.class, R.string.private_timeline_title);
+
+		pager.setAdapter(adapter);
+	}
+
+	private void initSubmitPrivateButton(final Activity activity) {
+		getSendPrivateMessageEditText().setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
+		getSendPrivateToUserEditText().setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
+
+		Button submitPrivateButton = getSubmitPrivateButton();
+		submitPrivateButton.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void handleResult(List<SendMessageResult> results) {
-				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
-					getSendMessageEditText().setText("");
-					getDrawer().closeDrawers();
+			public void onClick(View v) {
+				SendPrivateMessageRequest param = new SendPrivateMessageRequest();
+				String message = getSendPrivateMessageEditText().getText().toString();
+				param.message = message;
+				param.to_user_id = getSendPrivateToUserEditText().getText().toString();
+				if (message != null && message.length() != 0) {
+					MessageHelper.sendPrivateMessage(activity, param);
 				}
 			}
-		}).loginHandler(new LoginResultHandler() {
-			@Override
-			public void handleResult() {
-				getSendMessageEditText().setText("");
-				getDrawer().closeDrawers();
-			}
-		}).build().ignoreDialog(false).execute(JsonPath.paramOf(BASE_URL + SEND_MESSAGE_METHOD, param));
+		});
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
-		menu.add(Menu.NONE, 0, Menu.NONE, "Defalt");
+		menu.add(Menu.NONE, 0, Menu.NONE, "Default");
 		menu.add(Menu.NONE, 1, Menu.NONE, "Hirano View");
 		return true;
 	}
@@ -200,12 +265,44 @@ public class MainActivity extends FragmentActivity implements AtmosUrl {
 		return (DrawerLayout) findViewById(R.id.Drawer);
 	}
 
+	protected LinearLayout getReplyButtonLayout() {
+		return (LinearLayout) findViewById(R.id.reply_button_layout);
+	}
+
+	protected ImageView getGlobalReplyShowView() {
+		return (ImageView) findViewById(R.id.global_reply_button);
+	}
+
+	protected ImageView getPrivateReplyShowView() {
+		return (ImageView) findViewById(R.id.private_reply_button);
+	}
+
 	protected EditText getSendMessageEditText() {
 		return (EditText) findViewById(R.id.SendMessageEditText);
 	}
 
 	protected Button getSubmitButton() {
 		return (Button) findViewById(R.id.SubmitButton);
+	}
+
+	protected ImageButton getAddButton() {
+		return (ImageButton) findViewById(R.id.AddButton);
+	}
+
+	protected EditText getSendPrivateMessageEditText() {
+		return (EditText) findViewById(R.id.SendPrivateMessageEditText);
+	}
+
+	protected EditText getSendPrivateToUserEditText() {
+		return (EditText) findViewById(R.id.SendPrivateToUserEditText);
+	}
+
+	protected Button getSubmitPrivateButton() {
+		return (Button) findViewById(R.id.SubmitPrivateButton);
+	}
+
+	protected ImageButton getPrivateAddButton() {
+		return (ImageButton) findViewById(R.id.PrivateAddButton);
 	}
 
 	protected ListView getDetailListView() {

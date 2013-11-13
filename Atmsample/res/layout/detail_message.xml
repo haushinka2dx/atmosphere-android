@@ -10,7 +10,7 @@
         android:orientation="horizontal" >
 
         <ImageView
-            android:id="@+id/detail_user_avator"
+            android:id="@+id/detail_user_avatar"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="4dp"
@@ -44,6 +44,39 @@
                     android:gravity="right"
                     android:text="@string/message_time"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/private_detail_to_user_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="right"
+                android:orientation="horizontal"
+                android:visibility="gone" >
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@string/email"
+                    android:src="@drawable/email" />
+
+                <TextView
+                    android:id="@+id/detail_to_user_id_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:gravity="center"
+                    android:maxLength="25"
+                    android:text="@string/user_name"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                <TextView
+                    android:id="@+id/detail_point_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:gravity="center"
+                    android:text="@string/point"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <LinearLayout

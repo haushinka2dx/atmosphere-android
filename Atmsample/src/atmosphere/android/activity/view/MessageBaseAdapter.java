@@ -5,10 +5,9 @@ import java.util.List;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.MessageDto;
 
-public abstract class MessageBaseAdapter extends BaseAdapter implements AtmosUrl {
+public abstract class MessageBaseAdapter extends BaseAdapter {
 	protected List<MessageDto> list;
 
 	public MessageBaseAdapter(List<MessageDto> list) {

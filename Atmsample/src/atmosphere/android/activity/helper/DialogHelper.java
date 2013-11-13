@@ -1,8 +1,14 @@
 package atmosphere.android.activity.helper;
 
 import interprism.atmosphere.android.R;
+
+import java.util.List;
+
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -17,7 +23,7 @@ import atmosphere.android.util.json.AtmosTask;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
-public class DialogHelper implements AtmosUrl {
+public class DialogHelper {
 	public static Dialog createLoginDialog(final Context context, final Dialog dialog, int titleResId, final ResultHandler<LoginResult> resultHandler) {
 		dialog.setCancelable(false);
 		dialog.setTitle(titleResId);
@@ -52,7 +58,8 @@ public class DialogHelper implements AtmosUrl {
 					AtmosPreferenceManager.setPassword(context, "");
 				}
 
-				new AtmosTask.Builder<LoginResult>(context, LoginResult.class, RequestMethod.POST).resultHandler(resultHandler).build().execute(JsonPath.paramOf(BASE_URL + LOGIN_METHOD, param));
+				new AtmosTask.Builder<LoginResult>(context, LoginResult.class, RequestMethod.POST).resultHandler(resultHandler).build()
+						.execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.LOGIN_METHOD, param));
 			}
 		});
 
@@ -67,5 +74,33 @@ public class DialogHelper implements AtmosUrl {
 		dialog.setContentView(view);
 
 		return dialog;
+	}
+
+	public static void showResponseDialog(Activity activity, String title, String message, DialogInterface.OnClickListener postListener) {
+		AlertDialog.Builder dialog = new AlertDialog.Builder(activity).setTitle(title).setMessage(message).setPositiveButton("OK", postListener)
+				.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+					}
+				});
+		dialog.show();
+	}
+
+	public static void showStringListDialog(Activity activity, List<String> list) {
+		if (list != null && !list.isEmpty()) {
+
+			String[] items = new String[list.size()];
+			for (int i = 0; i < list.size(); i++) {
+				items[i] = list.get(i);
+			}
+
+			new AlertDialog.Builder(activity).setTitle("To Users").setItems(items, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+
+				}
+			}).show();
+		}
 	}
 }

@@ -5,6 +5,7 @@ import interprism.atmosphere.android.R;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import atmosphere.android.activity.view.MessageBaseAdapter;
 import atmosphere.android.constant.AtmosAction;
+import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.DestroyRequest;
 import atmosphere.android.dto.MessageDto;
@@ -28,11 +30,11 @@ import atmosphere.android.util.json.AtmosTask;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
-public class ResponseTooltipHelper implements AtmosUrl {
+public class ResponseTooltipHelper {
 
-	public static Tooltip createResponseTooltip(final Activity activity, View view, final int position, final MessageBaseAdapter adapter, final MessageDto item, final String targetMethod) {
+	public Tooltip createResponseTooltip(final Activity activity, final int position, final MessageBaseAdapter adapter, final MessageDto item, final String targetMethod) {
 		final Tooltip tooltip;
-		String userId = AtmosPreferenceManager.getUserId(activity);
+		final String userId = AtmosPreferenceManager.getUserId(activity);
 		if (item.created_by.equals(userId)) {
 			View tooltipView = LayoutInflater.from(activity).inflate(R.layout.reply_to_mine, null);
 			tooltip = new Tooltip(activity, tooltipView);
@@ -41,44 +43,28 @@ public class ResponseTooltipHelper implements AtmosUrl {
 			deleteButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					DestroyRequest param = new DestroyRequest();
-					param._id = item._id;
-					new AtmosTask.Builder<ResponseResult>(activity, ResponseResult.class, RequestMethod.POST).resultHandler(new ResultHandler<ResponseResult>() {
+					DialogHelper.showResponseDialog(activity, "Delete This Message?", item.message, new DialogInterface.OnClickListener() {
 						@Override
-						public void handleResult(List<ResponseResult> results) {
-							if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
-								adapter.removeItem(position);
-								adapter.notifyDataSetChanged();
-							}
-						}
-					}).build().execute(JsonPath.paramOf(BASE_URL + SEND_DESTORY_METHOD, param));
-					tooltip.dismiss();
-				}
-			});
-
-			ImageButton replayButton = (ImageButton) tooltipView.findViewById(R.id.reply_to_mine_image_button);
-			replayButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					getDrawer(activity).openDrawer(GravityCompat.START);
-					getSendMessageEditText(activity).setText("@" + item.created_by + " ");
-					getSendMessageEditText(activity).setSelection(item.created_by.length() + 2);
-
-					getSubmitButton(activity).setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							SendMessageRequest param = new SendMessageRequest();
-							param.reply_to = item._id;
-							String message = getSendMessageEditText(activity).getText().toString();
-							param.message = message;
-							if (message != null && message.length() != 0) {
-								MessageHelper.sendMessage(param, activity, adapter, targetMethod);
-							}
+						public void onClick(DialogInterface dialog, int which) {
+							DestroyRequest param = new DestroyRequest();
+							param._id = item._id;
+							new AtmosTask.Builder<ResponseResult>(activity, ResponseResult.class, RequestMethod.POST).resultHandler(new ResultHandler<ResponseResult>() {
+								@Override
+								public void handleResult(List<ResponseResult> results) {
+									if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
+										adapter.removeItem(position);
+										adapter.notifyDataSetChanged();
+									}
+								}
+							}).build().execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.SEND_DESTORY_METHOD, param));
 						}
 					});
 					tooltip.dismiss();
 				}
 			});
+
+			ImageButton replyButton = (ImageButton) tooltipView.findViewById(R.id.reply_to_mine_image_button);
+			replyButton.setOnClickListener(createReplyListener(activity, userId, adapter, item, targetMethod, tooltip));
 
 		} else {
 			View tooltipView = LayoutInflater.from(activity).inflate(R.layout.reply_to_others, null);
@@ -95,7 +81,12 @@ public class ResponseTooltipHelper implements AtmosUrl {
 				funButton.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						MessageHelper.sendResponse(activity, item, AtmosAction.FUN, adapter);
+						DialogHelper.showResponseDialog(activity, "Are you sure to response 'fun' ?", item.message, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								MessageHelper.sendResponse(activity, item, AtmosAction.FUN, adapter);
+							}
+						});
 						tooltip.dismiss();
 					}
 				});
@@ -111,7 +102,12 @@ public class ResponseTooltipHelper implements AtmosUrl {
 				goodButton.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						MessageHelper.sendResponse(activity, item, AtmosAction.GOOD, adapter);
+						DialogHelper.showResponseDialog(activity, "Are you sure to response 'good' ?", item.message, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								MessageHelper.sendResponse(activity, item, AtmosAction.GOOD, adapter);
+							}
+						});
 						tooltip.dismiss();
 					}
 				});
@@ -127,7 +123,12 @@ public class ResponseTooltipHelper implements AtmosUrl {
 				memoButton.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						MessageHelper.sendResponse(activity, item, AtmosAction.MEMO, adapter);
+						DialogHelper.showResponseDialog(activity, "Are you sure to response 'memo' ?", item.message, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								MessageHelper.sendResponse(activity, item, AtmosAction.MEMO, adapter);
+							}
+						});
 						tooltip.dismiss();
 					}
 				});
@@ -143,48 +144,77 @@ public class ResponseTooltipHelper implements AtmosUrl {
 				usefullButton.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						MessageHelper.sendResponse(activity, item, AtmosAction.USE_FULL, adapter);
+						DialogHelper.showResponseDialog(activity, "Are you sure to response 'usefull' ?", item.message, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								MessageHelper.sendResponse(activity, item, AtmosAction.USE_FULL, adapter);
+							}
+						});
 						tooltip.dismiss();
 					}
 				});
 			}
 
-			ImageButton replayButton = (ImageButton) tooltipView.findViewById(R.id.reply_to_other_image_button);
-			replayButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					getDrawer(activity).openDrawer(GravityCompat.START);
-					getSendMessageEditText(activity).setText("@" + item.created_by + " ");
-					getSendMessageEditText(activity).setSelection(item.created_by.length() + 2);
-
-					getSubmitButton(activity).setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							SendMessageRequest param = new SendMessageRequest();
-							param.reply_to = item._id;
-							String message = getSendMessageEditText(activity).getText().toString();
-							param.message = message;
-							if (message != null && message.length() != 0) {
-								MessageHelper.sendMessage(param, activity, adapter, targetMethod);
-							}
-						}
-					});
-					tooltip.dismiss();
-				}
-			});
+			ImageButton replyButton = (ImageButton) tooltipView.findViewById(R.id.reply_to_other_image_button);
+			replyButton.setOnClickListener(createReplyListener(activity, userId, adapter, item, targetMethod, tooltip));
 		}
 		return tooltip;
 	}
 
-	protected static DrawerLayout getDrawer(Activity activity) {
+	protected View.OnClickListener createReplyListener(final Activity activity, final String userId, final MessageBaseAdapter adapter, final MessageDto item, final String targetMethod,
+			final Tooltip tooltip) {
+		return new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String createUser = item.created_by;
+
+				StringBuilder sb = new StringBuilder();
+				if (!createUser.equals(AtmosPreferenceManager.getUserId(activity))) {
+					sb.append(AtmosConstant.MENTION_START_MARK);
+					sb.append(createUser);
+					sb.append(AtmosConstant.MENTION_END_MARK);
+				}
+
+				if (item.addresses != null && item.addresses.users != null && !item.addresses.users.isEmpty()) {
+					for (String replyUser : item.addresses.users) {
+						if (!replyUser.equals(userId) && !replyUser.equals(createUser)) {
+							sb.append(AtmosConstant.MENTION_START_MARK);
+							sb.append(replyUser);
+							sb.append(AtmosConstant.MENTION_END_MARK);
+						}
+					}
+				}
+
+				getDrawer(activity).openDrawer(GravityCompat.START);
+				getSendMessageEditText(activity).setText(sb.toString());
+				getSendMessageEditText(activity).setSelection(sb.length());
+
+				getSubmitButton(activity).setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						SendMessageRequest param = new SendMessageRequest();
+						param.reply_to = item._id;
+						String message = getSendMessageEditText(activity).getText().toString();
+						param.message = message;
+						if (message != null && message.length() != 0) {
+							MessageHelper.sendMessage(activity, param, adapter, targetMethod);
+						}
+					}
+				});
+				tooltip.dismiss();
+			}
+		};
+	}
+
+	protected DrawerLayout getDrawer(Activity activity) {
 		return (DrawerLayout) activity.findViewById(R.id.Drawer);
 	}
 
-	protected static EditText getSendMessageEditText(Activity activity) {
+	protected EditText getSendMessageEditText(Activity activity) {
 		return (EditText) activity.findViewById(R.id.SendMessageEditText);
 	}
 
-	protected static Button getSubmitButton(Activity activity) {
+	protected Button getSubmitButton(Activity activity) {
 		return (Button) activity.findViewById(R.id.SubmitButton);
 	}
 
