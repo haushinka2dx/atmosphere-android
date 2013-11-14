@@ -6,7 +6,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,13 +15,11 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import atmosphere.android.activity.view.MessageBaseAdapter;
 import atmosphere.android.constant.AtmosAction;
-import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.DestroyRequest;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.dto.ResponseResult;
 import atmosphere.android.dto.ResponsesDto;
-import atmosphere.android.dto.SendMessageRequest;
 import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.Tooltip;
 import atmosphere.android.util.internet.JsonPath;
@@ -30,7 +27,7 @@ import atmosphere.android.util.json.AtmosTask;
 import atmosphere.android.util.json.AtmosTask.RequestMethod;
 import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
-public class ResponseTooltipHelper {
+class ResponseTooltipHelper {
 
 	public Tooltip createResponseTooltip(final Activity activity, final int position, final MessageBaseAdapter adapter, final MessageDto item, final String targetMethod) {
 		final Tooltip tooltip;
@@ -166,41 +163,6 @@ public class ResponseTooltipHelper {
 		return new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String createUser = item.created_by;
-
-				StringBuilder sb = new StringBuilder();
-				if (!createUser.equals(AtmosPreferenceManager.getUserId(activity))) {
-					sb.append(AtmosConstant.MENTION_START_MARK);
-					sb.append(createUser);
-					sb.append(AtmosConstant.MENTION_END_MARK);
-				}
-
-				if (item.addresses != null && item.addresses.users != null && !item.addresses.users.isEmpty()) {
-					for (String replyUser : item.addresses.users) {
-						if (!replyUser.equals(userId) && !replyUser.equals(createUser)) {
-							sb.append(AtmosConstant.MENTION_START_MARK);
-							sb.append(replyUser);
-							sb.append(AtmosConstant.MENTION_END_MARK);
-						}
-					}
-				}
-
-				getDrawer(activity).openDrawer(GravityCompat.START);
-				getSendMessageEditText(activity).setText(sb.toString());
-				getSendMessageEditText(activity).setSelection(sb.length());
-
-				getSubmitButton(activity).setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						SendMessageRequest param = new SendMessageRequest();
-						param.reply_to = item._id;
-						String message = getSendMessageEditText(activity).getText().toString();
-						param.message = message;
-						if (message != null && message.length() != 0) {
-							MessageHelper.sendMessage(activity, param, adapter, targetMethod);
-						}
-					}
-				});
 				tooltip.dismiss();
 			}
 		};

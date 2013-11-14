@@ -154,8 +154,19 @@ public class MainActivity extends FragmentActivity {
 		initSubmitPrivateButton(activity);
 	}
 
+	private void messagesInitialize() {
+		ViewPager pager = getViewPager();
+		MessagePagerAdapter adapter = new MessagePagerAdapter(this, pager);
+
+		adapter.addTab(GlobalTimeLineFragment.class, R.string.global_timeline_title);
+		adapter.addTab(TalkTimeLineFragment.class, R.string.talk_timeline_title);
+		adapter.addTab(PrivateTimeLineFragment.class, R.string.private_timeline_title);
+
+		pager.setAdapter(adapter);
+	}
+
 	private void initSubmitButton(final Activity activity) {
-		getSendMessageEditText().setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
+		getSendMessageEditText().setText(AtmosConstant.MESSAGE_CLEAR_TEXT);
 		Button submitButton = getSubmitButton();
 		submitButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -170,20 +181,9 @@ public class MainActivity extends FragmentActivity {
 		});
 	}
 
-	private void messagesInitialize() {
-		ViewPager pager = getViewPager();
-		MessagePagerAdapter adapter = new MessagePagerAdapter(this, pager);
-
-		adapter.addTab(GlobalTimeLineFragment.class, R.string.global_timeline_title);
-		adapter.addTab(TalkTimeLineFragment.class, R.string.talk_timeline_title);
-		adapter.addTab(PrivateTimeLineFragment.class, R.string.private_timeline_title);
-
-		pager.setAdapter(adapter);
-	}
-
 	private void initSubmitPrivateButton(final Activity activity) {
-		getSendPrivateMessageEditText().setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
-		getSendPrivateToUserEditText().setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
+		getSendPrivateMessageEditText().setText(AtmosConstant.MESSAGE_CLEAR_TEXT);
+		getSendPrivateToUserEditText().setText(AtmosConstant.MESSAGE_CLEAR_TEXT);
 
 		Button submitPrivateButton = getSubmitPrivateButton();
 		submitPrivateButton.setOnClickListener(new View.OnClickListener() {
@@ -265,18 +265,6 @@ public class MainActivity extends FragmentActivity {
 		return (DrawerLayout) findViewById(R.id.Drawer);
 	}
 
-	protected LinearLayout getReplyButtonLayout() {
-		return (LinearLayout) findViewById(R.id.reply_button_layout);
-	}
-
-	protected ImageView getGlobalReplyShowView() {
-		return (ImageView) findViewById(R.id.global_reply_button);
-	}
-
-	protected ImageView getPrivateReplyShowView() {
-		return (ImageView) findViewById(R.id.private_reply_button);
-	}
-
 	protected EditText getSendMessageEditText() {
 		return (EditText) findViewById(R.id.SendMessageEditText);
 	}
@@ -307,5 +295,17 @@ public class MainActivity extends FragmentActivity {
 
 	protected ListView getDetailListView() {
 		return (ListView) findViewById(R.id.detail_message_list);
+	}
+
+	protected LinearLayout getReplyButtonLayout() {
+		return (LinearLayout) findViewById(R.id.reply_button_layout);
+	}
+
+	protected ImageView getGlobalReplyShowView() {
+		return (ImageView) findViewById(R.id.global_reply_button);
+	}
+
+	protected ImageView getPrivateReplyShowView() {
+		return (ImageView) findViewById(R.id.private_reply_button);
 	}
 }

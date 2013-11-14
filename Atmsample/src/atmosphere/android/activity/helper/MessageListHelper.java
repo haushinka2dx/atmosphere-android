@@ -7,7 +7,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -30,20 +29,21 @@ import atmosphere.android.dto.PastThanRequest;
 import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.Tooltip;
 
-public class MessageListHelper {
+abstract class MessageListHelper {
 
 	protected Activity activity;
-	protected View view;
-	private LayoutInflater inflater;
 	protected String targetMethod;
-	protected MessageAdapter adapter;
 
-	public MessageListHelper(Activity activity, View view, LayoutInflater inflater, String targetMethod) {
+	private View view;
+	private LayoutInflater inflater;
+	private MessageAdapter adapter;
+
+	protected MessageListHelper(Activity activity, View view, LayoutInflater inflater, String targetMethod, MessageAdapter adapter) {
 		this.activity = activity;
 		this.view = view;
 		this.inflater = inflater;
 		this.targetMethod = targetMethod;
-		this.adapter = new MessageAdapter(activity, new ArrayList<MessageDto>());
+		this.adapter = adapter;
 	}
 
 	public View createListView() {
@@ -149,10 +149,6 @@ public class MessageListHelper {
 	protected Tooltip createTooltip(int position, MessageBaseAdapter detailAdapter, MessageDto detailTargetItem) {
 		ResponseTooltipHelper helper = new ResponseTooltipHelper();
 		return helper.createResponseTooltip(activity, position, detailAdapter, detailTargetItem, targetMethod);
-	}
-
-	protected DrawerLayout getDrawer(Activity activity) {
-		return (DrawerLayout) activity.findViewById(R.id.Drawer);
 	}
 
 	protected ListView getListView(View view) {

@@ -51,7 +51,7 @@ public class MenuToolipAddHelper {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				tooltip.dismiss();
 				if (position == Menu.AddToUsers.ordinal()) {
-					createAddUsersList(activity, textView);
+					showAddUsersList(activity, textView);
 				}
 			}
 		});
@@ -59,7 +59,7 @@ public class MenuToolipAddHelper {
 		return tooltip;
 	}
 
-	private static void createAddUsersList(Activity activity, final TextView textView) {
+	private static void showAddUsersList(Activity activity, final TextView textView) {
 		List<String> userList = AtmosPreferenceManager.getUserList(activity);
 		final String[] users = new String[userList.size()];
 		final boolean[] flags = new boolean[userList.size()];

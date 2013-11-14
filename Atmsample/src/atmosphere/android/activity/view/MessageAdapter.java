@@ -70,12 +70,12 @@ public class MessageAdapter extends MessageBaseAdapter {
 		ImageView avatar = (ImageView) view.findViewById(R.id.user_avatar);
 		AvatarHelper.setAvatar(view, data, imageCash, avatar);
 
-		privateControl(view, data);
+		viewControl(view, data);
 
 		return view;
 	}
 
-	protected void privateControl(View view, MessageDto data) {
+	protected void viewControl(View view, MessageDto data) {
 		LinearLayout privateLayout = (LinearLayout) view.findViewById(R.id.private_to_user_layout);
 		privateLayout.setVisibility(View.GONE);
 	}

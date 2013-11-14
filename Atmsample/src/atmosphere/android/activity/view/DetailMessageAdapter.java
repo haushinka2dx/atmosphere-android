@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import atmosphere.android.activity.helper.AvatarHelper;
 import atmosphere.android.dto.MessageDto;
@@ -67,7 +66,7 @@ public class DetailMessageAdapter extends MessageBaseAdapter {
 		TextView usefullTextView = (TextView) view.findViewById(R.id.detail_usefull_text_view);
 		setResponseCount(usefullTextView, data.responses.usefull.size());
 
-		privateControl(view, data);
+		viewControl(view, data);
 
 		return view;
 	}
@@ -76,9 +75,7 @@ public class DetailMessageAdapter extends MessageBaseAdapter {
 		targetTextView.setText(String.valueOf(count));
 	}
 
-	protected void privateControl(View view, MessageDto data) {
-		LinearLayout privateLayout = (LinearLayout) view.findViewById(R.id.private_detail_to_user_layout);
-		privateLayout.setVisibility(View.GONE);
+	protected void viewControl(View view, MessageDto data) {
 	}
 
 	protected DrawerLayout getDrawer(Activity activity) {
