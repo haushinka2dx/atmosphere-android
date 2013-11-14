@@ -57,20 +57,7 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.activity_main);
 		final Activity activity = this;
 
-		new AtmosTask.Builder<UserListResult>(this, UserListResult.class, RequestMethod.GET).resultHandler(new ResultHandler<UserListResult>() {
-			@Override
-			public void handleResult(List<UserListResult> results) {
-				if (results != null && !results.isEmpty()) {
-					AtmosPreferenceManager.setUserList(activity, results.get(0));
-					messagesInitialize();
-				}
-			}
-		}).loginHandler(new LoginResultHandler() {
-			@Override
-			public void handleResult() {
-				messagesInitialize();
-			}
-		}).build().ignoreDialog(true).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.USER_LIST_METHOD, null));
+		init(activity);
 
 		drawerToggle = new ActionBarDrawerToggle(this, getDrawer(), R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
 			@Override
@@ -152,6 +139,32 @@ public class MainActivity extends FragmentActivity {
 
 		initSubmitButton(activity);
 		initSubmitPrivateButton(activity);
+	}
+
+	private void init(final Activity activity) {
+		new AtmosTask.Builder<UserListResult>(this, UserListResult.class, RequestMethod.GET).resultHandler(new ResultHandler<UserListResult>() {
+			@Override
+			public void handleResult(List<UserListResult> results) {
+				if (results != null && !results.isEmpty()) {
+					AtmosPreferenceManager.setUserList(activity, results.get(0));
+					messagesInitialize();
+					goneTitleView(activity);
+				}
+			}
+		}).loginHandler(new LoginResultHandler() {
+			@Override
+			public void handleResult() {
+				init(activity);
+			}
+		}).build().ignoreDialog(true).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.USER_LIST_METHOD, null));
+	}
+
+	private void goneTitleView(Activity activity) {
+		LinearLayout titleView = getTitleViewOverlay();
+		Animation outAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_out);
+		outAnimation.setDuration(2000);
+		titleView.startAnimation(outAnimation);
+		titleView.setVisibility(View.GONE);
 	}
 
 	private void messagesInitialize() {
@@ -307,5 +320,9 @@ public class MainActivity extends FragmentActivity {
 
 	protected ImageView getPrivateReplyShowView() {
 		return (ImageView) findViewById(R.id.private_reply_button);
+	}
+
+	protected LinearLayout getTitleViewOverlay() {
+		return (LinearLayout) findViewById(R.id.title_overlay);
 	}
 }
