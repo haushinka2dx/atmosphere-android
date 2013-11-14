@@ -11,8 +11,8 @@ import atmosphere.android.dto.MessageDto;
 
 public class PrivateDetailMessageAdapter extends DetailMessageAdapter {
 
-	public PrivateDetailMessageAdapter(Activity activity, List<MessageDto> list) {
-		super(activity, list);
+	public PrivateDetailMessageAdapter(Activity activity, List<MessageDto> list, String orgId) {
+		super(activity, list, orgId);
 	}
 
 	@Override

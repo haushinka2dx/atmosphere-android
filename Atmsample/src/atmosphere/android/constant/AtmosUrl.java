@@ -4,7 +4,7 @@ public final class AtmosUrl {
 	private AtmosUrl() {
 	}
 
-	public static final String BASE_URL = "https://atmos.interprism.co.jp/atmos-stg/";
+	public static final String BASE_URL = "https://atmos.interprism.co.jp/atmos/";
 
 	public static final String LOGIN_METHOD = "auth/login";
 	public static final String USER_WHO_AM_I_METHOD = "auth/whoami";

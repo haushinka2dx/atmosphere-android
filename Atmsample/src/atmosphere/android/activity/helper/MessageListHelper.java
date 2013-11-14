@@ -78,7 +78,7 @@ abstract class MessageListHelper {
 					List<MessageDto> list = new ArrayList<MessageDto>();
 					final MessageDto targetItem = (MessageDto) adapter.getItem(position);
 					list.add(targetItem);
-					final DetailMessageAdapter detailAdapter = createDetailAdapter(list);
+					final DetailMessageAdapter detailAdapter = createDetailAdapter(list, targetItem._id);
 					LinearLayout detailOverlay = getDetailOverlay(activity);
 					detailListView.setAdapter(detailAdapter);
 
@@ -142,8 +142,8 @@ abstract class MessageListHelper {
 		return view;
 	}
 
-	protected DetailMessageAdapter createDetailAdapter(List<MessageDto> list) {
-		return new DetailMessageAdapter(activity, list);
+	protected DetailMessageAdapter createDetailAdapter(List<MessageDto> list, String orgId) {
+		return new DetailMessageAdapter(activity, list, orgId);
 	}
 
 	protected Tooltip createTooltip(int position, MessageBaseAdapter detailAdapter, MessageDto detailTargetItem) {

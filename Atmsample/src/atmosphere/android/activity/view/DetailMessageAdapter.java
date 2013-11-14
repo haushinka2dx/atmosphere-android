@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import atmosphere.android.activity.helper.AvatarHelper;
 import atmosphere.android.dto.MessageDto;
@@ -23,11 +24,13 @@ import atmosphere.android.util.TimeUtil;
 public class DetailMessageAdapter extends MessageBaseAdapter {
 	protected Activity activity;
 	private Map<String, Bitmap> imageCash;
+	private String orgId;
 
-	public DetailMessageAdapter(Activity activity, List<MessageDto> list) {
+	public DetailMessageAdapter(Activity activity, List<MessageDto> list, String orgId) {
 		super(list);
 		this.activity = activity;
 		this.imageCash = new HashMap<String, Bitmap>();
+		this.orgId = orgId;
 	}
 
 	@Override
@@ -41,6 +44,13 @@ public class DetailMessageAdapter extends MessageBaseAdapter {
 		}
 
 		final MessageDto data = list.get(position);
+
+		LinearLayout detailLayout = (LinearLayout) view.findViewById(R.id.detail_layout);
+		if (data._id.equals(orgId)) {
+			detailLayout.setBackgroundColor(0x7f2c3e50);
+		} else {
+			detailLayout.setBackgroundColor(0x00000000);
+		}
 
 		TextView userName = (TextView) view.findViewById(R.id.detail_user_name);
 		userName.setText(data.created_by);

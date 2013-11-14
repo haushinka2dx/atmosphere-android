@@ -19,8 +19,8 @@ public class SimpleMessageListHelper extends MessageListHelper {
 	}
 
 	@Override
-	protected DetailMessageAdapter createDetailAdapter(List<MessageDto> list) {
-		return new DetailMessageAdapter(activity, list);
+	protected DetailMessageAdapter createDetailAdapter(List<MessageDto> list, String orgId) {
+		return new DetailMessageAdapter(activity, list, orgId);
 	}
 
 	@Override
