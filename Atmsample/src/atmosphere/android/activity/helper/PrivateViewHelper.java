@@ -34,7 +34,7 @@ public class PrivateViewHelper {
 		toUsers.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				DialogHelper.showStringListDialog(activity, data.to_user_id);
+				DialogHelper.showStringListDialog(activity, data.to_user_id, "To Users");
 			}
 		});
 

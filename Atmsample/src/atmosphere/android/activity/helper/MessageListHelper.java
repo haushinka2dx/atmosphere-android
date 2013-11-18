@@ -4,14 +4,18 @@ import interprism.atmosphere.android.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -27,6 +31,7 @@ import atmosphere.android.activity.view.MessageBaseAdapter;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.dto.PastThanRequest;
 import atmosphere.android.manager.AtmosPreferenceManager;
+import atmosphere.android.util.TimeUtil;
 import atmosphere.android.util.Tooltip;
 
 abstract class MessageListHelper {
@@ -53,14 +58,68 @@ abstract class MessageListHelper {
 		final ProgressBar footerProgressBar = (ProgressBar) footer.findViewById(R.id.ListViewFooterPrograssBar);
 		final TextView footerTextView = (TextView) footer.findViewById(R.id.ListViewFooterTextView);
 
-		messageListView.addFooterView(footer);
-		messageListView.setAdapter(adapter);
-		messageListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+		footer.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-				ListView list = (ListView) parent;
-				if (list.getCount() - 1 != position) {
-					final MessageDto item = (MessageDto) list.getItemAtPosition(position);
+			public void onClick(View v) {
+				if (0 < adapter.getCount()) {
+					MessageDto lastItem = (MessageDto) adapter.getItem(adapter.getCount() - 1);
+					PastThanRequest params = new PastThanRequest();
+					params.count = 10;
+					params.past_than = lastItem.created_at;
+
+					footerProgressBar.setVisibility(View.VISIBLE);
+					footerTextView.setText(R.string.connecting);
+					adapter.notifyDataSetChanged();
+
+					MessageHelper.pastTask(activity, adapter, targetMethod, params, footerProgressBar, footerTextView);
+				}
+			}
+		});
+		messageListView.addFooterView(footer);
+
+		adapter.setOnItemClickListener(new MessageAdapter.OnItemClickListener() {
+			@Override
+			public void onItemClick(View view, int position, long id) {
+				ListView detailListView = getDetailListView(activity);
+
+				List<MessageDto> list = new ArrayList<MessageDto>();
+				final MessageDto targetItem = (MessageDto) adapter.getItem(position);
+				list.add(targetItem);
+				final DetailMessageAdapter detailAdapter = createDetailAdapter(list, targetItem._id);
+				LinearLayout detailOverlay = getDetailOverlay(activity);
+				detailListView.setAdapter(detailAdapter);
+
+				detailOverlay.setVisibility(View.VISIBLE);
+				MessageHelper.serchMessage(activity, targetItem.reply_to, detailAdapter, targetItem._id, adapter.getList());
+
+				ViewPager pager = getViewPager(activity);
+				Animation outAnimation = AnimationUtils.loadAnimation(activity, R.anim.slide_out_right);
+				pager.startAnimation(outAnimation);
+				pager.setVisibility(View.GONE);
+
+				Animation inAnimation = AnimationUtils.loadAnimation(activity, R.anim.slide_in_right);
+				detailListView.startAnimation(inAnimation);
+				detailListView.setVisibility(View.VISIBLE);
+
+				detailListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+					@Override
+					public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+						final MessageDto detailTargetItem = (MessageDto) detailAdapter.getItem(position);
+						Tooltip detailTooltip = createTooltip(position, detailAdapter, detailTargetItem);
+						detailTooltip.showTop(view);
+						return false;
+					}
+				});
+
+			}
+		});
+
+		adapter.setOnItemLongClickListener(new MessageAdapter.OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(View view, int position, long id) {
+				if (adapter.getCount() - 1 != position) {
+					final MessageDto item = (MessageDto) adapter.getItem(position);
 					Tooltip tooltip = createTooltip(position, adapter, item);
 					tooltip.showTop(view);
 				}
@@ -68,58 +127,79 @@ abstract class MessageListHelper {
 			}
 		});
 
-		messageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		adapter.setOnItemDoubleClickListener(new MessageAdapter.OnItemDoubleClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if (adapter.getCount() != position) {
-
-					ListView detailListView = getDetailListView(activity);
-
-					List<MessageDto> list = new ArrayList<MessageDto>();
-					final MessageDto targetItem = (MessageDto) adapter.getItem(position);
-					list.add(targetItem);
-					final DetailMessageAdapter detailAdapter = createDetailAdapter(list, targetItem._id);
-					LinearLayout detailOverlay = getDetailOverlay(activity);
-					detailListView.setAdapter(detailAdapter);
-
-					detailOverlay.setVisibility(View.VISIBLE);
-					MessageHelper.serchMessage(activity, targetItem.reply_to, detailAdapter, targetItem._id, adapter.getList());
-
-					ViewPager pager = getViewPager(activity);
-					Animation outAnimation = AnimationUtils.loadAnimation(activity, R.anim.slide_out_right);
-					pager.startAnimation(outAnimation);
-					pager.setVisibility(View.GONE);
-
-					Animation inAnimation = AnimationUtils.loadAnimation(activity, R.anim.slide_in_right);
-					detailListView.startAnimation(inAnimation);
-					detailListView.setVisibility(View.VISIBLE);
-
-					detailListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-						@Override
-						public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-							final MessageDto detailTargetItem = (MessageDto) detailAdapter.getItem(position);
-							Tooltip detailTooltip = createTooltip(position, detailAdapter, detailTargetItem);
-							detailTooltip.showTop(view);
-							return false;
-						}
-					});
-
+			public boolean onItemDoubleClick(View view, int position, long id) {
+				final MessageDto item = (MessageDto) adapter.getItem(position);
+				getSecretUserName(activity).setText(item.created_by);
+				ImageView avatar = getSecretUserAvatar(activity);
+				Map<String, Bitmap> imageCash = adapter.getImageCash();
+				if (imageCash.containsKey(item.created_by)) {
+					avatar.setImageBitmap(imageCash.get(item.created_by));
 				} else {
-					if (0 < adapter.getCount()) {
-						MessageDto lastItem = (MessageDto) adapter.getItem(adapter.getCount() - 1);
-						PastThanRequest params = new PastThanRequest();
-						params.count = 10;
-						params.past_than = lastItem.created_at;
+					AvatarHelper.setAvatar(item.created_by, avatar);
+				}
+				getSecretMessageTime(activity).setText(TimeUtil.formaFulltDateFromGMT(item.created_at));
+				getSecretMessageTimeLine(activity).setText(item.message);
 
-						footerProgressBar.setVisibility(View.VISIBLE);
-						footerTextView.setText(R.string.connecting);
-						adapter.notifyDataSetChanged();
-
-						MessageHelper.pastTask(activity, adapter, targetMethod, params, footerProgressBar, footerTextView);
+				if (item.responses != null) {
+					if (item.responses.fun != null) {
+						getSecretFunTextView(activity).setText(String.valueOf(item.responses.fun.size()));
+						getSecretFunLayout(activity).setOnLongClickListener(new View.OnLongClickListener() {
+							@Override
+							public boolean onLongClick(View v) {
+								DialogHelper.showStringListDialog(activity, item.responses.fun, "Fun Users");
+								return false;
+							}
+						});
+					}
+					if (item.responses.good != null) {
+						getSecretGoodTextView(activity).setText(String.valueOf(item.responses.good.size()));
+						getSecretGoodLayout(activity).setOnLongClickListener(new View.OnLongClickListener() {
+							@Override
+							public boolean onLongClick(View v) {
+								DialogHelper.showStringListDialog(activity, item.responses.good, "Good Users");
+								return false;
+							}
+						});
+					}
+					if (item.responses.memo != null) {
+						getSecretMemoTextView(activity).setText(String.valueOf(item.responses.memo.size()));
+						getSecretMemoLayout(activity).setOnLongClickListener(new View.OnLongClickListener() {
+							@Override
+							public boolean onLongClick(View v) {
+								DialogHelper.showStringListDialog(activity, item.responses.memo, "Memo Users");
+								return false;
+							}
+						});
+					}
+					if (item.responses.usefull != null) {
+						getSecretUsefullTextView(activity).setText(String.valueOf(item.responses.usefull.size()));
+						getSecretUsefullLayout(activity).setOnLongClickListener(new View.OnLongClickListener() {
+							@Override
+							public boolean onLongClick(View v) {
+								DialogHelper.showStringListDialog(activity, item.responses.usefull, "Usefull Users");
+								return false;
+							}
+						});
 					}
 				}
+
+				ViewPager pager = getViewPager(activity);
+				Animation outAnimation = AnimationUtils.loadAnimation(activity, R.anim.slide_out_right);
+				pager.startAnimation(outAnimation);
+				pager.setVisibility(View.GONE);
+
+				LinearLayout secretLayout = getSecretOvarlay(activity);
+				Animation inAnimation = AnimationUtils.loadAnimation(activity, R.anim.slide_in_right);
+				secretLayout.startAnimation(inAnimation);
+				secretLayout.setVisibility(View.VISIBLE);
+
+				return false;
 			}
 		});
+
+		messageListView.setAdapter(adapter);
 
 		PastThanRequest params = new PastThanRequest();
 		params.count = 10;
@@ -191,4 +271,55 @@ abstract class MessageListHelper {
 		return (ViewPager) activity.findViewById(R.id.ViewPager);
 	}
 
+	protected LinearLayout getSecretOvarlay(Activity activity) {
+		return (LinearLayout) activity.findViewById(R.id.secret_overlay);
+	}
+
+	protected TextView getSecretUserName(Activity activity) {
+		return (TextView) activity.findViewById(R.id.secret_user_name);
+	}
+
+	protected ImageView getSecretUserAvatar(Activity activity) {
+		return (ImageView) activity.findViewById(R.id.secret_user_avatar);
+	}
+
+	protected TextView getSecretMessageTime(Activity activity) {
+		return (TextView) activity.findViewById(R.id.secret_message_time);
+	}
+
+	protected TextView getSecretMessageTimeLine(Activity activity) {
+		return (TextView) activity.findViewById(R.id.secret_message_timeline);
+	}
+
+	protected TextView getSecretFunTextView(Activity activity) {
+		return (TextView) activity.findViewById(R.id.secret_fun_text_view);
+	}
+
+	protected TextView getSecretGoodTextView(Activity activity) {
+		return (TextView) activity.findViewById(R.id.secret_good_text_view);
+	}
+
+	protected TextView getSecretMemoTextView(Activity activity) {
+		return (TextView) activity.findViewById(R.id.secret_memo_text_view);
+	}
+
+	protected TextView getSecretUsefullTextView(Activity activity) {
+		return (TextView) activity.findViewById(R.id.secret_usefull_text_view);
+	}
+
+	protected FrameLayout getSecretFunLayout(Activity activity) {
+		return (FrameLayout) activity.findViewById(R.id.secret_fun);
+	}
+
+	protected FrameLayout getSecretGoodLayout(Activity activity) {
+		return (FrameLayout) activity.findViewById(R.id.secret_good);
+	}
+
+	protected FrameLayout getSecretMemoLayout(Activity activity) {
+		return (FrameLayout) activity.findViewById(R.id.secret_memo);
+	}
+
+	protected FrameLayout getSecretUsefullLayout(Activity activity) {
+		return (FrameLayout) activity.findViewById(R.id.secret_usefull);
+	}
 }

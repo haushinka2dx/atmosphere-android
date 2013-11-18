@@ -249,11 +249,29 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+		LinearLayout detailOverlay = getDetailOverlay();
+		if (detailOverlay.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
+			detailOverlay.setVisibility(View.GONE);
+		}
+
 		ListView detailListView = getDetailListView();
+		LinearLayout secretOvarlay = getSecretOvarlay();
 		if (detailListView.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
 			Animation animation = AnimationUtils.loadAnimation(this, R.anim.slide_out_right);
 			detailListView.startAnimation(animation);
 			detailListView.setVisibility(View.GONE);
+
+			ViewPager pager = getViewPager();
+			Animation outAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
+			pager.startAnimation(outAnimation);
+			pager.setVisibility(View.VISIBLE);
+
+			return true;
+		} else if (secretOvarlay.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
+			Animation animation = AnimationUtils.loadAnimation(this, R.anim.slide_out_right);
+			secretOvarlay.startAnimation(animation);
+			secretOvarlay.setVisibility(View.GONE);
 
 			ViewPager pager = getViewPager();
 			Animation outAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
@@ -310,6 +328,10 @@ public class MainActivity extends FragmentActivity {
 		return (ListView) findViewById(R.id.detail_message_list);
 	}
 
+	protected LinearLayout getDetailOverlay() {
+		return (LinearLayout) findViewById(R.id.detail_message_list_overlay);
+	}
+
 	protected LinearLayout getReplyButtonLayout() {
 		return (LinearLayout) findViewById(R.id.reply_button_layout);
 	}
@@ -324,5 +346,9 @@ public class MainActivity extends FragmentActivity {
 
 	protected LinearLayout getTitleViewOverlay() {
 		return (LinearLayout) findViewById(R.id.title_overlay);
+	}
+
+	protected LinearLayout getSecretOvarlay() {
+		return (LinearLayout) findViewById(R.id.secret_overlay);
 	}
 }

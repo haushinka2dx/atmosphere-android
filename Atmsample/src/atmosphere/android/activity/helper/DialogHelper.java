@@ -87,7 +87,7 @@ public class DialogHelper {
 		dialog.show();
 	}
 
-	public static void showStringListDialog(Activity activity, List<String> list) {
+	public static void showStringListDialog(Activity activity, List<String> list, String title) {
 		if (list != null && !list.isEmpty()) {
 
 			String[] items = new String[list.size()];
@@ -95,7 +95,7 @@ public class DialogHelper {
 				items[i] = list.get(i);
 			}
 
-			new AlertDialog.Builder(activity).setTitle("To Users").setItems(items, new DialogInterface.OnClickListener() {
+			new AlertDialog.Builder(activity).setTitle(title).setItems(items, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 

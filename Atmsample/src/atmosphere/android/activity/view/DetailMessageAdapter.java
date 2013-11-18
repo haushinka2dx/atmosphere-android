@@ -62,7 +62,7 @@ public class DetailMessageAdapter extends MessageBaseAdapter {
 		messageTime.setText(TimeUtil.formatDateFromGMT(data.created_at));
 
 		ImageView avatar = (ImageView) view.findViewById(R.id.detail_user_avatar);
-		AvatarHelper.setAvatar(view, data, imageCash, avatar);
+		AvatarHelper.setAndCachAvatar(data, imageCash, avatar);
 
 		TextView funTextView = (TextView) view.findViewById(R.id.detail_fun_text_view);
 		setResponseCount(funTextView, data.responses.fun.size());

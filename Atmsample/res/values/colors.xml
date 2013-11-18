@@ -2,7 +2,9 @@
 <resources>
 
     <drawable name="trans_derk_gray">#4F7F7F7F</drawable>
+    <drawable name="trans_black">#4F000000</drawable>
     <drawable name="black">#000000</drawable>
     <drawable name="white">#FFFFFF</drawable>
     <drawable name="app_color">#43A1FF</drawable>
-</resources>
+
+</resources>
