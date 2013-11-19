@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 import atmosphere.android.activity.helper.AvatarHelper;
+import atmosphere.android.activity.helper.OnlyUserHelper;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.util.TimeUtil;
 
@@ -86,6 +87,7 @@ public class MessageAdapter extends MessageBaseAdapter {
 
 		ImageView avatar = (ImageView) view.findViewById(R.id.user_avatar);
 		AvatarHelper.setAndCachAvatar(data, imageCash, avatar);
+		OnlyUserHelper.showOnlyUserList(activity, avatar, data.created_by, imageCash);
 
 		viewControl(view, data);
 

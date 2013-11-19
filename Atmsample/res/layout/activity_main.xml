@@ -268,6 +268,9 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginTop="4dp"
                     android:orientation="vertical" >
 
                     <TextView
@@ -282,9 +285,95 @@
                         android:id="@+id/secret_message_timeline"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:autoLink="web"
+                        android:autoLink="web|email|map"
                         android:text="@string/base_message"
                         android:textAppearance="?android:attr/textAppearanceMedium" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/only_user_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/frame_bottom"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:id="@+id/only_user_avatar"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginLeft="-50dp"
+                        android:layout_marginTop="4dp"
+                        android:alpha="0.4"
+                        android:contentDescription="@string/user_icon"
+                        android:src="@drawable/no_image" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="4dp"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:id="@+id/only_user_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/user_name"
+                            android:textAppearance="?android:attr/textAppearanceLarge" >
+                        </TextView>
+
+                        <TextView
+                            android:id="@+id/only_user_info"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/user_name"
+                            android:textAppearance="?android:attr/textAppearanceMedium" >
+                        </TextView>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="bottom"
+                            android:orientation="horizontal" >
+
+                            <ImageView
+                                android:id="@+id/only_user_show_send_global_button"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:contentDescription="@string/reply"
+                                android:src="@drawable/add_person_global_message" />
+
+                            <ImageView
+                                android:id="@+id/only_user_show_send_private_button"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:contentDescription="@string/reply"
+                                android:src="@drawable/add_person_private_message" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp"
+                    android:orientation="vertical" >
+
+                    <ListView
+                        android:id="@+id/only_user_message_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" >
+                    </ListView>
                 </LinearLayout>
             </LinearLayout>
         </FrameLayout>

@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import atmosphere.android.activity.view.DetailMessageAdapter;
-import atmosphere.android.activity.view.MessageAdapter;
 import atmosphere.android.activity.view.MessageBaseAdapter;
 import atmosphere.android.constant.AtmosAction;
 import atmosphere.android.constant.AtmosConstant;
@@ -39,11 +38,12 @@ import atmosphere.android.util.json.AtmosTask.ResultHandler;
 
 public class MessageHelper {
 
-	public static void pastTask(final Activity activity, final MessageAdapter adapter, final String targetMethod, final PastThanRequest params, ProgressBar footerProgressBar, TextView footerTextView) {
+	public static void pastTask(final Activity activity, final MessageBaseAdapter adapter, final String targetMethod, final PastThanRequest params, ProgressBar footerProgressBar,
+			TextView footerTextView) {
 		pastTask(activity, adapter, targetMethod, params, true, footerProgressBar, footerTextView, null);
 	}
 
-	public static void pastTask(final Activity activity, final MessageAdapter adapter, final String targetMethod, final PastThanRequest params, final boolean ignoreDialog,
+	public static void pastTask(final Activity activity, final MessageBaseAdapter adapter, final String targetMethod, final PastThanRequest params, final boolean ignoreDialog,
 			final ProgressBar footerProgressBar, final TextView footerTextView, final LinearLayout overlay) {
 		if (ignoreDialog && overlay != null) {
 			overlay.setVisibility(View.VISIBLE);
@@ -173,12 +173,42 @@ public class MessageHelper {
 		}).build().execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.SEND_RESPONSE_METHOD, response));
 	}
 
-	public static void serchMessage(final Activity activity, final String replyId, final DetailMessageAdapter adapter, final String messageId, final List<MessageDto> orgList) {
-		final List<MessageDto> addBeforeList = new ArrayList<MessageDto>();
-		serchMessage(activity, replyId, adapter, messageId, orgList, addBeforeList);
+	public static void serchMessage(final Activity activity, final SerchRequest param, final MessageBaseAdapter adapter) {
+		serchMessage(activity, param, adapter, null, null);
 	}
 
-	private static void serchMessage(final Activity activity, final String replyId, final DetailMessageAdapter adapter, final String messageId, final List<MessageDto> orgList,
+	public static void serchMessage(final Activity activity, final SerchRequest param, final MessageBaseAdapter adapter, final ProgressBar footerProgressBar, final TextView footerTextView) {
+		new AtmosTask.Builder<MessageResult>(activity, MessageResult.class, RequestMethod.GET).resultHandler(new ResultHandler<MessageResult>() {
+			@Override
+			public void handleResult(List<MessageResult> results) {
+				if (results != null && !results.isEmpty()) {
+					List<MessageDto> result = results.get(0).results;
+					if (result != null && !result.isEmpty()) {
+						adapter.addItems(result);
+						if (footerProgressBar != null) {
+							footerProgressBar.setVisibility(View.INVISIBLE);
+						}
+						if (footerTextView != null) {
+							footerTextView.setText(R.string.more_load);
+						}
+						adapter.notifyDataSetChanged();
+					}
+				}
+			}
+		}).loginHandler(new LoginResultHandler() {
+			@Override
+			public void handleResult() {
+				serchMessage(activity, param, adapter, footerProgressBar, footerTextView);
+			}
+		}).build().ignoreDialog(true).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.MESSAGE_SEARCH_METHOD, param));
+	}
+
+	public static void serchConversationMessage(final Activity activity, final String replyId, final DetailMessageAdapter adapter, final String messageId, final List<MessageDto> orgList) {
+		final List<MessageDto> addBeforeList = new ArrayList<MessageDto>();
+		serchConversationMessage(activity, replyId, adapter, messageId, orgList, addBeforeList);
+	}
+
+	private static void serchConversationMessage(final Activity activity, final String replyId, final DetailMessageAdapter adapter, final String messageId, final List<MessageDto> orgList,
 			final List<MessageDto> addBeforeList) {
 
 		if (replyId != null && replyId.length() != 0) {
@@ -210,7 +240,7 @@ public class MessageHelper {
 							List<MessageDto> result = results.get(0).results;
 							if (result != null && !result.isEmpty() && result.get(0) != null) {
 								addBeforeList.add(0, result.get(0));
-								serchMessage(activity, result.get(0).reply_to, adapter, messageId, null, addBeforeList);
+								serchConversationMessage(activity, result.get(0).reply_to, adapter, messageId, null, addBeforeList);
 							} else {
 								serchReplyMessage(activity, messageId, adapter, orgList, addBeforeList);
 							}
@@ -222,7 +252,7 @@ public class MessageHelper {
 				}).loginHandler(new LoginResultHandler() {
 					@Override
 					public void handleResult() {
-						serchMessage(activity, replyId, adapter, messageId, orgList, addBeforeList);
+						serchConversationMessage(activity, replyId, adapter, messageId, orgList, addBeforeList);
 					}
 				}).build().ignoreDialog(true).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.MESSAGE_SEARCH_METHOD, param));
 			}

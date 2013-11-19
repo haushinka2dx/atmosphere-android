@@ -28,6 +28,7 @@ import atmosphere.android.activity.listener.handler.impl.FlickHiranoHandler;
 import atmosphere.android.activity.view.DetailMessageAdapter;
 import atmosphere.android.activity.view.MessageAdapter;
 import atmosphere.android.activity.view.MessageBaseAdapter;
+import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.dto.PastThanRequest;
 import atmosphere.android.manager.AtmosPreferenceManager;
@@ -64,7 +65,7 @@ abstract class MessageListHelper {
 				if (0 < adapter.getCount()) {
 					MessageDto lastItem = (MessageDto) adapter.getItem(adapter.getCount() - 1);
 					PastThanRequest params = new PastThanRequest();
-					params.count = 10;
+					params.count = AtmosConstant.NUMBER_OF_MESSAGES;
 					params.past_than = lastItem.created_at;
 
 					footerProgressBar.setVisibility(View.VISIBLE);
@@ -90,7 +91,7 @@ abstract class MessageListHelper {
 				detailListView.setAdapter(detailAdapter);
 
 				detailOverlay.setVisibility(View.VISIBLE);
-				MessageHelper.serchMessage(activity, targetItem.reply_to, detailAdapter, targetItem._id, adapter.getList());
+				MessageHelper.serchConversationMessage(activity, targetItem.reply_to, detailAdapter, targetItem._id, adapter.getList());
 
 				ViewPager pager = getViewPager(activity);
 				Animation outAnimation = AnimationUtils.loadAnimation(activity, R.anim.slide_out_right);
@@ -202,7 +203,7 @@ abstract class MessageListHelper {
 		messageListView.setAdapter(adapter);
 
 		PastThanRequest params = new PastThanRequest();
-		params.count = 10;
+		params.count = AtmosConstant.NUMBER_OF_MESSAGES;
 		MessageHelper.pastTask(activity, adapter, targetMethod, params, true, null, null, getListOverlay(view));
 		OnFlickHandler handler;
 		if (AtmosPreferenceManager.getViewTheme(activity) == 1) {

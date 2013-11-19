@@ -22,22 +22,18 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import atmosphere.android.activity.helper.MenuToolipAddHelper;
-import atmosphere.android.activity.helper.MessageHelper;
+import atmosphere.android.activity.helper.SendMessageHelper;
 import atmosphere.android.activity.view.MessagePagerAdapter;
 import atmosphere.android.activity.view.fragment.GlobalTimeLineFragment;
 import atmosphere.android.activity.view.fragment.PrivateTimeLineFragment;
 import atmosphere.android.activity.view.fragment.TalkTimeLineFragment;
-import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.constant.AtmosUrl;
-import atmosphere.android.dto.SendMessageRequest;
-import atmosphere.android.dto.SendPrivateMessageRequest;
 import atmosphere.android.dto.UserListResult;
 import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.Tooltip;
@@ -62,8 +58,8 @@ public class MainActivity extends FragmentActivity {
 		drawerToggle = new ActionBarDrawerToggle(this, getDrawer(), R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
 			@Override
 			public void onDrawerClosed(View drawerView) {
-				initSubmitButton(activity);
-				initSubmitPrivateButton(activity);
+				SendMessageHelper.initSubmitButton(activity);
+				SendMessageHelper.initSubmitPrivateButton(activity);
 				Log.i("MainActivity", "onDrawerClosed");
 			}
 
@@ -137,8 +133,8 @@ public class MainActivity extends FragmentActivity {
 			}
 		});
 
-		initSubmitButton(activity);
-		initSubmitPrivateButton(activity);
+		SendMessageHelper.initSubmitButton(activity);
+		SendMessageHelper.initSubmitPrivateButton(activity);
 	}
 
 	private void init(final Activity activity) {
@@ -176,41 +172,6 @@ public class MainActivity extends FragmentActivity {
 		adapter.addTab(PrivateTimeLineFragment.class, R.string.private_timeline_title);
 
 		pager.setAdapter(adapter);
-	}
-
-	private void initSubmitButton(final Activity activity) {
-		getSendMessageEditText().setText(AtmosConstant.MESSAGE_CLEAR_TEXT);
-		Button submitButton = getSubmitButton();
-		submitButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				SendMessageRequest param = new SendMessageRequest();
-				String message = getSendMessageEditText().getText().toString();
-				param.message = message;
-				if (message != null && message.length() != 0) {
-					MessageHelper.sendMessage(activity, param);
-				}
-			}
-		});
-	}
-
-	private void initSubmitPrivateButton(final Activity activity) {
-		getSendPrivateMessageEditText().setText(AtmosConstant.MESSAGE_CLEAR_TEXT);
-		getSendPrivateToUserEditText().setText(AtmosConstant.MESSAGE_CLEAR_TEXT);
-
-		Button submitPrivateButton = getSubmitPrivateButton();
-		submitPrivateButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				SendPrivateMessageRequest param = new SendPrivateMessageRequest();
-				String message = getSendPrivateMessageEditText().getText().toString();
-				param.message = message;
-				param.to_user_id = getSendPrivateToUserEditText().getText().toString();
-				if (message != null && message.length() != 0) {
-					MessageHelper.sendPrivateMessage(activity, param);
-				}
-			}
-		});
 	}
 
 	@Override
@@ -255,33 +216,32 @@ public class MainActivity extends FragmentActivity {
 			detailOverlay.setVisibility(View.GONE);
 		}
 
-		ListView detailListView = getDetailListView();
 		LinearLayout secretOvarlay = getSecretOvarlay();
+		LinearLayout onlyUserOverlay = getOnlyUserOverlay();
+		ListView detailListView = getDetailListView();
 		if (detailListView.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
-			Animation animation = AnimationUtils.loadAnimation(this, R.anim.slide_out_right);
-			detailListView.startAnimation(animation);
-			detailListView.setVisibility(View.GONE);
-
-			ViewPager pager = getViewPager();
-			Animation outAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
-			pager.startAnimation(outAnimation);
-			pager.setVisibility(View.VISIBLE);
-
+			closeTargetOverlay(detailListView);
+			return true;
+		} else if (onlyUserOverlay.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
+			closeTargetOverlay(onlyUserOverlay);
 			return true;
 		} else if (secretOvarlay.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
-			Animation animation = AnimationUtils.loadAnimation(this, R.anim.slide_out_right);
-			secretOvarlay.startAnimation(animation);
-			secretOvarlay.setVisibility(View.GONE);
-
-			ViewPager pager = getViewPager();
-			Animation outAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
-			pager.startAnimation(outAnimation);
-			pager.setVisibility(View.VISIBLE);
-
+			closeTargetOverlay(secretOvarlay);
 			return true;
 		} else {
 			return super.onKeyDown(keyCode, event);
 		}
+	}
+
+	private void closeTargetOverlay(View targetView) {
+		Animation animation = AnimationUtils.loadAnimation(this, R.anim.slide_out_right);
+		targetView.startAnimation(animation);
+		targetView.setVisibility(View.GONE);
+
+		ViewPager pager = getViewPager();
+		Animation outAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
+		pager.startAnimation(outAnimation);
+		pager.setVisibility(View.VISIBLE);
 	}
 
 	protected ViewPager getViewPager() {
@@ -300,24 +260,12 @@ public class MainActivity extends FragmentActivity {
 		return (EditText) findViewById(R.id.SendMessageEditText);
 	}
 
-	protected Button getSubmitButton() {
-		return (Button) findViewById(R.id.SubmitButton);
-	}
-
 	protected ImageButton getAddButton() {
 		return (ImageButton) findViewById(R.id.AddButton);
 	}
 
-	protected EditText getSendPrivateMessageEditText() {
-		return (EditText) findViewById(R.id.SendPrivateMessageEditText);
-	}
-
 	protected EditText getSendPrivateToUserEditText() {
 		return (EditText) findViewById(R.id.SendPrivateToUserEditText);
-	}
-
-	protected Button getSubmitPrivateButton() {
-		return (Button) findViewById(R.id.SubmitPrivateButton);
 	}
 
 	protected ImageButton getPrivateAddButton() {
@@ -350,5 +298,9 @@ public class MainActivity extends FragmentActivity {
 
 	protected LinearLayout getSecretOvarlay() {
 		return (LinearLayout) findViewById(R.id.secret_overlay);
+	}
+
+	protected LinearLayout getOnlyUserOverlay() {
+		return (LinearLayout) findViewById(R.id.only_user_overlay);
 	}
 }
