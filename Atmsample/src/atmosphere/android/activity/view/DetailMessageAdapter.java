@@ -46,11 +46,13 @@ public class DetailMessageAdapter extends MessageBaseAdapter {
 		final MessageDto data = list.get(position);
 
 		LinearLayout detailLayout = (LinearLayout) view.findViewById(R.id.detail_layout);
+		int color;
 		if (data._id.equals(orgId)) {
-			detailLayout.setBackgroundColor(0x7f2c3e50);
+			color = activity.getResources().getColor(R.drawable.detail_focus_color);
 		} else {
-			detailLayout.setBackgroundColor(0x00000000);
+			color = activity.getResources().getColor(R.drawable.none);
 		}
+		detailLayout.setBackgroundColor(color);
 
 		TextView userName = (TextView) view.findViewById(R.id.detail_user_name);
 		userName.setText(data.created_by);
