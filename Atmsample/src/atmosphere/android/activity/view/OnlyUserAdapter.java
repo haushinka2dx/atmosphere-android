@@ -5,7 +5,6 @@ import interprism.atmosphere.android.R;
 import java.util.List;
 
 import android.app.Activity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -14,23 +13,13 @@ import atmosphere.android.util.TimeUtil;
 
 public class OnlyUserAdapter extends MessageBaseAdapter {
 
-	private Activity activity;
-
 	public OnlyUserAdapter(Activity activity, List<MessageDto> list) {
-		super(list);
-		this.activity = activity;
+		super(activity, list, R.layout.only_user_message, R.id.only_user_clicked_color_view);
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		final View view;
-		if (convertView != null) {
-			view = convertView;
-		} else {
-			LayoutInflater inflater = LayoutInflater.from(activity);
-			view = inflater.inflate(R.layout.only_user_message, parent, false);
-		}
-
+		final View view = super.getView(position, convertView, parent);
 		final MessageDto data = list.get(position);
 
 		TextView create_at = (TextView) view.findViewById(R.id.only_user_message_time);

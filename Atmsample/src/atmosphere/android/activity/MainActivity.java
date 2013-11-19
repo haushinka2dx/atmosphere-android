@@ -219,14 +219,14 @@ public class MainActivity extends FragmentActivity {
 		LinearLayout secretOvarlay = getSecretOvarlay();
 		LinearLayout onlyUserOverlay = getOnlyUserOverlay();
 		ListView detailListView = getDetailListView();
-		if (detailListView.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
-			closeTargetOverlay(detailListView);
+		if (secretOvarlay.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
+			closeTargetOverlay(secretOvarlay);
 			return true;
 		} else if (onlyUserOverlay.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
 			closeTargetOverlay(onlyUserOverlay);
 			return true;
-		} else if (secretOvarlay.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
-			closeTargetOverlay(secretOvarlay);
+		} else if (detailListView.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
+			closeTargetOverlay(detailListView);
 			return true;
 		} else {
 			return super.onKeyDown(keyCode, event);

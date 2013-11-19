@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -78,7 +77,7 @@ abstract class MessageListHelper {
 		});
 		messageListView.addFooterView(footer);
 
-		adapter.setOnItemClickListener(new MessageAdapter.OnItemClickListener() {
+		adapter.setOnItemClickListener(new MessageBaseAdapter.OnItemClickListener() {
 			@Override
 			public void onItemClick(View view, int position, long id) {
 				ListView detailListView = getDetailListView(activity);
@@ -87,6 +86,15 @@ abstract class MessageListHelper {
 				final MessageDto targetItem = (MessageDto) adapter.getItem(position);
 				list.add(targetItem);
 				final DetailMessageAdapter detailAdapter = createDetailAdapter(list, targetItem._id);
+				detailAdapter.setOnItemLongClickListener(new MessageBaseAdapter.OnItemLongClickListener() {
+					@Override
+					public boolean onItemLongClick(View view, int position, long id) {
+						final MessageDto detailTargetItem = (MessageDto) detailAdapter.getItem(position);
+						Tooltip detailTooltip = createTooltip(position, detailAdapter, detailTargetItem);
+						detailTooltip.showTop(view);
+						return false;
+					}
+				});
 				LinearLayout detailOverlay = getDetailOverlay(activity);
 				detailListView.setAdapter(detailAdapter);
 
@@ -101,21 +109,10 @@ abstract class MessageListHelper {
 				Animation inAnimation = AnimationUtils.loadAnimation(activity, R.anim.slide_in_right);
 				detailListView.startAnimation(inAnimation);
 				detailListView.setVisibility(View.VISIBLE);
-
-				detailListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-					@Override
-					public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-						final MessageDto detailTargetItem = (MessageDto) detailAdapter.getItem(position);
-						Tooltip detailTooltip = createTooltip(position, detailAdapter, detailTargetItem);
-						detailTooltip.showTop(view);
-						return false;
-					}
-				});
-
 			}
 		});
 
-		adapter.setOnItemLongClickListener(new MessageAdapter.OnItemLongClickListener() {
+		adapter.setOnItemLongClickListener(new MessageBaseAdapter.OnItemLongClickListener() {
 
 			@Override
 			public boolean onItemLongClick(View view, int position, long id) {
@@ -128,7 +125,7 @@ abstract class MessageListHelper {
 			}
 		});
 
-		adapter.setOnItemDoubleClickListener(new MessageAdapter.OnItemDoubleClickListener() {
+		adapter.setOnItemDoubleClickListener(new MessageBaseAdapter.OnItemDoubleClickListener() {
 			@Override
 			public boolean onItemDoubleClick(View view, int position, long id) {
 				final MessageDto item = (MessageDto) adapter.getItem(position);
