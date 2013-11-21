@@ -265,30 +265,33 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <LinearLayout
+                <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginRight="4dp"
-                    android:layout_marginTop="4dp"
-                    android:orientation="vertical" >
+                    android:layout_height="match_parent" >
 
-                    <TextView
-                        android:id="@+id/secret_message_time"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="right"
-                        android:text="@string/message_time"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                        android:layout_margin="4dp"
+                        android:orientation="vertical" >
 
-                    <TextView
-                        android:id="@+id/secret_message_timeline"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:autoLink="web|email|map"
-                        android:text="@string/base_message"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
-                </LinearLayout>
+                        <TextView
+                            android:id="@+id/secret_message_time"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="right"
+                            android:text="@string/message_time"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                        <TextView
+                            android:id="@+id/secret_message_timeline"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:autoLink="web|email|map"
+                            android:text="@string/base_message"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                    </LinearLayout>
+                </ScrollView>
             </LinearLayout>
 
             <LinearLayout
@@ -316,32 +319,44 @@
                         android:src="@drawable/no_image" />
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_margin="4dp"
+                        android:layout_weight="1"
                         android:orientation="vertical" >
 
                         <TextView
                             android:id="@+id/only_user_name"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/user_name"
                             android:textAppearance="?android:attr/textAppearanceLarge" >
                         </TextView>
 
-                        <TextView
-                            android:id="@+id/only_user_info"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/user_name"
-                            android:textAppearance="?android:attr/textAppearanceMedium" >
-                        </TextView>
+                        <ScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="90dp" >
+
+                            <TextView
+                                android:id="@+id/only_user_info"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/user_name"
+                                android:textAppearance="?android:attr/textAppearanceMedium" >
+                            </TextView>
+                        </ScrollView>
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:gravity="bottom"
                             android:orientation="horizontal" >
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:layout_weight="2" >
+                            </View>
 
                             <ImageView
                                 android:id="@+id/only_user_show_send_global_button"
