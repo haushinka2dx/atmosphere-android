@@ -238,10 +238,14 @@ public class MainActivity extends FragmentActivity {
 		targetView.startAnimation(animation);
 		targetView.setVisibility(View.GONE);
 
-		ViewPager pager = getViewPager();
+		LinearLayout mainOverlay = getMainOverlay();
 		Animation outAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
-		pager.startAnimation(outAnimation);
-		pager.setVisibility(View.VISIBLE);
+		mainOverlay.startAnimation(outAnimation);
+		mainOverlay.setVisibility(View.VISIBLE);
+	}
+
+	protected LinearLayout getMainOverlay() {
+		return (LinearLayout) findViewById(R.id.main_overlay);
 	}
 
 	protected ViewPager getViewPager() {

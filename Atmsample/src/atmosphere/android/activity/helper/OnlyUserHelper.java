@@ -9,7 +9,6 @@ import java.util.Map;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -102,10 +101,10 @@ public class OnlyUserHelper {
 					}
 				});
 
-				ViewPager pager = getViewPager(activity);
+				LinearLayout mainOverlay = getMainOverlay(activity);
 				Animation outAnimation = AnimationUtils.loadAnimation(activity, R.anim.slide_out_right);
-				pager.startAnimation(outAnimation);
-				pager.setVisibility(View.GONE);
+				mainOverlay.startAnimation(outAnimation);
+				mainOverlay.setVisibility(View.GONE);
 
 				LinearLayout onlyUserOverlay = getOnlyUserOverlay(activity);
 				Animation animation = AnimationUtils.loadAnimation(activity, R.anim.slide_in_right);
@@ -115,8 +114,8 @@ public class OnlyUserHelper {
 		});
 	}
 
-	protected static ViewPager getViewPager(Activity activity) {
-		return (ViewPager) activity.findViewById(R.id.ViewPager);
+	protected static LinearLayout getMainOverlay(Activity activity) {
+		return (LinearLayout) activity.findViewById(R.id.main_overlay);
 	}
 
 	protected static LinearLayout getOnlyUserOverlay(Activity activity) {
