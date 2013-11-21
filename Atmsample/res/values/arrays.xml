@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="menus">
+        <item>everyone\'s message</item>
+        <item>messages to you</item>
+    </string-array>
+
+    <array name="listview_items">
+        <item>Message 1</item>
+        <item>Message 2</item>
+        <item>Message 3</item>
+        <item>Message 4</item>
+        <item>Message 5</item>
+    </array>
+
+</resources>

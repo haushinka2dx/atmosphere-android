@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal"
+    android:paddingBottom="2dip"
+    android:paddingTop="2dip" >
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <ImageButton
+            android:id="@+id/fun_image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/fun"
+            android:src="@drawable/fun"
+            android:textDirection="@string/zero" />
+
+        <TextView
+            android:id="@+id/fun_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="3dp"
+            android:layout_marginRight="5dp"
+            android:text="@string/zero"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@drawable/white" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <ImageButton
+            android:id="@+id/good_image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/good"
+            android:src="@drawable/good" />
+
+        <TextView
+            android:id="@+id/good_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="3dp"
+            android:layout_marginRight="5dp"
+            android:text="@string/zero"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@drawable/white" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <ImageButton
+            android:id="@+id/memo_image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/memo"
+            android:src="@drawable/memo" />
+
+        <TextView
+            android:id="@+id/memo_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="3dp"
+            android:layout_marginRight="5dp"
+            android:text="@string/zero"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@drawable/white" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <ImageButton
+            android:id="@+id/usefull_image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/usefull"
+            android:src="@drawable/usefull" />
+
+        <TextView
+            android:id="@+id/usefull_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="3dp"
+            android:layout_marginRight="5dp"
+            android:text="@string/zero"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@drawable/white" />
+    </FrameLayout>
+
+    <ImageButton
+        android:id="@+id/reply_to_other_image_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/reply"
+        android:src="@drawable/reply" />
+
+</LinearLayout>
