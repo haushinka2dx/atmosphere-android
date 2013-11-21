@@ -11,12 +11,12 @@ import atmosphere.android.dto.MessageDto;
 
 public class PrivateDetailMessageAdapter extends DetailMessageAdapter {
 
-	public PrivateDetailMessageAdapter(Activity activity, List<MessageDto> list) {
-		super(activity, list);
+	public PrivateDetailMessageAdapter(Activity activity, List<MessageDto> list, String orgId) {
+		super(activity, list, orgId);
 	}
 
 	@Override
-	protected void privateControl(View view, final MessageDto data) {
+	protected void viewControl(View view, final MessageDto data) {
 		PrivateViewHelper.showToUsers(activity, view, data, R.id.private_detail_to_user_layout, R.id.detail_to_user_id_text_view, R.id.detail_point_text_view);
 	}
 }

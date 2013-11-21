@@ -9,7 +9,6 @@ import java.util.Map;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.support.v4.widget.DrawerLayout;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -22,26 +21,28 @@ import atmosphere.android.dto.MessageDto;
 import atmosphere.android.util.TimeUtil;
 
 public class DetailMessageAdapter extends MessageBaseAdapter {
-	protected Activity activity;
 	private Map<String, Bitmap> imageCash;
+	private String orgId;
 
-	public DetailMessageAdapter(Activity activity, List<MessageDto> list) {
-		super(list);
-		this.activity = activity;
+	public DetailMessageAdapter(Activity activity, List<MessageDto> list, String orgId) {
+		super(activity, list, R.layout.detail_message, R.id.detail_clicked_color_view);
 		this.imageCash = new HashMap<String, Bitmap>();
+		this.orgId = orgId;
 	}
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
-		final View view;
-		if (convertView != null) {
-			view = convertView;
-		} else {
-			LayoutInflater inflater = LayoutInflater.from(activity);
-			view = inflater.inflate(R.layout.detail_message, parent, false);
-		}
-
+		final View view = super.getView(position, convertView, parent);
 		final MessageDto data = list.get(position);
+
+		LinearLayout detailLayout = (LinearLayout) view.findViewById(R.id.detail_layout);
+		int color;
+		if (data._id.equals(orgId)) {
+			color = activity.getResources().getColor(R.drawable.detail_focus_color);
+		} else {
+			color = activity.getResources().getColor(R.drawable.none);
+		}
+		detailLayout.setBackgroundColor(color);
 
 		TextView userName = (TextView) view.findViewById(R.id.detail_user_name);
 		userName.setText(data.created_by);
@@ -53,7 +54,7 @@ public class DetailMessageAdapter extends MessageBaseAdapter {
 		messageTime.setText(TimeUtil.formatDateFromGMT(data.created_at));
 
 		ImageView avatar = (ImageView) view.findViewById(R.id.detail_user_avatar);
-		AvatarHelper.setAvatar(view, data, imageCash, avatar);
+		AvatarHelper.setAndCachAvatar(data, imageCash, avatar);
 
 		TextView funTextView = (TextView) view.findViewById(R.id.detail_fun_text_view);
 		setResponseCount(funTextView, data.responses.fun.size());
@@ -67,7 +68,7 @@ public class DetailMessageAdapter extends MessageBaseAdapter {
 		TextView usefullTextView = (TextView) view.findViewById(R.id.detail_usefull_text_view);
 		setResponseCount(usefullTextView, data.responses.usefull.size());
 
-		privateControl(view, data);
+		viewControl(view, data);
 
 		return view;
 	}
@@ -76,9 +77,7 @@ public class DetailMessageAdapter extends MessageBaseAdapter {
 		targetTextView.setText(String.valueOf(count));
 	}
 
-	protected void privateControl(View view, MessageDto data) {
-		LinearLayout privateLayout = (LinearLayout) view.findViewById(R.id.private_detail_to_user_layout);
-		privateLayout.setVisibility(View.GONE);
+	protected void viewControl(View view, MessageDto data) {
 	}
 
 	protected DrawerLayout getDrawer(Activity activity) {

@@ -16,8 +16,7 @@ public class PrivateMessageAdapter extends MessageAdapter {
 	}
 
 	@Override
-	protected void privateControl(View view, final MessageDto data) {
+	protected void viewControl(View view, final MessageDto data) {
 		PrivateViewHelper.showToUsers(activity, view, data, R.id.private_to_user_layout, R.id.to_user_id_text_view, R.id.point_text_view);
 	}
-
 }

@@ -9,7 +9,6 @@ import java.util.Map;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,17 +16,16 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import atmosphere.android.activity.helper.AvatarHelper;
+import atmosphere.android.activity.helper.OnlyUserHelper;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.util.TimeUtil;
 
 public class MessageAdapter extends MessageBaseAdapter {
 
-	protected Activity activity;
 	private Map<String, Bitmap> imageCash;
 
 	public MessageAdapter(Activity activity, List<MessageDto> list) {
-		super(list);
-		this.activity = activity;
+		super(activity, list, R.layout.messeges, R.id.clicked_color_view);
 		this.imageCash = new HashMap<String, Bitmap>();
 	}
 
@@ -36,16 +34,13 @@ public class MessageAdapter extends MessageBaseAdapter {
 		return list;
 	}
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		final View view;
-		if (convertView != null) {
-			view = convertView;
-		} else {
-			LayoutInflater inflater = LayoutInflater.from(activity);
-			view = inflater.inflate(R.layout.messeges, parent, false);
-		}
+	public Map<String, Bitmap> getImageCash() {
+		return this.imageCash;
+	}
 
+	@Override
+	public View getView(final int position, final View convertView, final ViewGroup parent) {
+		final View view = super.getView(position, convertView, parent);
 		final MessageDto data = list.get(position);
 
 		TextView userName = (TextView) view.findViewById(R.id.user_name);
@@ -53,29 +48,20 @@ public class MessageAdapter extends MessageBaseAdapter {
 
 		TextView message = (TextView) view.findViewById(R.id.message_timeline);
 		message.setText(data.message);
-		// LinkUtil.autoLink(message, new LinkUtil.OnClickListener() {
-		// @Override
-		// public void onLinkClicked(String link) {
-		// }
-		//
-		// @Override
-		// public void onClicked() {
-		// listView.dispatchSetActivated(true);
-		// }
-		// });
 
 		TextView messageTime = (TextView) view.findViewById(R.id.message_time);
 		messageTime.setText(TimeUtil.formatDateFromGMT(data.created_at));
 
 		ImageView avatar = (ImageView) view.findViewById(R.id.user_avatar);
-		AvatarHelper.setAvatar(view, data, imageCash, avatar);
+		AvatarHelper.setAndCachAvatar(data, imageCash, avatar);
+		OnlyUserHelper.showOnlyUserList(activity, avatar, data.created_by, imageCash);
 
-		privateControl(view, data);
+		viewControl(view, data);
 
 		return view;
 	}
 
-	protected void privateControl(View view, MessageDto data) {
+	protected void viewControl(View view, MessageDto data) {
 		LinearLayout privateLayout = (LinearLayout) view.findViewById(R.id.private_to_user_layout);
 		privateLayout.setVisibility(View.GONE);
 	}

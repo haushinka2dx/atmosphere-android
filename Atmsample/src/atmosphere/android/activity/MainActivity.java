@@ -22,22 +22,18 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import atmosphere.android.activity.helper.MenuToolipAddHelper;
-import atmosphere.android.activity.helper.MessageHelper;
+import atmosphere.android.activity.helper.SendMessageHelper;
 import atmosphere.android.activity.view.MessagePagerAdapter;
 import atmosphere.android.activity.view.fragment.GlobalTimeLineFragment;
 import atmosphere.android.activity.view.fragment.PrivateTimeLineFragment;
 import atmosphere.android.activity.view.fragment.TalkTimeLineFragment;
-import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.constant.AtmosUrl;
-import atmosphere.android.dto.SendMessageRequest;
-import atmosphere.android.dto.SendPrivateMessageRequest;
 import atmosphere.android.dto.UserListResult;
 import atmosphere.android.manager.AtmosPreferenceManager;
 import atmosphere.android.util.Tooltip;
@@ -57,26 +53,13 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.activity_main);
 		final Activity activity = this;
 
-		new AtmosTask.Builder<UserListResult>(this, UserListResult.class, RequestMethod.GET).resultHandler(new ResultHandler<UserListResult>() {
-			@Override
-			public void handleResult(List<UserListResult> results) {
-				if (results != null && !results.isEmpty()) {
-					AtmosPreferenceManager.setUserList(activity, results.get(0));
-					messagesInitialize();
-				}
-			}
-		}).loginHandler(new LoginResultHandler() {
-			@Override
-			public void handleResult() {
-				messagesInitialize();
-			}
-		}).build().ignoreDialog(true).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.USER_LIST_METHOD, null));
+		init(activity);
 
 		drawerToggle = new ActionBarDrawerToggle(this, getDrawer(), R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
 			@Override
 			public void onDrawerClosed(View drawerView) {
-				initSubmitButton(activity);
-				initSubmitPrivateButton(activity);
+				SendMessageHelper.initSubmitButton(activity);
+				SendMessageHelper.initSubmitPrivateButton(activity);
 				Log.i("MainActivity", "onDrawerClosed");
 			}
 
@@ -150,24 +133,34 @@ public class MainActivity extends FragmentActivity {
 			}
 		});
 
-		initSubmitButton(activity);
-		initSubmitPrivateButton(activity);
+		SendMessageHelper.initSubmitButton(activity);
+		SendMessageHelper.initSubmitPrivateButton(activity);
 	}
 
-	private void initSubmitButton(final Activity activity) {
-		getSendMessageEditText().setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
-		Button submitButton = getSubmitButton();
-		submitButton.setOnClickListener(new View.OnClickListener() {
+	private void init(final Activity activity) {
+		new AtmosTask.Builder<UserListResult>(this, UserListResult.class, RequestMethod.GET).resultHandler(new ResultHandler<UserListResult>() {
 			@Override
-			public void onClick(View v) {
-				SendMessageRequest param = new SendMessageRequest();
-				String message = getSendMessageEditText().getText().toString();
-				param.message = message;
-				if (message != null && message.length() != 0) {
-					MessageHelper.sendMessage(activity, param);
+			public void handleResult(List<UserListResult> results) {
+				if (results != null && !results.isEmpty()) {
+					AtmosPreferenceManager.setUserList(activity, results.get(0));
+					messagesInitialize();
+					goneTitleView(activity);
 				}
 			}
-		});
+		}).loginHandler(new LoginResultHandler() {
+			@Override
+			public void handleResult() {
+				init(activity);
+			}
+		}).build().ignoreDialog(true).execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.USER_LIST_METHOD, null));
+	}
+
+	private void goneTitleView(Activity activity) {
+		LinearLayout titleView = getTitleViewOverlay();
+		Animation outAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_out);
+		outAnimation.setDuration(2000);
+		titleView.startAnimation(outAnimation);
+		titleView.setVisibility(View.GONE);
 	}
 
 	private void messagesInitialize() {
@@ -179,25 +172,6 @@ public class MainActivity extends FragmentActivity {
 		adapter.addTab(PrivateTimeLineFragment.class, R.string.private_timeline_title);
 
 		pager.setAdapter(adapter);
-	}
-
-	private void initSubmitPrivateButton(final Activity activity) {
-		getSendPrivateMessageEditText().setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
-		getSendPrivateToUserEditText().setText(AtmosConstant.SEND_MESSAGE_CLEAR_TEXT);
-
-		Button submitPrivateButton = getSubmitPrivateButton();
-		submitPrivateButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				SendPrivateMessageRequest param = new SendPrivateMessageRequest();
-				String message = getSendPrivateMessageEditText().getText().toString();
-				param.message = message;
-				param.to_user_id = getSendPrivateToUserEditText().getText().toString();
-				if (message != null && message.length() != 0) {
-					MessageHelper.sendPrivateMessage(activity, param);
-				}
-			}
-		});
 	}
 
 	@Override
@@ -236,21 +210,38 @@ public class MainActivity extends FragmentActivity {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+		LinearLayout detailOverlay = getDetailOverlay();
+		if (detailOverlay.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
+			detailOverlay.setVisibility(View.GONE);
+		}
+
+		LinearLayout secretOvarlay = getSecretOvarlay();
+		LinearLayout onlyUserOverlay = getOnlyUserOverlay();
 		ListView detailListView = getDetailListView();
-		if (detailListView.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
-			Animation animation = AnimationUtils.loadAnimation(this, R.anim.slide_out_right);
-			detailListView.startAnimation(animation);
-			detailListView.setVisibility(View.GONE);
-
-			ViewPager pager = getViewPager();
-			Animation outAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
-			pager.startAnimation(outAnimation);
-			pager.setVisibility(View.VISIBLE);
-
+		if (secretOvarlay.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
+			closeTargetOverlay(secretOvarlay);
+			return true;
+		} else if (onlyUserOverlay.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
+			closeTargetOverlay(onlyUserOverlay);
+			return true;
+		} else if (detailListView.getVisibility() == View.VISIBLE && keyCode == KeyEvent.KEYCODE_BACK) {
+			closeTargetOverlay(detailListView);
 			return true;
 		} else {
 			return super.onKeyDown(keyCode, event);
 		}
+	}
+
+	private void closeTargetOverlay(View targetView) {
+		Animation animation = AnimationUtils.loadAnimation(this, R.anim.slide_out_right);
+		targetView.startAnimation(animation);
+		targetView.setVisibility(View.GONE);
+
+		ViewPager pager = getViewPager();
+		Animation outAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
+		pager.startAnimation(outAnimation);
+		pager.setVisibility(View.VISIBLE);
 	}
 
 	protected ViewPager getViewPager() {
@@ -265,6 +256,30 @@ public class MainActivity extends FragmentActivity {
 		return (DrawerLayout) findViewById(R.id.Drawer);
 	}
 
+	protected EditText getSendMessageEditText() {
+		return (EditText) findViewById(R.id.SendMessageEditText);
+	}
+
+	protected ImageButton getAddButton() {
+		return (ImageButton) findViewById(R.id.AddButton);
+	}
+
+	protected EditText getSendPrivateToUserEditText() {
+		return (EditText) findViewById(R.id.SendPrivateToUserEditText);
+	}
+
+	protected ImageButton getPrivateAddButton() {
+		return (ImageButton) findViewById(R.id.PrivateAddButton);
+	}
+
+	protected ListView getDetailListView() {
+		return (ListView) findViewById(R.id.detail_message_list);
+	}
+
+	protected LinearLayout getDetailOverlay() {
+		return (LinearLayout) findViewById(R.id.detail_message_list_overlay);
+	}
+
 	protected LinearLayout getReplyButtonLayout() {
 		return (LinearLayout) findViewById(R.id.reply_button_layout);
 	}
@@ -277,35 +292,15 @@ public class MainActivity extends FragmentActivity {
 		return (ImageView) findViewById(R.id.private_reply_button);
 	}
 
-	protected EditText getSendMessageEditText() {
-		return (EditText) findViewById(R.id.SendMessageEditText);
+	protected LinearLayout getTitleViewOverlay() {
+		return (LinearLayout) findViewById(R.id.title_overlay);
 	}
 
-	protected Button getSubmitButton() {
-		return (Button) findViewById(R.id.SubmitButton);
+	protected LinearLayout getSecretOvarlay() {
+		return (LinearLayout) findViewById(R.id.secret_overlay);
 	}
 
-	protected ImageButton getAddButton() {
-		return (ImageButton) findViewById(R.id.AddButton);
-	}
-
-	protected EditText getSendPrivateMessageEditText() {
-		return (EditText) findViewById(R.id.SendPrivateMessageEditText);
-	}
-
-	protected EditText getSendPrivateToUserEditText() {
-		return (EditText) findViewById(R.id.SendPrivateToUserEditText);
-	}
-
-	protected Button getSubmitPrivateButton() {
-		return (Button) findViewById(R.id.SubmitPrivateButton);
-	}
-
-	protected ImageButton getPrivateAddButton() {
-		return (ImageButton) findViewById(R.id.PrivateAddButton);
-	}
-
-	protected ListView getDetailListView() {
-		return (ListView) findViewById(R.id.detail_message_list);
+	protected LinearLayout getOnlyUserOverlay() {
+		return (LinearLayout) findViewById(R.id.only_user_overlay);
 	}
 }

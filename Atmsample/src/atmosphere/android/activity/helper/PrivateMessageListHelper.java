@@ -16,8 +16,7 @@ import atmosphere.android.util.Tooltip;
 public class PrivateMessageListHelper extends MessageListHelper {
 
 	public PrivateMessageListHelper(Activity activity, View view, LayoutInflater inflater, String targetMethod) {
-		super(activity, view, inflater, targetMethod);
-		super.adapter = new PrivateMessageAdapter(activity, new ArrayList<MessageDto>());
+		super(activity, view, inflater, targetMethod, new PrivateMessageAdapter(activity, new ArrayList<MessageDto>()));
 	}
 
 	@Override
@@ -27,7 +26,7 @@ public class PrivateMessageListHelper extends MessageListHelper {
 	}
 
 	@Override
-	protected DetailMessageAdapter createDetailAdapter(List<MessageDto> list) {
-		return new PrivateDetailMessageAdapter(activity, list);
+	protected DetailMessageAdapter createDetailAdapter(List<MessageDto> list, String orgId) {
+		return new PrivateDetailMessageAdapter(activity, list, orgId);
 	}
 }
