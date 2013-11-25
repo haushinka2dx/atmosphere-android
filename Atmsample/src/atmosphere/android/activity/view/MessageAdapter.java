@@ -8,12 +8,10 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import atmosphere.android.activity.helper.AvatarHelper;
 import atmosphere.android.activity.helper.OnlyUserHelper;
@@ -65,17 +63,4 @@ public class MessageAdapter extends MessageBaseAdapter {
 		LinearLayout privateLayout = (LinearLayout) view.findViewById(R.id.private_to_user_layout);
 		privateLayout.setVisibility(View.GONE);
 	}
-
-	protected ListView getDetailListView(Activity activity) {
-		return (ListView) activity.findViewById(R.id.detail_message_list);
-	}
-
-	protected LinearLayout getDetailOverlay(Activity activity) {
-		return (LinearLayout) activity.findViewById(R.id.detail_message_list_overlay);
-	}
-
-	protected ViewPager getViewPager(Activity activity) {
-		return (ViewPager) activity.findViewById(R.id.ViewPager);
-	}
-
 }

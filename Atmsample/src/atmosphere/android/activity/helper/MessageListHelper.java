@@ -8,7 +8,6 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -101,10 +100,10 @@ abstract class MessageListHelper {
 				detailOverlay.setVisibility(View.VISIBLE);
 				MessageHelper.serchConversationMessage(activity, targetItem.reply_to, detailAdapter, targetItem._id, adapter.getList());
 
-				ViewPager pager = getViewPager(activity);
+				LinearLayout mainOverlay = getMainOverlay(activity);
 				Animation outAnimation = AnimationUtils.loadAnimation(activity, R.anim.slide_out_right);
-				pager.startAnimation(outAnimation);
-				pager.setVisibility(View.GONE);
+				mainOverlay.startAnimation(outAnimation);
+				mainOverlay.setVisibility(View.GONE);
 
 				Animation inAnimation = AnimationUtils.loadAnimation(activity, R.anim.slide_in_right);
 				detailListView.startAnimation(inAnimation);
@@ -183,10 +182,10 @@ abstract class MessageListHelper {
 					}
 				}
 
-				ViewPager pager = getViewPager(activity);
+				LinearLayout mainOverlay = getMainOverlay(activity);
 				Animation outAnimation = AnimationUtils.loadAnimation(activity, R.anim.slide_out_right);
-				pager.startAnimation(outAnimation);
-				pager.setVisibility(View.GONE);
+				mainOverlay.startAnimation(outAnimation);
+				mainOverlay.setVisibility(View.GONE);
 
 				LinearLayout secretLayout = getSecretOvarlay(activity);
 				Animation inAnimation = AnimationUtils.loadAnimation(activity, R.anim.slide_in_right);
@@ -265,8 +264,8 @@ abstract class MessageListHelper {
 		return (LinearLayout) activity.findViewById(R.id.detail_message_list_overlay);
 	}
 
-	protected ViewPager getViewPager(Activity activity) {
-		return (ViewPager) activity.findViewById(R.id.ViewPager);
+	protected LinearLayout getMainOverlay(Activity activity) {
+		return (LinearLayout) activity.findViewById(R.id.main_overlay);
 	}
 
 	protected LinearLayout getSecretOvarlay(Activity activity) {
