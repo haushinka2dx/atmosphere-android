@@ -9,6 +9,7 @@ import android.view.View;
 import atmosphere.android.activity.view.DetailMessageAdapter;
 import atmosphere.android.activity.view.MessageBaseAdapter;
 import atmosphere.android.activity.view.SimpleMessageAdapter;
+import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.util.Tooltip;
 
@@ -26,6 +27,6 @@ public class SimpleMessageListHelper extends MessageListHelper {
 	@Override
 	protected Tooltip createTooltip(int position, MessageBaseAdapter detailAdapter, MessageDto detailTargetItem) {
 		SimpleResponseTooltipHelper helper = new SimpleResponseTooltipHelper();
-		return helper.createResponseTooltip(activity, position, detailAdapter, detailTargetItem, targetMethod);
+		return helper.createResponseTooltip(activity, position, detailAdapter, detailTargetItem, targetMethod, AtmosUrl.SEND_RESPONSE_METHOD, AtmosUrl.SEND_DESTORY_METHOD);
 	}
 }
