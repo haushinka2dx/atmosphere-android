@@ -227,9 +227,7 @@ abstract class MessageListHelper {
 		return new DetailMessageAdapter(activity, list, orgId);
 	}
 
-	protected Tooltip createTooltip(int position, MessageBaseAdapter detailAdapter, MessageDto detailTargetItem) {
-		return null;
-	}
+	abstract Tooltip createTooltip(int position, MessageBaseAdapter detailAdapter, MessageDto detailTargetItem);
 
 	protected ListView getListView(View view) {
 		return (ListView) view.findViewById(R.id.message_list);
