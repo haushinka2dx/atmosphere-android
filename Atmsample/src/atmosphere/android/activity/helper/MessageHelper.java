@@ -9,7 +9,6 @@ import android.app.Activity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
-import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -19,6 +18,7 @@ import atmosphere.android.activity.view.MessageBaseAdapter;
 import atmosphere.android.constant.AtmosAction;
 import atmosphere.android.constant.AtmosConstant;
 import atmosphere.android.constant.AtmosUrl;
+import atmosphere.android.dto.DestroyRequest;
 import atmosphere.android.dto.FutureThanRequest;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.dto.MessageResult;
@@ -149,7 +149,7 @@ public class MessageHelper {
 		}).build().execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.SEND_PRIVATE_MESSAGE_METHOD, param));
 	}
 
-	public static void sendResponse(final Activity activity, final MessageDto item, final AtmosAction action, final BaseAdapter adapter) {
+	public static void sendResponse(final Activity activity, final MessageDto item, final AtmosAction action, final MessageBaseAdapter adapter, String responseMethod) {
 		ResponseRequest response = new ResponseRequest();
 		response.target_id = item._id;
 		response.action = action.getValue();
@@ -170,7 +170,22 @@ public class MessageHelper {
 					adapter.notifyDataSetChanged();
 				}
 			}
-		}).build().execute(JsonPath.paramOf(AtmosUrl.BASE_URL + AtmosUrl.SEND_RESPONSE_METHOD, response));
+		}).build().execute(JsonPath.paramOf(AtmosUrl.BASE_URL + responseMethod, response));
+	}
+
+	public static void sendDelete(Activity activity, MessageDto item, final MessageBaseAdapter adapter, final int position, String deleteMethod) {
+		DestroyRequest param = new DestroyRequest();
+		param._id = item._id;
+		new AtmosTask.Builder<ResponseResult>(activity, ResponseResult.class, RequestMethod.POST).resultHandler(new ResultHandler<ResponseResult>() {
+			@Override
+			public void handleResult(List<ResponseResult> results) {
+				if (results != null && !results.isEmpty() && results.get(0).status.equals("ok")) {
+					adapter.removeItem(position);
+					adapter.notifyDataSetChanged();
+				}
+			}
+		}).build().execute(JsonPath.paramOf(AtmosUrl.BASE_URL + deleteMethod, param));
+
 	}
 
 	public static void serchMessage(final Activity activity, final SerchRequest param, final MessageBaseAdapter adapter) {

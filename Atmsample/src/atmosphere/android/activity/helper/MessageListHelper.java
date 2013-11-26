@@ -90,7 +90,9 @@ abstract class MessageListHelper {
 					public boolean onItemLongClick(View view, int position, long id) {
 						final MessageDto detailTargetItem = (MessageDto) detailAdapter.getItem(position);
 						Tooltip detailTooltip = createTooltip(position, detailAdapter, detailTargetItem);
-						detailTooltip.showTop(view);
+						if (detailTooltip != null) {
+							detailTooltip.showTop(view);
+						}
 						return false;
 					}
 				});
@@ -118,7 +120,9 @@ abstract class MessageListHelper {
 				if (adapter.getCount() - 1 != position) {
 					final MessageDto item = (MessageDto) adapter.getItem(position);
 					Tooltip tooltip = createTooltip(position, adapter, item);
-					tooltip.showTop(view);
+					if (tooltip != null) {
+						tooltip.showTop(view);
+					}
 				}
 				return false;
 			}
@@ -223,10 +227,7 @@ abstract class MessageListHelper {
 		return new DetailMessageAdapter(activity, list, orgId);
 	}
 
-	protected Tooltip createTooltip(int position, MessageBaseAdapter detailAdapter, MessageDto detailTargetItem) {
-		ResponseTooltipHelper helper = new ResponseTooltipHelper();
-		return helper.createResponseTooltip(activity, position, detailAdapter, detailTargetItem, targetMethod);
-	}
+	abstract Tooltip createTooltip(int position, MessageBaseAdapter detailAdapter, MessageDto detailTargetItem);
 
 	protected ListView getListView(View view) {
 		return (ListView) view.findViewById(R.id.message_list);

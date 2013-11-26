@@ -10,6 +10,7 @@ import atmosphere.android.activity.view.DetailMessageAdapter;
 import atmosphere.android.activity.view.MessageBaseAdapter;
 import atmosphere.android.activity.view.PrivateDetailMessageAdapter;
 import atmosphere.android.activity.view.PrivateMessageAdapter;
+import atmosphere.android.constant.AtmosUrl;
 import atmosphere.android.dto.MessageDto;
 import atmosphere.android.util.Tooltip;
 
@@ -22,7 +23,7 @@ public class PrivateMessageListHelper extends MessageListHelper {
 	@Override
 	protected Tooltip createTooltip(int position, MessageBaseAdapter detailAdapter, MessageDto detailTargetItem) {
 		PrivateResponseTooltipHelper helper = new PrivateResponseTooltipHelper();
-		return helper.createResponseTooltip(activity, position, detailAdapter, detailTargetItem, targetMethod);
+		return helper.createResponseTooltip(activity, position, detailAdapter, detailTargetItem, targetMethod, AtmosUrl.SEND_PRIVATE_RESPONSE_METHOD, AtmosUrl.SEND_PRIVATE_DESTORY_METHOD);
 	}
 
 	@Override
